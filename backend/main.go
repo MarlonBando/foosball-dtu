@@ -15,6 +15,9 @@ var API_KEY = os.Getenv("API_KEY")
 func main() {
 	router := gin.Default()
 	router.GET("/nationalities", GetNationalities)
+	router.GET("/players", GetPlayers)
+	router.POST("/matches/register", RegisterMatch)
+
 	router.Run("localhost:8080")
 }
 
@@ -26,7 +29,7 @@ func GetNationalities(c *gin.Context) {
 	)
 
 	if err != nil {
-		fmt.Println("Failed to initialize client")
+		fmt.Println("Failed to initialize supabase client")
 	}
 
 	data, _, err := client.From("Nationalities").Select("id,code,name", "", false).Execute()
@@ -37,4 +40,54 @@ func GetNationalities(c *gin.Context) {
 	var allNations []Nationality
 	json.Unmarshal(data, &allNations)
 	c.IndentedJSON(http.StatusOK, allNations)
+}
+
+func GetPlayers(c *gin.Context) {
+	client, err := supabase.NewClient(
+		API_URL,
+		API_KEY,
+		&supabase.ClientOptions{},
+	)
+
+	if err != nil {
+		fmt.Println("Failed to initialize supabase client")
+	}
+
+	data, _, err := client.From("Players").Select("*", "", false).Execute()
+	if err != nil {
+		fmt.Println("Error while fetching the data")
+	}
+
+	var allPlayers []Player
+	json.Unmarshal(data, &allPlayers)
+	c.IndentedJSON(http.StatusOK, allPlayers)
+}
+
+func RegisterMatch(c *gin.Context) {
+	var newMatch Match
+
+	if err := c.BindJSON(&newMatch); err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	client, err := supabase.NewClient(
+		API_URL,
+		API_KEY,
+		&supabase.ClientOptions{},
+	)
+
+	if err != nil {
+		fmt.Println("Failed to initialize supabase client")
+		return
+	}
+
+	data, count, err := client.From("Matches").Insert(newMatch, false, "", "minimal", "").Execute()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(data)
+	fmt.Println(count)
 }
