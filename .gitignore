@@ -1,3 +1,7 @@
 .env
 .setup.sh
 bin/
+
+node_modules/
+dist/
+.DS_Store
