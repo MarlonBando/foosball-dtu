@@ -1,13 +1,8 @@
-.match-page {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background-color: #ffffff; /* White background */
-}
-
+/* Game container - flex layout handled by PageLayout */
 .game-container {
   display: flex;
-  flex-direction: column; /* Stack items vertically */
+  flex-direction: column;
+  /* Stack items vertically */
   justify-content: center;
   align-items: center;
   flex-grow: 1;
@@ -16,11 +11,13 @@
 
 .game-area {
   position: relative;
-  display: inline-block; /* Make container size to the image */
+  display: inline-block;
+  /* Make container size to the image */
 }
 
 .scoreboard-container {
-  margin-bottom: 20px; /* Add space between scoreboard and table */
+  margin-bottom: 20px;
+  /* Add space between scoreboard and table */
 }
 
 .team {
@@ -31,15 +28,18 @@
   flex-direction: column;
   justify-content: space-around;
   width: 50px;
-  z-index: 1; /* Ensure players are on top of the image */
+  z-index: 1;
+  /* Ensure players are on top of the image */
 }
 
 .team-left {
-  left: 5%; /* Position from the left edge of the game-area */
+  left: 5%;
+  /* Position from the left edge of the game-area */
 }
 
 .team-right {
-  right: 5%; /* Position from the right edge of the game-area */
+  right: 5%;
+  /* Position from the right edge of the game-area */
 }
 
 /* Responsive for mobile */
@@ -60,4 +60,23 @@
   .team-right {
     right: 2%;
   }
+}
+
+.register-match-button {
+  margin-top: 20px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #c8102e;
+  /* DTU Red */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.register-match-button:hover {
+  background-color: #a20f26;
+  /* Darker DTU Red */
 }

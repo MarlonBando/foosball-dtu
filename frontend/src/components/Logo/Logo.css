@@ -1,0 +1,7 @@
+.logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%; /* Make it a circle */
+  object-fit: cover; /* Ensure image covers the circle */
+  border: 2px solid #c8102e; /* Default DTU Red border */
+}

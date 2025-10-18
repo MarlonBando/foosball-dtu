@@ -1,11 +1,16 @@
 import { Route, Routes } from 'react-router-dom'
 import './App.css'
 import MatchPage from './pages/MatchPage/MatchPage.tsx'
+import LoginPage from './pages/LoginPage/LoginPage.tsx';
+import SignupPage from './pages/SignupPage/SignupPage.tsx';
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<MatchPage />} />
+      <Route path="/" element={<LoginPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
+      <Route path="/match" element={<MatchPage />} />
     </Routes>
   )
 }

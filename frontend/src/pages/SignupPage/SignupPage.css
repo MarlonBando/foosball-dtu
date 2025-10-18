@@ -1,0 +1,152 @@
+/* Container for signup form - centered by PageLayout */
+.signup-container {
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 12px;
+  /* Slightly more rounded */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  /* Softer, deeper shadow */
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid #e0e0e0;
+  /* Subtle light border */
+}
+
+/* The logo component itself has a border, so we don't need to define it here */
+.signup-logo {
+  margin-bottom: 25px;
+  /* Slightly more space below logo */
+}
+
+.signup-title {
+  color: #333;
+  margin-bottom: 35px;
+  /* More space below title */
+  font-size: 26px;
+  /* Slightly larger title */
+  font-weight: 700;
+  /* Bolder title */
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  /* Slightly more space between inputs */
+  margin-bottom: 25px;
+  /* More space below form */
+}
+
+.signup-input {
+  padding: 14px 18px;
+  border: 1px solid #ccc;
+  /* Slightly softer border */
+  border-radius: 8px;
+  /* More rounded input */
+  font-size: 17px;
+  /* Slightly larger font */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.signup-input:focus {
+  border-color: #c8102e;
+  /* DTU Red */
+  box-shadow: 0 0 0 4px rgba(200, 16, 46, 0.15);
+  /* More prominent focus glow */
+  outline: none;
+}
+
+.experience-level {
+  text-align: left;
+  margin-top: 15px;
+  /* More space above */
+  margin-bottom: 10px;
+  /* More space below */
+  color: #555;
+  font-size: 16px;
+  /* Slightly larger font */
+  font-weight: 500;
+}
+
+.experience-level p {
+  margin-bottom: 10px;
+  font-weight: 600;
+  /* Bolder text */
+}
+
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  /* More space between radio buttons */
+  justify-content: center;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 16px;
+  /* Slightly larger font */
+  color: #444;
+}
+
+.radio-group input[type="radio"] {
+  margin-right: 10px;
+  /* More space */
+  accent-color: #c8102e;
+  /* DTU Red for radio buttons */
+  width: 20px;
+  /* Larger radio buttons */
+  height: 20px;
+}
+
+.signup-button {
+  padding: 14px 25px;
+  border: none;
+  border-radius: 8px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.signup-button.primary {
+  background-color: #c8102e;
+  /* DTU Red */
+  color: white;
+  box-shadow: 0 2px 8px rgba(200, 16, 46, 0.2);
+}
+
+.signup-button.primary:hover {
+  background-color: #a00c24;
+  /* Darker red */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(200, 16, 46, 0.3);
+}
+
+.signup-button.secondary {
+  background-color: #004a94;
+  /* DTU Blue */
+  color: white;
+  margin-top: 15px;
+  box-shadow: 0 2px 8px rgba(0, 74, 148, 0.2);
+}
+
+.signup-button.secondary:hover {
+  background-color: #003a7a;
+  /* Darker blue */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 74, 148, 0.3);
+}
+
+.signup-footer {
+  margin-top: 30px;
+  color: #777;
+  font-size: 15px;
+}
+
+.signup-footer p {
+  margin-bottom: 12px;
+}

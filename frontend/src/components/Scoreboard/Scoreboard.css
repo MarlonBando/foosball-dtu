@@ -6,6 +6,13 @@
   border-radius: 10px;
   border: 2px solid #444;
   box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  align-items: center;
+}
+
+.score-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .score {
@@ -35,10 +42,33 @@
   background-color: #444;
 }
 
-.score.blue .digit {
+.score.team1 .digit {
+  background-color: #c8102e; /* DTU Red */
+}
+
+.score.team2 .digit {
   background-color: #007bff; /* Blue */
 }
 
-.score.red .digit {
-  background-color: #c8102e; /* DTU Red */
+.score-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.score-controls button {
+  background-color: #4f4f4f;
+  color: white;
+  border: 1px solid #666;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  width: 30px;
+  height: 30px;
+  transition: background-color 0.2s;
+}
+
+.score-controls button:hover {
+  background-color: #666;
 }

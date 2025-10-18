@@ -1,9 +1,48 @@
+.player-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .player {
   width: 50px;
   height: 50px;
   background-color: #c8102e; /* DTU Red */
   border-radius: 50%;
-  margin: 20px 0;
   border: 3px solid white;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  font-family: sans-serif;
+}
+
+/* This will be used to style team 2 players */
+.team-right .player-container .player {
+  background-color: #004a94; /* A nice blue */
+}
+
+.player.empty {
+  background-color: #a0a0a0; /* Grey for empty slot */
+}
+
+.player-initial {
+  line-height: 1;
+}
+
+.player-name {
+  background-color: #333;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 15px;
+  margin-top: 8px;
+  font-size: 14px;
+  font-family: sans-serif;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  min-width: 80px;
+  white-space: nowrap;
 }
