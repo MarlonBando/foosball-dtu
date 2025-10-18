@@ -1,0 +1,44 @@
+.scoreboard {
+  display: flex;
+  gap: 20px;
+  padding: 10px;
+  background-color: #333;
+  border-radius: 10px;
+  border: 2px solid #444;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.score {
+  display: flex;
+  gap: 5px;
+}
+
+.digit {
+  color: white;
+  font-size: 3rem;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  padding: 10px 15px;
+  border-radius: 5px;
+  position: relative;
+  background-color: #000;
+  border: 1px solid #222;
+}
+
+.digit::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #444;
+}
+
+.score.blue .digit {
+  background-color: #007bff; /* Blue */
+}
+
+.score.red .digit {
+  background-color: #c8102e; /* DTU Red */
+}

@@ -1,0 +1,63 @@
+.match-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #ffffff; /* White background */
+}
+
+.game-container {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  padding: 20px;
+}
+
+.game-area {
+  position: relative;
+  display: inline-block; /* Make container size to the image */
+}
+
+.scoreboard-container {
+  margin-bottom: 20px; /* Add space between scoreboard and table */
+}
+
+.team {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 50px;
+  z-index: 1; /* Ensure players are on top of the image */
+}
+
+.team-left {
+  left: 5%; /* Position from the left edge of the game-area */
+}
+
+.team-right {
+  right: 5%; /* Position from the right edge of the game-area */
+}
+
+/* Responsive for mobile */
+@media (max-width: 768px) {
+  .foosball-table-image {
+    max-width: 90vw;
+  }
+
+  .player {
+    width: 40px;
+    height: 40px;
+  }
+
+  .team-left {
+    left: 2%;
+  }
+
+  .team-right {
+    right: 2%;
+  }
+}
