@@ -76,6 +76,22 @@ const mockMatches: Match[] = [
         t1_st_status: PlayerStatus.Accepted,
         t2_gk_status: PlayerStatus.Accepted,
         t2_st_status: PlayerStatus.Accepted,
+    },
+    {
+        id: 3,
+        created_at: new Date().toISOString(),
+        t1_gk: mockPlayer1,
+        t1_st: mockPlayer4,
+        t2_gk: mockPlayer2,
+        t2_st: mockPlayer5,
+        table: 1,
+        t1_score: 0,
+        t2_score: 0,
+        status: MatchStatus.Pending,
+        t1_gk_status: PlayerStatus.Accepted,
+        t1_st_status: PlayerStatus.Pending,
+        t2_gk_status: PlayerStatus.Rejected,
+        t2_st_status: PlayerStatus.Accepted,
     }
 ];
 
