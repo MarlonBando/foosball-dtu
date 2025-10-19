@@ -1,0 +1,126 @@
+.player-header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 30px 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    /* Light grey gradient for clean look */
+}
+
+.player-header-card {
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    padding: 40px;
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+    border: 1px solid #e0e0e0;
+}
+
+.player-header-name {
+    color: #c8102e;
+    /* DTU Red for name */
+    background: transparent;
+    /* ensure no pill background */
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0 0 25px 0;
+    line-height: 1.2;
+}
+
+.player-elo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #f0f2f5;
+    border-radius: 12px;
+}
+
+.elo-label {
+    color: #777;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.elo-value {
+    color: #c8102e;
+    /* DTU Red */
+    font-size: 48px;
+    font-weight: 700;
+}
+
+.player-record {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.record-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.record-value {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.record-item.wins .record-value {
+    color: #28a745;
+    /* Green for wins */
+}
+
+.record-item.losses .record-value {
+    color: #dc3545;
+    /* Red for losses */
+}
+
+.record-label {
+    color: #555;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.record-divider {
+    color: #ccc;
+    font-size: 32px;
+    font-weight: 300;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .player-header {
+        padding: 20px 15px;
+    }
+
+    .player-header-card {
+        padding: 30px 20px;
+    }
+
+    .player-name {
+        font-size: 28px;
+    }
+
+    .elo-value {
+        font-size: 40px;
+    }
+
+    .record-value {
+        font-size: 28px;
+    }
+
+    .player-record {
+        gap: 20px;
+    }
+}

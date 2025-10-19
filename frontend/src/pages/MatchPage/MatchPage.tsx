@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Navbar from '../../components/Navbar/Navbar';
 import FoosballTable from '../../components/FoosballTable/FoosballTable';
 import Player from '../../components/Player/Player';
 import Scoreboard from '../../components/Scoreboard/Scoreboard';
@@ -9,12 +8,12 @@ import './MatchPage.css';
 import type { Match, Player as PlayerType } from '../../types';
 
 // Mock Data as requested
-const mockPlayer1: PlayerType = { id: 1, created_at: new Date().toISOString(), username: 'johndoe', elo: 1200, name: 'John', surname: 'Doe', nationality: 1 };
-const mockPlayer2: PlayerType = { id: 2, created_at: new Date().toISOString(), username: 'janedoe', elo: 1250, name: 'Jane', surname: 'Doe', nationality: 2 };
-const mockPlayer3: PlayerType = { id: 3, created_at: new Date().toISOString(), username: 'peterp', elo: 1100, name: 'Peter', surname: 'Pan', nationality: 3 };
-const mockPlayer4: PlayerType = { id: 4, created_at: new Date().toISOString(), username: 'maryj', elo: 1300, name: 'Mary', surname: 'Jane', nationality: 4 };
-const mockPlayer5: PlayerType = { id: 5, created_at: new Date().toISOString(), username: 'sarahk', elo: 1150, name: 'Sarah', surname: 'K', nationality: 1 };
-const mockPlayer6: PlayerType = { id: 6, created_at: new Date().toISOString(), username: 'mikeb', elo: 1050, name: 'Mike', surname: 'B', nationality: 2 };
+const mockPlayer1: PlayerType = { id: 1, created_at: new Date().toISOString(), username: 'johndoe', elo: 1200, name: 'John', surname: 'Doe', nationality: 1, wins: 10, losses: 5 };
+const mockPlayer2: PlayerType = { id: 2, created_at: new Date().toISOString(), username: 'janedoe', elo: 1250, name: 'Jane', surname: 'Doe', nationality: 2, wins: 12, losses: 8 };
+const mockPlayer3: PlayerType = { id: 3, created_at: new Date().toISOString(), username: 'peterp', elo: 1100, name: 'Peter', surname: 'Pan', nationality: 3, wins: 8, losses: 10 };
+const mockPlayer4: PlayerType = { id: 4, created_at: new Date().toISOString(), username: 'maryj', elo: 1300, name: 'Mary', surname: 'Jane', nationality: 4, wins: 15, losses: 6 };
+const mockPlayer5: PlayerType = { id: 5, created_at: new Date().toISOString(), username: 'sarahk', elo: 1150, name: 'Sarah', surname: 'K', nationality: 1, wins: 9, losses: 9 };
+const mockPlayer6: PlayerType = { id: 6, created_at: new Date().toISOString(), username: 'mikeb', elo: 1050, name: 'Mike', surname: 'B', nationality: 2, wins: 6, losses: 12 };
 
 // Mock list of all players for the selection modal
 const mockAllPlayers: PlayerType[] = [
@@ -24,10 +23,10 @@ const mockAllPlayers: PlayerType[] = [
   mockPlayer4,
   mockPlayer5,
   mockPlayer6,
-  { id: 7, created_at: new Date().toISOString(), username: 'alice', elo: 1350, name: 'Alice', surname: 'A', nationality: 3 },
-  { id: 8, created_at: new Date().toISOString(), username: 'bob', elo: 1180, name: 'Bob', surname: 'B', nationality: 4 },
-  { id: 9, created_at: new Date().toISOString(), username: 'charlie', elo: 1220, name: 'Charlie', surname: 'C', nationality: 1 },
-  { id: 10, created_at: new Date().toISOString(), username: 'diana', elo: 1280, name: 'Diana', surname: 'D', nationality: 2 },
+  { id: 7, created_at: new Date().toISOString(), username: 'alice', elo: 1350, name: 'Alice', surname: 'A', nationality: 3, wins: 14, losses: 7 },
+  { id: 8, created_at: new Date().toISOString(), username: 'bob', elo: 1180, name: 'Bob', surname: 'B', nationality: 4, wins: 11, losses: 9 },
+  { id: 9, created_at: new Date().toISOString(), username: 'charlie', elo: 1220, name: 'Charlie', surname: 'C', nationality: 1, wins: 13, losses: 8 },
+  { id: 10, created_at: new Date().toISOString(), username: 'diana', elo: 1280, name: 'Diana', surname: 'D', nationality: 2, wins: 12, losses: 6 },
 ];
 
 type PlayerSlot = 't1_gk' | 't1_st' | 't2_gk' | 't2_st';
@@ -42,6 +41,7 @@ const initialMatch: Match = {
   table: 1,
   t1_score: 0,
   t2_score: 0,
+  status: 'pending',
 };
 
 const MatchPage: React.FC = () => {

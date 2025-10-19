@@ -32,4 +32,6 @@ type Player struct {
 	Name        string    `json:"name"`
 	Surname     string    `json:"surname"`
 	Nationality int64     `json:"nationality"`
+	Wins        int16     `json:"wins"`
+	Losses      int16     `json:"losses"`
 }

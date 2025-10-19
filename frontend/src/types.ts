@@ -1,3 +1,5 @@
+export type MatchStatus = 'pending' | 'accepted' | 'completed';
+
 export interface Player {
   id: number;
   created_at: string;
@@ -6,6 +8,8 @@ export interface Player {
   name: string;
   surname: string;
   nationality: number;
+  wins: number;
+  losses: number;
 }
 
 export interface Match {
@@ -18,4 +22,5 @@ export interface Match {
   table: number | null;
   t1_score: number;
   t2_score: number;
+  status: MatchStatus;
 }
