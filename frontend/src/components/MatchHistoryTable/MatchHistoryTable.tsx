@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './MatchHistoryTable.css';
 import type { Match } from '../../types';
 
@@ -13,6 +14,14 @@ const MatchHistoryTable: React.FC<MatchHistoryTableProps> = ({
     currentPlayerId,
     onAcceptMatch
 }) => {
+    const navigate = useNavigate();
+
+    const handleRowClick = (matchId: number | null) => {
+        if (matchId) {
+            navigate(`/match/${matchId}`, { state: { readOnly: true } });
+        }
+    };
+
     const formatDate = (dateString: string | null) => {
         if (!dateString) return 'N/A';
         const date = new Date(dateString);
@@ -57,7 +66,10 @@ const MatchHistoryTable: React.FC<MatchHistoryTableProps> = ({
             return (
                 <button
                     className="accept-button"
-                    onClick={() => onAcceptMatch && match.id && onAcceptMatch(match.id)}
+                    onClick={(e) => {
+                        e.stopPropagation(); // Prevent row click from firing
+                        onAcceptMatch && match.id && onAcceptMatch(match.id)
+                    }}
                 >
                     Accept
                 </button>
@@ -87,7 +99,7 @@ const MatchHistoryTable: React.FC<MatchHistoryTableProps> = ({
                             </tr>
                         ) : (
                             matches.map((match, index) => (
-                                <tr key={match.id || index}>
+                                <tr key={match.id || index} className="clickable-row" onClick={() => handleRowClick(match.id)}>
                                     <td className="date-cell">{formatDate(match.created_at)}</td>
                                     <td className="players-cell">{formatPlayers(match)}</td>
                                     <td className="score-cell">

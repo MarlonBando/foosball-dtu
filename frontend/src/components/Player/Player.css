@@ -46,3 +46,29 @@
   min-width: 80px;
   white-space: nowrap;
 }
+
+.player-status {
+  margin-top: 5px;
+  height: 30px; /* Give it a fixed height to prevent layout shifts */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-icon {
+  font-size: 24px;
+}
+
+.accept-button {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #4CAF50; /* Green */
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.accept-button:hover {
+  background-color: #45a049;
+}

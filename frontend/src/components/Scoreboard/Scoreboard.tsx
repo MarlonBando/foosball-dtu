@@ -5,9 +5,10 @@ interface ScoreboardProps {
   t1_score: number;
   t2_score: number;
   onScoreChange: (team: 't1' | 't2', delta: 1 | -1) => void;
+  readOnly: boolean;
 }
 
-const Scoreboard: React.FC<ScoreboardProps> = ({ t1_score, t2_score, onScoreChange }) => {
+const Scoreboard: React.FC<ScoreboardProps> = ({ t1_score, t2_score, onScoreChange, readOnly }) => {
   const formatScore = (score: number) => {
     return score.toString().padStart(2, '0');
   };
@@ -20,8 +21,8 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ t1_score, t2_score, onScoreChan
           <span className="digit">{formatScore(t1_score)[1]}</span>
         </div>
         <div className="score-controls">
-          <button onClick={() => onScoreChange('t1', 1)}>+</button>
-          <button onClick={() => onScoreChange('t1', -1)}>-</button>
+          <button onClick={() => onScoreChange('t1', 1)} disabled={readOnly}>+</button>
+          <button onClick={() => onScoreChange('t1', -1)} disabled={readOnly}>-</button>
         </div>
       </div>
       <div className="score-container">
@@ -30,8 +31,8 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ t1_score, t2_score, onScoreChan
           <span className="digit">{formatScore(t2_score)[1]}</span>
         </div>
         <div className="score-controls">
-          <button onClick={() => onScoreChange('t2', 1)}>+</button>
-          <button onClick={() => onScoreChange('t2', -1)}>-</button>
+          <button onClick={() => onScoreChange('t2', 1)} disabled={readOnly}>+</button>
+          <button onClick={() => onScoreChange('t2', -1)} disabled={readOnly}>-</button>
         </div>
       </div>
     </div>
