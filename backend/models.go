@@ -55,3 +55,10 @@ type Player struct {
 	Wins        int16     `json:"wins"`
 	Losses      int16     `json:"losses"`
 }
+
+type SupabaseWebhook struct {
+	Type      string `json:"type"`
+	Table     string `json:"table"`
+	Record    Match  `json:"record"`
+	OldRecord Match  `json:"old_record"`
+}

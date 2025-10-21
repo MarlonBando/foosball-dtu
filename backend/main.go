@@ -23,8 +23,9 @@ func main() {
 	router.POST("/matches/register", RegisterMatch)
 	router.POST("players/add", AddPlayer)
 
-	router.PATCH("/mathces/:matchId/accept", AcceptMatch)
-	router.PATCH("/mathces/:matchId/reject", RejectMatch)
+	router.PATCH("/matches/:matchId/accept", AcceptMatch)
+	router.PATCH("/matches/:matchId/reject", RejectMatch)
+	router.PATCH("/matches/eloupdate", UpdateElo)
 
 	router.Run("localhost:8080")
 }
@@ -304,4 +305,18 @@ func AddPlayer(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, data)
+}
+
+func UpdateElo(c *gin.Context) {
+	var payload SupabaseWebhook
+	if err := c.ShouldBindJSON(&payload); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	match := payload.Record
+
+	// TODO: Update record of each player
+	// TODO: Update Elo of each player
+
 }
