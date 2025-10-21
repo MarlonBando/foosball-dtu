@@ -44,18 +44,31 @@ Unlike traditional ELO where wins are binary (1.0 or 0.0), foosball scores are w
 
 **The loser's score is**: `1 - winner's score`
 
+### Win Protection Rule
+
+**Important**: You can never lose ELO from winning a match.
+
+If the calculation would result in negative ELO change for a winner, it's set to 0 instead.
+
+This means:
+- Dominant wins give you lots of points
+- Close wins give you few or zero points
+- But you never lose points for winning
+
 ### Example
 
 A 2000-rated player beats a 1000-rated player 10-9:
 - **Expected Score**: ~0.99 (heavily favored)
 - **Actual Score**: 0.55 (tight win)
 - **K-factor**: 24 (assuming 10+ matches)
-- **Rating Change**: 24 × (0.55 - 0.99) = **-10.56** ≈ **-11 points**
+- **Calculated Change**: 24 × (0.55 - 0.99) = **-10.56**
+- **Actual Change**: **0 points** (protected by win rule)
 
-Despite winning, the higher-rated player **loses ELO** because the margin was too close!
+The higher-rated player gains nothing, but doesn't lose ELO either.
 
 ## Key Differences from Standard ELO
 
 1. **Margin of victory matters**: A 10-0 win is worth more than a 10-9 win
-2. **You can lose ELO by winning**: If you're heavily favored but barely win
-3. **Dynamic K-factor**: New players' ratings adjust faster to reach their true level
+2. **Win protection**: You never lose ELO from winning (minimum 0 gain)
+3. **Losses can be rewarding**: Losing 9-10 against a much stronger opponent gives you ELO
+4. **Dynamic K-factor**: New players' ratings adjust faster to reach their true level

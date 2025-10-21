@@ -7,7 +7,11 @@ func GetNewElo(elo int16, opponentElo int16, matchNumber int, score int, opponen
 	actualScore := getActualScore(score, opponentScore)
 	expectedScore := getOddsToWin(elo, opponentElo)
 
-	return elo + int16(k*(actualScore-expectedScore))
+	eloDelta := int16(k * (actualScore - expectedScore))
+	if actualScore > 0.5 && eloDelta < 0 {
+		eloDelta = 0
+	}
+	return elo + eloDelta
 }
 
 var weightedScore = map[int]float64{
