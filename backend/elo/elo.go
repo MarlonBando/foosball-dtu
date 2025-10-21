@@ -2,7 +2,7 @@ package elo
 
 import "math"
 
-func GetNewElo(elo int16, opponentElo int16, matchNumber int, score int, opponentScore int) int16 {
+func GetEloDelta(elo int16, opponentElo int16, matchNumber int, score int, opponentScore int) int16 {
 	k := float64(getK(matchNumber))
 	actualScore := getActualScore(score, opponentScore)
 	expectedScore := getOddsToWin(elo, opponentElo)
@@ -11,7 +11,7 @@ func GetNewElo(elo int16, opponentElo int16, matchNumber int, score int, opponen
 	if actualScore > 0.5 && eloDelta < 0 {
 		eloDelta = 0
 	}
-	return elo + eloDelta
+	return eloDelta
 }
 
 var weightedScore = map[int]float64{

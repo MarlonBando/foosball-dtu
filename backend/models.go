@@ -29,19 +29,19 @@ type Match struct {
 	Status     MatchStatus  `json:"status"`
 }
 
-type PlayerStatus int
-type MatchStatus int
+type PlayerStatus string
+type MatchStatus string
 
 const (
-	PlayerPending PlayerStatus = iota
-	PlayerAccepted
-	PlayerRejected
+	PlayerPending  PlayerStatus = "pending"
+	PlayerAccepted PlayerStatus = "accepted"
+	PlayerRejected PlayerStatus = "rejected"
 )
 
 const (
-	MatchPending MatchStatus = iota
-	MatchCompleted
-	MatchRejected
+	MatchPending   MatchStatus = "pending"
+	MatchCompleted MatchStatus = "completed"
+	MatchRejected  MatchStatus = "rejected"
 )
 
 type Player struct {

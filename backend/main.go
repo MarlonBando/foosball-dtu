@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"foosballDtu/elo"
 	"github.com/gin-gonic/gin"
 	"github.com/supabase-community/supabase-go"
 	"net/http"
@@ -21,11 +23,11 @@ func main() {
 	router.GET("/nationalities", GetNationalities)
 
 	router.POST("/matches/register", RegisterMatch)
-	router.POST("players/add", AddPlayer)
+	router.POST("/players/add", AddPlayer)
+	router.POST("/matches/eloupdate", UpdateElo)
 
 	router.PATCH("/matches/:matchId/accept", AcceptMatch)
 	router.PATCH("/matches/:matchId/reject", RejectMatch)
-	router.PATCH("/matches/eloupdate", UpdateElo)
 
 	router.Run("localhost:8080")
 }
@@ -38,13 +40,13 @@ func GetNationalities(c *gin.Context) {
 	)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 
 	// TODO: Use ExecutTo to avoid json conversion
 	data, _, err := client.From("Nationalities").Select("id,code,name", "", false).Execute()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -110,7 +112,7 @@ func RegisterMatch(c *gin.Context) {
 	var newMatch Match
 
 	if err := c.BindJSON(&newMatch); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": err})
+		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -121,13 +123,17 @@ func RegisterMatch(c *gin.Context) {
 	)
 
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	data, _, err := client.From("Matches").Insert(newMatch, false, "", "minimal", "").Execute()
+	data, _, err := client.
+		From("Matches").
+		Insert([]Match{newMatch}, false, "", "representation", "").
+		Execute()
+
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -158,12 +164,19 @@ func AcceptMatch(c *gin.Context) {
 		return
 	}
 
-	var match Match
-	_, err = client.From("Matches").Select("*", "", false).Eq("id", idMatch).ExecuteTo(&match)
+	var matches []Match
+	_, err = client.From("Matches").Select("*", "", false).Eq("id", idMatch).ExecuteTo(&matches)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	if len(matches) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "match not found"})
+		return
+	}
+
+	match := matches[0]
 
 	atoi, err := strconv.Atoi(idPlayer)
 	if err != nil {
@@ -201,7 +214,7 @@ func AcceptMatch(c *gin.Context) {
 		match.Status = MatchCompleted
 	}
 
-	updatedMatch, _, err := client.From("Matches").Update(match, "minimal", "").Execute()
+	updatedMatch, _, err := client.From("Matches").Update(match, "minimal", "").Eq("id", idMatch).Execute()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -228,12 +241,19 @@ func RejectMatch(c *gin.Context) {
 		return
 	}
 
-	var match Match
-	_, err = client.From("Matches").Select("*", "", false).Eq("id", idMatch).ExecuteTo(&match)
+	var matches []Match
+	_, err = client.From("Matches").Select("*", "", false).Eq("id", idMatch).ExecuteTo(&matches)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	if len(matches) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "match not found"})
+		return
+	}
+
+	match := matches[0]
 
 	atoi, err := strconv.Atoi(idPlayer)
 	if err != nil {
@@ -270,7 +290,7 @@ func RejectMatch(c *gin.Context) {
 		match.Status = MatchRejected
 	}
 
-	updatedMatch, _, err := client.From("Matches").Update(match, "minimal", "").Execute()
+	updatedMatch, _, err := client.From("Matches").Update(match, "minimal", "").Eq("id", idMatch).Execute()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -294,13 +314,13 @@ func AddPlayer(c *gin.Context) {
 	)
 
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err})
 		return
 	}
 
 	data, _, err := client.From("Players").Insert(newPlayer, false, "", "minimal", "").Execute()
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err})
 		return
 	}
 
@@ -315,8 +335,124 @@ func UpdateElo(c *gin.Context) {
 	}
 
 	match := payload.Record
+	matchPrevState := payload.OldRecord
 
-	// TODO: Update record of each player
-	// TODO: Update Elo of each player
+	if match.Status != MatchCompleted {
+		return
+	}
 
+	if matchPrevState.Status != MatchPending {
+		return
+	}
+
+	players, err := getPlayerInMatch(match.T1GK, match.T1ST, match.T2GK, match.T2ST)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = updatePlayers(match, players)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	client, err := supabase.NewClient(
+		API_URL,
+		API_KEY,
+		&supabase.ClientOptions{},
+	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err})
+		return
+	}
+
+	for _, player := range players {
+		_, _, err := client.From("Players").Update(player, "minimal", "").Eq("id", fmt.Sprintf("%d", player.ID)).Execute()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+	
+	c.JSON(http.StatusOK, gin.H{"message": "ELO updated successfully"})
+}
+
+func getPlayerInMatch(t1gk, t1st, t2gk, t2st int64) (map[int64]Player, error) {
+	client, err := supabase.NewClient(
+		API_URL,
+		API_KEY,
+		&supabase.ClientOptions{},
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	playersId := []string{
+		strconv.Itoa(int(t1gk)),
+		strconv.Itoa(int(t2gk)),
+		strconv.Itoa(int(t1st)),
+		strconv.Itoa(int(t2st)),
+	}
+
+	data, _, err := client.From("Players").Select("*", "", false).In("id", playersId).Execute()
+	var players []Player
+	json.Unmarshal(data, &players)
+	if len(players) != 4 {
+		return nil, fmt.Errorf("expected 4 players, got %d", len(players))
+	}
+
+	matchPlayers := make(map[int64]Player, 4)
+	for _, player := range players {
+		switch player.ID {
+		case t1gk:
+			matchPlayers[t1gk] = player
+		case t1st:
+			matchPlayers[t1st] = player
+		case t2gk:
+			matchPlayers[t2gk] = player
+		case t2st:
+			matchPlayers[t2st] = player
+		default:
+			return nil, errors.New("Unknown player, something off with the query")
+		}
+	}
+
+	return matchPlayers, nil
+}
+
+func updatePlayers(match Match, players map[int64]Player) error {
+	t1Elo := (players[match.T1GK].Elo + players[match.T1ST].Elo) / 2
+	t2Elo := (players[match.T2GK].Elo + players[match.T2ST].Elo) / 2
+
+	for id, player := range players {
+		isTeam1 := id == match.T1GK || id == match.T1ST
+		nMatches := int(player.Wins + player.Losses)
+
+		var teamElo, oppElo int16
+		var teamScore, oppScore int
+
+		if isTeam1 {
+			teamElo, oppElo = t1Elo, t2Elo
+			teamScore, oppScore = int(match.T1Score), int(match.T2Score)
+		} else {
+			teamElo, oppElo = t2Elo, t1Elo
+			teamScore, oppScore = int(match.T2Score), int(match.T1Score)
+		}
+
+		eloDelta := elo.GetEloDelta(teamElo, oppElo, nMatches, teamScore, oppScore)
+
+		if teamScore > oppScore {
+			player.Wins++
+		} else {
+			player.Losses++
+		}
+
+		player.Elo += eloDelta
+		players[id] = player
+	}
+
+	return nil
 }
