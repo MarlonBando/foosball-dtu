@@ -23,7 +23,7 @@ func main() {
 	router.GET("/nationalities", GetNationalities)
 
 	router.POST("/matches/register", RegisterMatch)
-	router.POST("players/add", AddPlayer)
+	router.POST("/players/add", AddPlayer)
 	router.POST("/matches/eloupdate", UpdateElo)
 
 	router.PATCH("/matches/:matchId/accept", AcceptMatch)
@@ -40,13 +40,13 @@ func GetNationalities(c *gin.Context) {
 	)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 
 	// TODO: Use ExecutTo to avoid json conversion
 	data, _, err := client.From("Nationalities").Select("id,code,name", "", false).Execute()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -112,7 +112,7 @@ func RegisterMatch(c *gin.Context) {
 	var newMatch Match
 
 	if err := c.BindJSON(&newMatch); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": err})
+		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -123,13 +123,17 @@ func RegisterMatch(c *gin.Context) {
 	)
 
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	data, _, err := client.From("Matches").Insert(newMatch, false, "", "minimal", "").Execute()
+	data, _, err := client.
+		From("Matches").
+		Insert([]Match{newMatch}, false, "", "representation", "").
+		Execute()
+
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -160,12 +164,19 @@ func AcceptMatch(c *gin.Context) {
 		return
 	}
 
-	var match Match
-	_, err = client.From("Matches").Select("*", "", false).Eq("id", idMatch).ExecuteTo(&match)
+	var matches []Match
+	_, err = client.From("Matches").Select("*", "", false).Eq("id", idMatch).ExecuteTo(&matches)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	if len(matches) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "match not found"})
+		return
+	}
+
+	match := matches[0]
 
 	atoi, err := strconv.Atoi(idPlayer)
 	if err != nil {
@@ -203,7 +214,7 @@ func AcceptMatch(c *gin.Context) {
 		match.Status = MatchCompleted
 	}
 
-	updatedMatch, _, err := client.From("Matches").Update(match, "minimal", "").Execute()
+	updatedMatch, _, err := client.From("Matches").Update(match, "minimal", "").Eq("id", idMatch).Execute()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -230,12 +241,19 @@ func RejectMatch(c *gin.Context) {
 		return
 	}
 
-	var match Match
-	_, err = client.From("Matches").Select("*", "", false).Eq("id", idMatch).ExecuteTo(&match)
+	var matches []Match
+	_, err = client.From("Matches").Select("*", "", false).Eq("id", idMatch).ExecuteTo(&matches)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	if len(matches) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "match not found"})
+		return
+	}
+
+	match := matches[0]
 
 	atoi, err := strconv.Atoi(idPlayer)
 	if err != nil {
@@ -272,7 +290,7 @@ func RejectMatch(c *gin.Context) {
 		match.Status = MatchRejected
 	}
 
-	updatedMatch, _, err := client.From("Matches").Update(match, "minimal", "").Execute()
+	updatedMatch, _, err := client.From("Matches").Update(match, "minimal", "").Eq("id", idMatch).Execute()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -330,11 +348,13 @@ func UpdateElo(c *gin.Context) {
 	players, err := getPlayerInMatch(match.T1GK, match.T1ST, match.T2GK, match.T2ST)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	err = updatePlayers(match, players)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	client, err := supabase.NewClient(
@@ -349,8 +369,14 @@ func UpdateElo(c *gin.Context) {
 	}
 
 	for _, player := range players {
-		client.From("Players").Update(player, "minimal", "").Execute()
+		_, _, err := client.From("Players").Update(player, "minimal", "").Eq("id", fmt.Sprintf("%d", player.ID)).Execute()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 	}
+	
+	c.JSON(http.StatusOK, gin.H{"message": "ELO updated successfully"})
 }
 
 func getPlayerInMatch(t1gk, t1st, t2gk, t2st int64) (map[int64]Player, error) {
