@@ -63,3 +63,29 @@ type SupabaseWebhook struct {
 	Record    Match  `json:"record"`
 	OldRecord Match  `json:"old_record"`
 }
+
+type MatchDetailDTO struct {
+	ID        int64        `json:"id"`
+	CreatedAt time.Time    `json:"created_at"`
+	T1Score   int16        `json:"t1_score"`
+	T2Score   int16        `json:"t2_score"`
+	Status    MatchStatus  `json:"status"`
+	Players   []PlayerMatchDTO `json:"players"`
+}
+
+type PlayerMatchDTO struct {
+	PlayerID    int64        `json:"player_id"`
+	Username    string       `json:"username"`
+	Name        string       `json:"name"`
+	Surname     string       `json:"surname"`
+	Nationality int64        `json:"nationality"`
+	CurrentElo  int16        `json:"current_elo"`
+	Wins        int16        `json:"wins"`
+	Losses      int16        `json:"losses"`
+	IsTeam1     bool         `json:"is_team1"`
+	IsGk        bool         `json:"is_gk"`
+	IsWin       bool         `json:"is_win"`
+	EloOld      int16        `json:"elo_old"`
+	EloNew      int16        `json:"elo_new"`
+	Status      PlayerStatus `json:"status"`
+}

@@ -19,6 +19,7 @@ func main() {
 
 	router.GET("/players", GetPlayers)
 	router.GET("/matches", GetPlayerMatches)
+	router.GET("/match/:id", GetMatchDetails)
 	router.GET("/nationalities", GetNationalities)
 
 	router.POST("/matches/register", RegisterMatch)
@@ -76,6 +77,76 @@ func GetPlayers(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, allPlayers)
 }
 
+func GetMatchDetails(c *gin.Context) {
+	matchId := c.Param("id")
+	if matchId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "missing path parameter: id"})
+		return
+	}
+
+	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to initialize Supabase client"})
+		return
+	}
+
+	var matches []Match
+	_, err = client.From("Matches").Select("*", "", false).Eq("id", matchId).ExecuteTo(&matches)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if len(matches) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "match not found"})
+		return
+	}
+	match := matches[0]
+
+	matchPlayers, err := getMatchPlayers(*match.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	players, err := getPlayers(matchPlayers)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	dto := MatchDetailDTO{
+		ID:        *match.ID,
+		CreatedAt: *match.CreatedAt,
+		T1Score:   match.T1Score,
+		T2Score:   match.T2Score,
+		Status:    match.Status,
+		Players:   make([]PlayerMatchDTO, 0, len(matchPlayers)),
+	}
+
+	for _, mp := range matchPlayers {
+		player := players[mp.IDPlayer]
+		playerDTO := PlayerMatchDTO{
+			PlayerID:    *player.ID,
+			Username:    player.Username,
+			Name:        player.Name,
+			Surname:     player.Surname,
+			Nationality: player.Nationality,
+			CurrentElo:  player.Elo,
+			Wins:        player.Wins,
+			Losses:      player.Losses,
+			IsTeam1:     mp.IsTeam1,
+			IsGk:        mp.IsGk,
+			IsWin:       mp.IsWin,
+			EloOld:      mp.EloOld,
+			EloNew:      mp.EloNew,
+			Status:      mp.Status,
+		}
+		dto.Players = append(dto.Players, playerDTO)
+	}
+
+	c.JSON(http.StatusOK, dto)
+}
+
 func GetPlayerMatches(c *gin.Context) {
 	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
 	if err != nil {
@@ -83,15 +154,15 @@ func GetPlayerMatches(c *gin.Context) {
 		return
 	}
 
-	id := c.Query("id")
-	if id == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "missing query parameter: id"})
+	playerid := c.Query("playerid")
+	if playerid == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "missing query parameter: playerid"})
 		return
 	}
 
 	// Get all MatchPlayer records for this player
 	var matchPlayers []MatchPlayer
-	_, err = client.From("MatchPlayers").Select("*", "", false).Eq("idPlayer", id).ExecuteTo(&matchPlayers)
+	_, err = client.From("MatchPlayers").Select("*", "", false).Eq("idPlayer", playerid).ExecuteTo(&matchPlayers)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -386,7 +457,7 @@ func UpdateElo(c *gin.Context) {
 	}
 
 	// Get all players
-	players, err := getPlayersForMatchPlayers(matchPlayers)
+	players, err := getPlayers(matchPlayers)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -477,7 +548,7 @@ func getMatchPlayers(matchId int64) ([]MatchPlayer, error) {
 	return matchPlayers, nil
 }
 
-func getPlayersForMatchPlayers(matchPlayers []MatchPlayer) (map[int64]Player, error) {
+func getPlayers(matchPlayers []MatchPlayer) (map[int64]Player, error) {
 	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
 	if err != nil {
 		return nil, err
