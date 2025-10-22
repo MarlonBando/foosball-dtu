@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { getAllPlayers } from '../../api';
 import type { Player as PlayerType } from '../../types';
 import './PlayerSelectionModal.css';
 
@@ -6,16 +7,26 @@ interface PlayerSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectPlayer: (player: PlayerType) => void;
-  players: PlayerType[];
 }
 
 const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
   isOpen,
   onClose,
   onSelectPlayer,
-  players,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [players, setPlayers] = useState<PlayerType[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setLoading(true);
+      getAllPlayers()
+        .then(setPlayers)
+        .catch(err => console.error('Failed to load players:', err))
+        .finally(() => setLoading(false));
+    }
+  }, [isOpen]);
 
   const filteredPlayers = useMemo(() => {
     if (!searchTerm) {
@@ -51,7 +62,9 @@ const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <div className="player-selection-modal-list">
-          {filteredPlayers.length > 0 ? (
+          {loading ? (
+            <div className="player-selection-modal-loading">Loading players...</div>
+          ) : filteredPlayers.length > 0 ? (
             filteredPlayers.map((player) => (
               <div
                 key={player.id}

@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getPlayerMatches, acceptMatch, rejectMatch, getMatchDetails } from '../../api';
+import type { MatchDetail } from '../../api';
+import { PLAYER_STATUS } from '../../types';
 import PageLayout from '../../components/PageLayout/PageLayout';
 import PlayerHeader from '../../components/PlayerHeader/PlayerHeader';
 import MatchHistoryTable from '../../components/MatchHistoryTable/MatchHistoryTable';
+import Toast from '../../components/Toast/Toast';
+import Spinner from '../../components/Spinner/Spinner';
 import './HomePage.css';
 import type { Player, Match } from '../../types';
 
-// Mock Data - will be replaced with actual data from props/API
+const CURRENT_PLAYER_ID = 1;
+
 const mockPlayer: Player = {
-    id: 1,
+    id: CURRENT_PLAYER_ID,
     created_at: new Date().toISOString(),
     username: 'johndoe',
     elo: 1450,
@@ -18,79 +24,139 @@ const mockPlayer: Player = {
     losses: 18,
 };
 
-const mockMatches: Match[] = [
-    {
-        id: 1,
-        created_at: '2025-10-19T10:30:00Z',
-        t1_gk: { id: 1, created_at: '', username: 'johndoe', elo: 1450, name: 'John', surname: 'Doe', nationality: 1, wins: 24, losses: 18 },
-        t1_st: { id: 2, created_at: '', username: 'janedoe', elo: 1380, name: 'Jane', surname: 'Doe', nationality: 2, wins: 20, losses: 15 },
-        t2_gk: { id: 3, created_at: '', username: 'peterp', elo: 1200, name: 'Peter', surname: 'Pan', nationality: 3, wins: 12, losses: 20 },
-        t2_st: { id: 4, created_at: '', username: 'maryj', elo: 1500, name: 'Mary', surname: 'Jane', nationality: 4, wins: 28, losses: 10 },
-        table: 1,
-        t1_score: 10,
-        t2_score: 7,
-        status: 'completed',
-    },
-    {
-        id: 2,
-        created_at: '2025-10-18T15:45:00Z',
-        t1_gk: { id: 5, created_at: '', username: 'alice', elo: 1350, name: 'Alice', surname: 'A', nationality: 1, wins: 15, losses: 12 },
-        t1_st: { id: 6, created_at: '', username: 'bob', elo: 1280, name: 'Bob', surname: 'B', nationality: 2, wins: 18, losses: 16 },
-        t2_gk: { id: 1, created_at: '', username: 'johndoe', elo: 1450, name: 'John', surname: 'Doe', nationality: 1, wins: 24, losses: 18 },
-        t2_st: { id: 7, created_at: '', username: 'charlie', elo: 1420, name: 'Charlie', surname: 'C', nationality: 3, wins: 22, losses: 14 },
-        table: 2,
-        t1_score: 10,
-        t2_score: 6,
-        status: 'completed',
-    },
-    {
-        id: 3,
-        created_at: '2025-10-17T12:00:00Z',
-        t1_gk: { id: 1, created_at: '', username: 'johndoe', elo: 1450, name: 'John', surname: 'Doe', nationality: 1, wins: 24, losses: 18 },
-        t1_st: { id: 8, created_at: '', username: 'diana', elo: 1380, name: 'Diana', surname: 'D', nationality: 4, wins: 19, losses: 13 },
-        t2_gk: { id: 9, created_at: '', username: 'emily', elo: 1290, name: 'Emily', surname: 'E', nationality: 1, wins: 16, losses: 18 },
-        t2_st: { id: 10, created_at: '', username: 'frank', elo: 1320, name: 'Frank', surname: 'F', nationality: 2, wins: 17, losses: 15 },
-        table: 1,
-        t1_score: 0,
-        t2_score: 0,
-        status: 'accepted',
-    },
-    {
-        id: 4,
-        created_at: '2025-10-16T09:30:00Z',
-        t1_gk: { id: 11, created_at: '', username: 'george', elo: 1400, name: 'George', surname: 'G', nationality: 3, wins: 20, losses: 16 },
-        t1_st: { id: 12, created_at: '', username: 'helen', elo: 1350, name: 'Helen', surname: 'H', nationality: 4, wins: 18, losses: 17 },
-        t2_gk: { id: 1, created_at: '', username: 'johndoe', elo: 1450, name: 'John', surname: 'Doe', nationality: 1, wins: 24, losses: 18 },
-        t2_st: { id: 13, created_at: '', username: 'ivan', elo: 1380, name: 'Ivan', surname: 'I', nationality: 1, wins: 19, losses: 14 },
-        table: 2,
-        t1_score: 0,
-        t2_score: 0,
-        status: 'pending',
-    },
-];
+function convertApiMatchToUiMatch(apiMatch: MatchDetail): Match {
+  const players = apiMatch.players;
+  const t1_gk = players.find(p => p.is_team1 && p.is_gk);
+  const t1_st = players.find(p => p.is_team1 && !p.is_gk);
+  const t2_gk = players.find(p => !p.is_team1 && p.is_gk);
+  const t2_st = players.find(p => !p.is_team1 && !p.is_gk);
+
+  const toPlayer = (p: typeof t1_gk): Player | null => {
+    if (!p) return null;
+    return {
+      id: p.player_id,
+      username: p.username,
+      name: p.name,
+      surname: p.surname,
+      nationality: p.nationality,
+      elo: p.current_elo,
+      wins: p.wins,
+      losses: p.losses,
+      created_at: apiMatch.created_at
+    };
+  };
+
+  return {
+    id: apiMatch.id,
+    created_at: apiMatch.created_at,
+    t1_gk: toPlayer(t1_gk),
+    t1_st: toPlayer(t1_st),
+    t2_gk: toPlayer(t2_gk),
+    t2_st: toPlayer(t2_st),
+    table: 1,
+    t1_score: apiMatch.t1_score,
+    t2_score: apiMatch.t2_score,
+    status: apiMatch.status,
+    t1_gk_status: t1_gk?.status || PLAYER_STATUS.PENDING,
+    t1_st_status: t1_st?.status || PLAYER_STATUS.PENDING,
+    t2_gk_status: t2_gk?.status || PLAYER_STATUS.PENDING,
+    t2_st_status: t2_st?.status || PLAYER_STATUS.PENDING,
+  };
+}
 
 const HomePage: React.FC = () => {
-    const [matches, setMatches] = useState<Match[]>(mockMatches);
+    const [matches, setMatches] = useState<Match[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+
+    useEffect(() => {
+        setLoading(true);
+        getPlayerMatches(CURRENT_PLAYER_ID)
+            .then(async (apiMatches) => {
+                const detailedMatches = await Promise.all(
+                    apiMatches.map(m => getMatchDetails(m.id))
+                );
+                setMatches(detailedMatches.map(convertApiMatchToUiMatch));
+            })
+            .catch(err => {
+                console.error('Failed to load matches:', err);
+            })
+            .finally(() => setLoading(false));
+    }, []);
 
     const handleAcceptMatch = (matchId: number) => {
-        setMatches(prevMatches =>
-            prevMatches.map(match =>
-                match.id === matchId ? { ...match, status: 'accepted' as const } : match
-            )
-        );
-        console.log(`Match ${matchId} accepted`);
+        acceptMatch(matchId, CURRENT_PLAYER_ID)
+            .then(() => {
+                setMatches(prevMatches =>
+                    prevMatches.map(match => {
+                        if (match.id !== matchId) return match;
+                        
+                        const updatedMatch = { ...match };
+                        if (match.t1_gk?.id === CURRENT_PLAYER_ID) updatedMatch.t1_gk_status = PLAYER_STATUS.ACCEPTED;
+                        if (match.t1_st?.id === CURRENT_PLAYER_ID) updatedMatch.t1_st_status = PLAYER_STATUS.ACCEPTED;
+                        if (match.t2_gk?.id === CURRENT_PLAYER_ID) updatedMatch.t2_gk_status = PLAYER_STATUS.ACCEPTED;
+                        if (match.t2_st?.id === CURRENT_PLAYER_ID) updatedMatch.t2_st_status = PLAYER_STATUS.ACCEPTED;
+                        
+                        return updatedMatch;
+                    })
+                );
+                setToast({ message: 'Match accepted successfully!', type: 'success' });
+            })
+            .catch(err => {
+                console.error('Failed to accept match:', err);
+                setToast({ message: 'Failed to accept match. Please try again.', type: 'error' });
+            });
+    };
+
+    const handleRejectMatch = (matchId: number) => {
+        rejectMatch(matchId, CURRENT_PLAYER_ID)
+            .then(() => {
+                setMatches(prevMatches =>
+                    prevMatches.map(match => {
+                        if (match.id !== matchId) return match;
+                        
+                        const updatedMatch = { ...match };
+                        if (match.t1_gk?.id === CURRENT_PLAYER_ID) updatedMatch.t1_gk_status = PLAYER_STATUS.REJECTED;
+                        if (match.t1_st?.id === CURRENT_PLAYER_ID) updatedMatch.t1_st_status = PLAYER_STATUS.REJECTED;
+                        if (match.t2_gk?.id === CURRENT_PLAYER_ID) updatedMatch.t2_gk_status = PLAYER_STATUS.REJECTED;
+                        if (match.t2_st?.id === CURRENT_PLAYER_ID) updatedMatch.t2_st_status = PLAYER_STATUS.REJECTED;
+                        
+                        return updatedMatch;
+                    })
+                );
+                setToast({ message: 'Match rejected successfully!', type: 'success' });
+            })
+            .catch(err => {
+                console.error('Failed to reject match:', err);
+                setToast({ message: 'Failed to reject match. Please try again.', type: 'error' });
+            });
     };
 
     return (
         <PageLayout variant="full" backgroundColor="#ffffff">
             <div className="home-page">
                 <PlayerHeader player={mockPlayer} />
-                <MatchHistoryTable
-                    matches={matches}
-                    currentPlayerId={mockPlayer.id}
-                    onAcceptMatch={handleAcceptMatch}
-                />
+                {loading ? (
+                    <div style={{ textAlign: 'center', padding: '4rem' }}>
+                        <Spinner size="large" />
+                        <p style={{ marginTop: '1rem', color: '#666' }}>Loading matches...</p>
+                    </div>
+                ) : (
+                    <MatchHistoryTable
+                        matches={matches}
+                        currentPlayerId={mockPlayer.id}
+                        onAcceptMatch={handleAcceptMatch}
+                        onRejectMatch={handleRejectMatch}
+                    />
+                )}
             </div>
+            {toast && (
+                <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast(null)}
+                />
+            )}
         </PageLayout>
     );
 };

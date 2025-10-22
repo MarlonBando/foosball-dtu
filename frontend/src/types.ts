@@ -1,13 +1,22 @@
-export enum PlayerStatus {
-  Pending = 0,
-  Accepted = 1,
-  Rejected = 2,
-}
+export type PlayerStatus = "pending" | "accepted" | "rejected";
+export type MatchStatus = "pending" | "completed" | "rejected";
 
-export enum MatchStatus {
-  Pending = 0,
-  Completed = 1,
-  Rejected = 2,
+export const PLAYER_STATUS = {
+  PENDING: "pending" as PlayerStatus,
+  ACCEPTED: "accepted" as PlayerStatus,
+  REJECTED: "rejected" as PlayerStatus,
+} as const;
+
+export const MATCH_STATUS = {
+  PENDING: "pending" as MatchStatus,
+  COMPLETED: "completed" as MatchStatus,
+  REJECTED: "rejected" as MatchStatus,
+} as const;
+
+export interface Nationality {
+  id: number;
+  code: string;
+  name: string;
 }
 
 export interface Player {
@@ -37,4 +46,30 @@ export interface Match {
   t1_st_status: PlayerStatus;
   t2_gk_status: PlayerStatus;
   t2_st_status: PlayerStatus;
+}
+
+export interface MatchDetail {
+  id: number;
+  created_at: string;
+  t1_score: number;
+  t2_score: number;
+  status: MatchStatus;
+  players: PlayerInMatch[];
+}
+
+export interface PlayerInMatch {
+  player_id: number;
+  username: string;
+  name: string;
+  surname: string;
+  nationality: number;
+  current_elo: number;
+  wins: number;
+  losses: number;
+  is_team1: boolean;
+  is_gk: boolean;
+  is_win: boolean;
+  elo_old: number;
+  elo_new: number;
+  status: PlayerStatus;
 }

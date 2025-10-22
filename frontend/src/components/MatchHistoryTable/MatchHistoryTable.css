@@ -103,9 +103,66 @@
     color: white;
 }
 
+.status-rejected {
+    background-color: #6c757d;
+    color: white;
+}
+
 .status-pending {
     background-color: #ffc107;
     color: white;
+}
+
+.action-buttons-group {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.accept-button-table {
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    min-width: 90px;
+}
+
+.accept-button-table:hover:not(:disabled) {
+    background-color: #45a049;
+    transform: translateY(-2px);
+}
+
+.accept-button-table:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.reject-button-table {
+    padding: 8px 16px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    min-width: 90px;
+}
+
+.reject-button-table:hover:not(:disabled) {
+    background-color: #da190b;
+    transform: translateY(-2px);
+}
+
+.reject-button-table:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
 .accept-button {

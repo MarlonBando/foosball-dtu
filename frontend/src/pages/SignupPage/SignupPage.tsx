@@ -236,7 +236,7 @@ const SignupPage: React.FC = () => {
             <option value="Syrian">Syrian</option>
             <option value="Taiwanese">Taiwanese</option>
             <option value="Tajik">Tajik</option>
-            <.option value="Tanzanian">Tanzanian</option>
+            <option value="Tanzanian">Tanzanian</option>
             <option value="Thai">Thai</option>
             <option value="Togolese">Togolese</option>
             <option value="Tongan">Tongan</option>

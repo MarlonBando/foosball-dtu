@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"foosballDtu/elo"
 	"github.com/gin-gonic/gin"
@@ -18,8 +17,22 @@ var API_KEY = os.Getenv("API_KEY")
 func main() {
 	router := gin.Default()
 
+	router.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		
+		c.Next()
+	})
+
 	router.GET("/players", GetPlayers)
 	router.GET("/matches", GetPlayerMatches)
+	router.GET("/match/:id", GetMatchDetails)
 	router.GET("/nationalities", GetNationalities)
 
 	router.POST("/matches/register", RegisterMatch)
@@ -77,8 +90,12 @@ func GetPlayers(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, allPlayers)
 }
 
-func GetPlayerMatches(c *gin.Context) {
-	var matches []Match
+func GetMatchDetails(c *gin.Context) {
+	matchId := c.Param("id")
+	if matchId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "missing path parameter: id"})
+		return
+	}
 
 	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
 	if err != nil {
@@ -86,22 +103,100 @@ func GetPlayerMatches(c *gin.Context) {
 		return
 	}
 
-	id := c.Query("id")
-	if id == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "missing query parameter: id"})
-		return
-	}
-
-	eqFilter := fmt.Sprintf("t1_gk.eq.%s,t1_st.eq.%s,t2_gk.eq.%s,t2_st.eq.%s", id, id, id, id)
-
-	_, err = client.From("Matches").Select("*", "", false).Or(eqFilter, "").ExecuteTo(&matches)
+	var matches []Match
+	_, err = client.From("Matches").Select("*", "", false).Eq("id", matchId).ExecuteTo(&matches)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if len(matches) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "match not found"})
+		return
+	}
+	match := matches[0]
+
+	matchPlayers, err := getMatchPlayers(*match.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	if len(matches) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"message": "no matches found"})
+	players, err := getPlayers(matchPlayers)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	dto := MatchDetailDTO{
+		ID:        *match.ID,
+		CreatedAt: *match.CreatedAt,
+		T1Score:   match.T1Score,
+		T2Score:   match.T2Score,
+		Status:    match.Status,
+		Players:   make([]PlayerMatchDTO, 0, len(matchPlayers)),
+	}
+
+	for _, mp := range matchPlayers {
+		player := players[mp.IDPlayer]
+		playerDTO := PlayerMatchDTO{
+			PlayerID:    *player.ID,
+			Username:    player.Username,
+			Name:        player.Name,
+			Surname:     player.Surname,
+			Nationality: player.Nationality,
+			CurrentElo:  player.Elo,
+			Wins:        player.Wins,
+			Losses:      player.Losses,
+			IsTeam1:     mp.IsTeam1,
+			IsGk:        mp.IsGk,
+			IsWin:       mp.IsWin,
+			EloOld:      mp.EloOld,
+			EloNew:      mp.EloNew,
+			Status:      mp.Status,
+		}
+		dto.Players = append(dto.Players, playerDTO)
+	}
+
+	c.JSON(http.StatusOK, dto)
+}
+
+func GetPlayerMatches(c *gin.Context) {
+	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to initialize Supabase client"})
+		return
+	}
+
+	playerid := c.Query("playerid")
+	if playerid == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "missing query parameter: playerid"})
+		return
+	}
+
+	// Get all MatchPlayer records for this player
+	var matchPlayers []MatchPlayer
+	_, err = client.From("MatchPlayers").Select("*", "", false).Eq("idPlayer", playerid).ExecuteTo(&matchPlayers)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if len(matchPlayers) == 0 {
+		c.JSON(http.StatusOK, []Match{})
+		return
+	}
+
+	// Extract match IDs
+	matchIds := make([]string, len(matchPlayers))
+	for i, mp := range matchPlayers {
+		matchIds[i] = strconv.Itoa(int(mp.IDMatch))
+	}
+
+	// Get matches
+	var matches []Match
+	_, err = client.From("Matches").Select("*", "", false).In("id", matchIds).ExecuteTo(&matches)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -109,117 +204,134 @@ func GetPlayerMatches(c *gin.Context) {
 }
 
 func RegisterMatch(c *gin.Context) {
-	var newMatch Match
+	var req struct {
+		T1GK    int64 `json:"t1_gk"`
+		T1ST    int64 `json:"t1_st"`
+		T2GK    int64 `json:"t2_gk"`
+		T2ST    int64 `json:"t2_st"`
+		T1Score int16 `json:"t1_score"`
+		T2Score int16 `json:"t2_score"`
+	}
 
-	if err := c.BindJSON(&newMatch); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message0": err.Error()})
 		return
 	}
 
-	client, err := supabase.NewClient(
-		API_URL,
-		API_KEY,
-		&supabase.ClientOptions{},
-	)
-
+	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"message1": err.Error()})
 		return
 	}
 
-	data, _, err := client.
-		From("Matches").
-		Insert([]Match{newMatch}, false, "", "representation", "").
-		Execute()
+	newMatch := Match{
+		T1Score: req.T1Score,
+		T2Score: req.T2Score,
+		Status:  MatchPending,
+	}
 
+	data, _, err := client.From("Matches").Insert([]Match{newMatch}, false, "", "representation", "").Execute()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"message2": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, data)
+	var insertedMatches []Match
+	json.Unmarshal(data, &insertedMatches)
+	if len(insertedMatches) == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "failed to create match"})
+		return
+	}
+	matchId := *insertedMatches[0].ID
+
+	t1Won := req.T1Score > req.T2Score
+	matchPlayers := []MatchPlayer{
+		{IDMatch: matchId, IDPlayer: req.T1GK, IsTeam1: true, Status: PlayerPending, IsGk: true, IsWin: t1Won},
+		{IDMatch: matchId, IDPlayer: req.T1ST, IsTeam1: true, Status: PlayerPending, IsGk: false, IsWin: t1Won},
+		{IDMatch: matchId, IDPlayer: req.T2GK, IsTeam1: false, Status: PlayerPending, IsGk: true, IsWin: !t1Won},
+		{IDMatch: matchId, IDPlayer: req.T2ST, IsTeam1: false, Status: PlayerPending, IsGk: false, IsWin: !t1Won},
+	}
+
+	_, _, err = client.From("MatchPlayers").Insert(matchPlayers, false, "", "minimal", "").Execute()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message3": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, insertedMatches[0])
 }
 
 func AcceptMatch(c *gin.Context) {
 	idMatch := c.Param("matchId")
 	idPlayer := c.Query("playerId")
+
 	if idMatch == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "missing query parameter: matchId"})
 		return
 	}
-
 	if idPlayer == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "missing query parameter: playerId"})
 		return
 	}
 
-	client, err := supabase.NewClient(
-		API_URL,
-		API_KEY,
-		&supabase.ClientOptions{},
-	)
-
+	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	var matches []Match
-	_, err = client.From("Matches").Select("*", "", false).Eq("id", idMatch).ExecuteTo(&matches)
+	matchPlayers, err := getMatchPlayers(atoi64(idMatch))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	if len(matches) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "match not found"})
+	var targetMP *MatchPlayer
+	for i := range matchPlayers {
+		if matchPlayers[i].IDPlayer == atoi64(idPlayer) {
+			targetMP = &matchPlayers[i]
+			break
+		}
+	}
+
+	if targetMP == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "player not part of this match"})
 		return
 	}
 
-	match := matches[0]
-
-	atoi, err := strconv.Atoi(idPlayer)
+	targetMP.Status = PlayerAccepted
+	_, _, err = client.From("MatchPlayers").Update(*targetMP, "minimal", "").Eq("id", fmt.Sprintf("%d", *targetMP.ID)).Execute()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	id := int64(atoi)
 
-	isTeam1 := true
+	team1Accepted := false
+	team2Accepted := false
+	for _, mp := range matchPlayers {
+		// Why mp.IDPlayer == ... becuase that is the player that called the endpoint
+		// and we know it has accpeted, and matchPlayers has NOT the updated status.
+		accepted := mp.Status == PlayerAccepted || mp.IDPlayer == atoi64(idPlayer)
+		if !accepted {
+			continue
+		}
 
-	switch id {
-	case match.T1GK:
-		match.T1GKStatus = PlayerAccepted
-	case match.T1ST:
-		match.T1STStatus = PlayerAccepted
-	case match.T2GK:
-		match.T2GKStatus = PlayerAccepted
-		isTeam1 = false
-	case match.T2ST:
-		match.T2STStatus = PlayerAccepted
-		isTeam1 = false
-	default:
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error! No id player found in the match"})
-		return
+		if mp.IsTeam1 {
+			team1Accepted = true
+		} else {
+			team2Accepted = true
+		}
 	}
 
-	var otherTeamAccepted bool
-	if isTeam1 {
-		otherTeamAccepted = match.T2GKStatus == PlayerAccepted || match.T2STStatus == PlayerAccepted
-	} else {
-		otherTeamAccepted = match.T1GKStatus == PlayerAccepted || match.T1STStatus == PlayerAccepted
+	if team1Accepted && team2Accepted {
+		_, _, err = client.From("Matches").Update(map[string]any{"status": MatchCompleted}, "minimal", "").Eq("id", idMatch).Execute()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 	}
 
-	if otherTeamAccepted {
-		match.Status = MatchCompleted
-	}
-
-	updatedMatch, _, err := client.From("Matches").Update(match, "minimal", "").Eq("id", idMatch).Execute()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, updatedMatch)
+	c.JSON(http.StatusOK, gin.H{"status": "accepted"})
 }
 
 func RejectMatch(c *gin.Context) {
@@ -241,62 +353,63 @@ func RejectMatch(c *gin.Context) {
 		return
 	}
 
-	var matches []Match
-	_, err = client.From("Matches").Select("*", "", false).Eq("id", idMatch).ExecuteTo(&matches)
+	matchPlayers, err := getMatchPlayers(atoi64(idMatch))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	if len(matches) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "match not found"})
-		return
+	var targetMP *MatchPlayer
+	for i := range matchPlayers {
+		if matchPlayers[i].IDPlayer == atoi64(idPlayer) {
+			targetMP = &matchPlayers[i]
+			break
+		}
 	}
 
-	match := matches[0]
-
-	atoi, err := strconv.Atoi(idPlayer)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid playerId"})
-		return
-	}
-	id := int64(atoi)
-
-	isTeam1 := true
-	switch id {
-	case match.T1GK:
-		match.T1GKStatus = PlayerRejected
-	case match.T1ST:
-		match.T1STStatus = PlayerRejected
-	case match.T2GK:
-		match.T2GKStatus = PlayerRejected
-		isTeam1 = false
-	case match.T2ST:
-		match.T2STStatus = PlayerRejected
-		isTeam1 = false
-	default:
+	if targetMP == nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "player not part of this match"})
 		return
 	}
 
-	var otherTeamRejected bool
-	if isTeam1 {
-		otherTeamRejected = match.T2GKStatus == PlayerRejected || match.T2STStatus == PlayerRejected
-	} else {
-		otherTeamRejected = match.T1GKStatus == PlayerRejected || match.T1STStatus == PlayerRejected
-	}
-
-	if otherTeamRejected {
-		match.Status = MatchRejected
-	}
-
-	updatedMatch, _, err := client.From("Matches").Update(match, "minimal", "").Eq("id", idMatch).Execute()
+	targetMP.Status = PlayerRejected
+	_, _, err = client.From("MatchPlayers").Update(*targetMP, "minimal", "").Eq("id", fmt.Sprintf("%d", *targetMP.ID)).Execute()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "rejected", "match": updatedMatch})
+	team1Rejected := targetMP.IsTeam1
+	team2Rejected := !targetMP.IsTeam1
+	for _, mp := range matchPlayers {
+		// Why mp.IDPlayer == ... becuase that is the player that called the endpoint
+		// and we know it has rejected, and matchPlayers has NOT the updated status.
+		rejected := mp.Status == PlayerRejected || mp.IDPlayer == atoi64(idPlayer)
+		if !rejected {
+			continue
+		}
+
+		if mp.IsTeam1 {
+			team1Rejected = true
+		} else {
+			team2Rejected = true
+		}
+	}
+
+	if team1Rejected && team2Rejected {
+		// We updated using map becuase in this way we avoid to fatch the full match
+		// And we avoid to override other informations
+		_, _, err = client.From("Matches").
+			Update(map[string]any{"status": MatchRejected}, "minimal", "").
+			Eq("id", idMatch).
+			Execute()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "rejected"})
 }
 
 func AddPlayer(c *gin.Context) {
@@ -345,96 +458,52 @@ func UpdateElo(c *gin.Context) {
 		return
 	}
 
-	players, err := getPlayerInMatch(match.T1GK, match.T1ST, match.T2GK, match.T2ST)
+	matchPlayers, err := getMatchPlayers(*match.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = updatePlayers(match, players)
+	if len(matchPlayers) != 4 {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "expected 4 players in match"})
+		return
+	}
+
+	// Get all players
+	players, err := getPlayers(matchPlayers)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	client, err := supabase.NewClient(
-		API_URL,
-		API_KEY,
-		&supabase.ClientOptions{},
-	)
+	// Calculate team ELOs
+	var team1Players, team2Players []int64
+	for _, mp := range matchPlayers {
+		if mp.IsTeam1 {
+			team1Players = append(team1Players, mp.IDPlayer)
+		} else {
+			team2Players = append(team2Players, mp.IDPlayer)
+		}
+	}
 
+	t1Elo := (players[team1Players[0]].Elo + players[team1Players[1]].Elo) / 2
+	t2Elo := (players[team2Players[0]].Elo + players[team2Players[1]].Elo) / 2
+
+	// Update each player
+	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	for _, player := range players {
-		_, _, err := client.From("Players").Update(player, "minimal", "").Eq("id", fmt.Sprintf("%d", player.ID)).Execute()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-	}
-	
-	c.JSON(http.StatusOK, gin.H{"message": "ELO updated successfully"})
-}
-
-func getPlayerInMatch(t1gk, t1st, t2gk, t2st int64) (map[int64]Player, error) {
-	client, err := supabase.NewClient(
-		API_URL,
-		API_KEY,
-		&supabase.ClientOptions{},
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	playersId := []string{
-		strconv.Itoa(int(t1gk)),
-		strconv.Itoa(int(t2gk)),
-		strconv.Itoa(int(t1st)),
-		strconv.Itoa(int(t2st)),
-	}
-
-	data, _, err := client.From("Players").Select("*", "", false).In("id", playersId).Execute()
-	var players []Player
-	json.Unmarshal(data, &players)
-	if len(players) != 4 {
-		return nil, fmt.Errorf("expected 4 players, got %d", len(players))
-	}
-
-	matchPlayers := make(map[int64]Player, 4)
-	for _, player := range players {
-		switch player.ID {
-		case t1gk:
-			matchPlayers[t1gk] = player
-		case t1st:
-			matchPlayers[t1st] = player
-		case t2gk:
-			matchPlayers[t2gk] = player
-		case t2st:
-			matchPlayers[t2st] = player
-		default:
-			return nil, errors.New("Unknown player, something off with the query")
-		}
-	}
-
-	return matchPlayers, nil
-}
-
-func updatePlayers(match Match, players map[int64]Player) error {
-	t1Elo := (players[match.T1GK].Elo + players[match.T1ST].Elo) / 2
-	t2Elo := (players[match.T2GK].Elo + players[match.T2ST].Elo) / 2
-
-	for id, player := range players {
-		isTeam1 := id == match.T1GK || id == match.T1ST
+	for _, mp := range matchPlayers {
+		player := players[mp.IDPlayer]
 		nMatches := int(player.Wins + player.Losses)
 
 		var teamElo, oppElo int16
 		var teamScore, oppScore int
 
-		if isTeam1 {
+		if mp.IsTeam1 {
 			teamElo, oppElo = t1Elo, t2Elo
 			teamScore, oppScore = int(match.T1Score), int(match.T2Score)
 		} else {
@@ -443,6 +512,7 @@ func updatePlayers(match Match, players map[int64]Player) error {
 		}
 
 		eloDelta := elo.GetEloDelta(teamElo, oppElo, nMatches, teamScore, oppScore)
+		oldElo := player.Elo
 
 		if teamScore > oppScore {
 			player.Wins++
@@ -451,8 +521,69 @@ func updatePlayers(match Match, players map[int64]Player) error {
 		}
 
 		player.Elo += eloDelta
-		players[id] = player
+
+		_, _, err := client.From("Players").Update(player, "minimal", "").Eq("id", fmt.Sprintf("%d", player.ID)).Execute()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		mp.EloOld = oldElo
+		mp.EloNew = player.Elo
+		mp.IsWin = teamScore > oppScore
+		_, _, err = client.From("MatchPlayers").Update(mp, "minimal", "").Eq("id", fmt.Sprintf("%d", mp.ID)).Execute()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 	}
 
-	return nil
+	c.JSON(http.StatusOK, gin.H{"message": "ELO updated successfully"})
+}
+
+func atoi64(s string) int64 {
+	i, _ := strconv.Atoi(s)
+	return int64(i)
+}
+
+func getMatchPlayers(matchId int64) ([]MatchPlayer, error) {
+	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	var matchPlayers []MatchPlayer
+	_, err = client.From("MatchPlayers").Select("*", "", false).Eq("idMatch", fmt.Sprintf("%d", matchId)).ExecuteTo(&matchPlayers)
+	if err != nil {
+		return nil, err
+	}
+
+	return matchPlayers, nil
+}
+
+func getPlayers(matchPlayers []MatchPlayer) (map[int64]Player, error) {
+	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	playerIds := make([]string, len(matchPlayers))
+	for i, mp := range matchPlayers {
+		playerIds[i] = strconv.Itoa(int(mp.IDPlayer))
+	}
+
+	data, _, err := client.From("Players").Select("*", "", false).In("id", playerIds).Execute()
+	if err != nil {
+		return nil, err
+	}
+
+	var players []Player
+	json.Unmarshal(data, &players)
+
+	playerMap := make(map[int64]Player)
+	for _, p := range players {
+		playerMap[*p.ID] = p
+	}
+
+	return playerMap, nil
 }
