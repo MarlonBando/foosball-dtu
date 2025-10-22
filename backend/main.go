@@ -180,6 +180,7 @@ func RegisterMatch(c *gin.Context) {
 func AcceptMatch(c *gin.Context) {
 	idMatch := c.Param("matchId")
 	idPlayer := c.Query("playerId")
+
 	if idMatch == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "missing query parameter: matchId"})
 		return
@@ -201,7 +202,6 @@ func AcceptMatch(c *gin.Context) {
 		return
 	}
 
-	// Find and update the specific player's status
 	var targetMP *MatchPlayer
 	for i := range matchPlayers {
 		if matchPlayers[i].IDPlayer == atoi64(idPlayer) {
@@ -216,7 +216,7 @@ func AcceptMatch(c *gin.Context) {
 	}
 
 	targetMP.Status = PlayerAccepted
-	_, _, err = client.From("MatchPlayers").Update(*targetMP, "minimal", "").Eq("id", fmt.Sprintf("%d", targetMP.ID)).Execute()
+	_, _, err = client.From("MatchPlayers").Update(*targetMP, "minimal", "").Eq("id", fmt.Sprintf("%d", *targetMP.ID)).Execute()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -289,7 +289,7 @@ func RejectMatch(c *gin.Context) {
 	}
 
 	targetMP.Status = PlayerRejected
-	_, _, err = client.From("MatchPlayers").Update(*targetMP, "minimal", "").Eq("id", fmt.Sprintf("%d", targetMP.ID)).Execute()
+	_, _, err = client.From("MatchPlayers").Update(*targetMP, "minimal", "").Eq("id", fmt.Sprintf("%d", *targetMP.ID)).Execute()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
