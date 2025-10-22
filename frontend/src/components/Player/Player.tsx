@@ -1,7 +1,8 @@
 import React from 'react';
 import './Player.css';
-import type { Player as PlayerType } from '../../types';
-import { MatchStatus, PlayerStatus } from '../../types';
+import Spinner from '../Spinner/Spinner';
+import type { Player as PlayerType, MatchStatus, PlayerStatus } from '../../types';
+import { MATCH_STATUS, PLAYER_STATUS } from '../../types';
 
 interface PlayerProps {
   player: PlayerType | null;
@@ -9,28 +10,48 @@ interface PlayerProps {
   playerStatus: PlayerStatus;
   isCurrentUser: boolean;
   onAccept: () => void;
+  onReject: () => void;
   onClick?: () => void;
   readOnly: boolean;
+  isLoading?: boolean;
+  actionType?: 'accept' | 'reject' | null;
 }
 
-const Player: React.FC<PlayerProps> = ({ player, status, playerStatus, isCurrentUser, onAccept, onClick, readOnly }) => {
+const Player: React.FC<PlayerProps> = ({ player, status, playerStatus, isCurrentUser, onAccept, onReject, onClick, readOnly, isLoading = false, actionType = null }) => {
   const renderStatus = () => {
     switch (status) {
-      case MatchStatus.Completed:
+      case MATCH_STATUS.COMPLETED:
         return <div className="status-icon">✅</div>;
-      case MatchStatus.Rejected:
+      case MATCH_STATUS.REJECTED:
         return <div className="status-icon">❌</div>;
-      case MatchStatus.Pending:
-        if (isCurrentUser && playerStatus === PlayerStatus.Pending && !readOnly) {
-          return <button onClick={onAccept} className="accept-button">Accept</button>;
+      case MATCH_STATUS.PENDING:
+        if (isCurrentUser && playerStatus === PLAYER_STATUS.PENDING && !readOnly) {
+          return (
+            <div className="action-buttons">
+              <button onClick={onAccept} className="accept-button" disabled={isLoading}>
+                {isLoading && actionType === 'accept' ? (
+                  <Spinner size="small" color="white" />
+                ) : (
+                  '✓'
+                )}
+              </button>
+              <button onClick={onReject} className="reject-button" disabled={isLoading}>
+                {isLoading && actionType === 'reject' ? (
+                  <Spinner size="small" color="white" />
+                ) : (
+                  '✕'
+                )}
+              </button>
+            </div>
+          );
         }
         switch (playerStatus) {
-          case PlayerStatus.Accepted:
+          case PLAYER_STATUS.ACCEPTED:
             return <div className="status-icon">⏳</div>;
-          case PlayerStatus.Rejected:
+          case PLAYER_STATUS.REJECTED:
             return <div className="status-icon">❌</div>;
-          case PlayerStatus.Pending:
-            return <div className="status-icon">❔</div>;
+          case PLAYER_STATUS.PENDING:
+            return <div className="status-icon">⏳</div>;
           default:
             return null;
         }
@@ -53,7 +74,7 @@ const Player: React.FC<PlayerProps> = ({ player, status, playerStatus, isCurrent
         <span className="player-initial">{player.name[0]}</span>
       </div>
       <div className="player-name">
-        {player.name}
+        {player.username}
       </div>
       <div className="player-status">
         {renderStatus()}
