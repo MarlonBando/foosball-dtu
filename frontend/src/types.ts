@@ -22,6 +22,7 @@ export interface Nationality {
 export interface Player {
   id: number;
   created_at: string;
+  user_id?: string;
   username: string;
   elo: number;
   name: string;

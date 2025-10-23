@@ -41,6 +41,7 @@ type Player struct {
 	Nationality int64      `json:"nationality"`
 	Wins        int16      `json:"wins"`
 	Losses      int16      `json:"losses"`
+	UserId      string     `json:"user_id"`
 }
 
 type MatchPlayer struct {
@@ -57,6 +58,15 @@ type MatchPlayer struct {
 	Status    PlayerStatus `json:"status"`
 }
 
+type RegisterMatchRequest struct {
+	T1GK    int64 `json:"t1_gk"`
+	T1ST    int64 `json:"t1_st"`
+	T2GK    int64 `json:"t2_gk"`
+	T2ST    int64 `json:"t2_st"`
+	T1Score int16 `json:"t1_score"`
+	T2Score int16 `json:"t2_score"`
+}
+
 type SupabaseWebhook struct {
 	Type      string `json:"type"`
 	Table     string `json:"table"`
@@ -65,11 +75,11 @@ type SupabaseWebhook struct {
 }
 
 type MatchDetailDTO struct {
-	ID        int64        `json:"id"`
-	CreatedAt time.Time    `json:"created_at"`
-	T1Score   int16        `json:"t1_score"`
-	T2Score   int16        `json:"t2_score"`
-	Status    MatchStatus  `json:"status"`
+	ID        int64            `json:"id"`
+	CreatedAt time.Time        `json:"created_at"`
+	T1Score   int16            `json:"t1_score"`
+	T2Score   int16            `json:"t2_score"`
+	Status    MatchStatus      `json:"status"`
 	Players   []PlayerMatchDTO `json:"players"`
 }
 

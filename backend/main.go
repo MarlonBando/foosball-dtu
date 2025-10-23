@@ -13,22 +13,10 @@ import (
 
 var API_URL = os.Getenv("API_URL")
 var API_KEY = os.Getenv("API_KEY")
+var JWK_CONTENT = os.Getenv("JWK")
 
 func main() {
 	router := gin.Default()
-
-	router.Use(func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(204)
-			return
-		}
-		
-		c.Next()
-	})
 
 	router.GET("/players", GetPlayers)
 	router.GET("/matches", GetPlayerMatches)
@@ -204,15 +192,14 @@ func GetPlayerMatches(c *gin.Context) {
 }
 
 func RegisterMatch(c *gin.Context) {
-	var req struct {
-		T1GK    int64 `json:"t1_gk"`
-		T1ST    int64 `json:"t1_st"`
-		T2GK    int64 `json:"t2_gk"`
-		T2ST    int64 `json:"t2_st"`
-		T1Score int16 `json:"t1_score"`
-		T2Score int16 `json:"t2_score"`
+	authHeader := c.Request.Header.Get("Authorization")
+	err := Auth(authHeader)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		return
 	}
 
+	var req RegisterMatchRequest
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message0": err.Error()})
 		return
@@ -262,6 +249,13 @@ func RegisterMatch(c *gin.Context) {
 }
 
 func AcceptMatch(c *gin.Context) {
+	authHeader := c.Request.Header.Get("Authorization")
+	err := Auth(authHeader)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		return
+	}
+
 	idMatch := c.Param("matchId")
 	idPlayer := c.Query("playerId")
 
@@ -335,6 +329,13 @@ func AcceptMatch(c *gin.Context) {
 }
 
 func RejectMatch(c *gin.Context) {
+	authHeader := c.Request.Header.Get("Authorization")
+	err := Auth(authHeader)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		return
+	}
+
 	idMatch := c.Param("matchId")
 	idPlayer := c.Query("playerId")
 
@@ -413,10 +414,10 @@ func RejectMatch(c *gin.Context) {
 }
 
 func AddPlayer(c *gin.Context) {
-	var newPlayer Match
+	var newPlayer Player
 
 	if err := c.BindJSON(&newPlayer); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": err})
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -427,17 +428,38 @@ func AddPlayer(c *gin.Context) {
 	)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	data, _, err := client.From("Players").Insert(newPlayer, false, "", "minimal", "").Execute()
+	// Insert player into database
+
+	var insertedPlayers []Player
+	client.From("Players").Insert(newPlayer, false, "", "representation", "").ExecuteTo(&insertedPlayers)
+
+	if insertedPlayers == nil || len(insertedPlayers) == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "failed to create player"})
+		return
+	}
+
+	// Update user metadata with player_id
+	playerID := *insertedPlayers[0].ID
+	userID := newPlayer.UserId
+
+	updateData := map[string]interface{}{
+		"user_metadata": map[string]interface{}{
+			"player_id": playerID,
+		},
+	}
+
+	// TODO: Find out how to do this
+	_, err = client.Auth.AdminUpdateUser()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err})
-		return
+		// Log warning but don't fail - player is already created
+		fmt.Printf("Warning: Failed to update user metadata for user %s: %v\n", userID, err)
 	}
 
-	c.JSON(http.StatusOK, data)
+	c.JSON(http.StatusOK, insertedPlayers[0])
 }
 
 func UpdateElo(c *gin.Context) {
@@ -586,4 +608,8 @@ func getPlayers(matchPlayers []MatchPlayer) (map[int64]Player, error) {
 	}
 
 	return playerMap, nil
+}
+
+func isJwtValid(token string) bool {
+
 }
