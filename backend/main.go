@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"foosballDtu/elo"
 	"github.com/gin-gonic/gin"
@@ -9,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 )
 
 var API_URL = os.Getenv("API_URL")
@@ -19,6 +21,7 @@ func main() {
 	router := gin.Default()
 
 	router.GET("/players", GetPlayers)
+	router.GET("/players/me", GetCurrentPlayer)
 	router.GET("/matches", GetPlayerMatches)
 	router.GET("/match/:id", GetMatchDetails)
 	router.GET("/nationalities", GetNationalities)
@@ -45,14 +48,14 @@ func GetNationalities(c *gin.Context) {
 	}
 
 	// TODO: Use ExecutTo to avoid json conversion
-	data, _, err := client.From("Nationalities").Select("id,code,name", "", false).Execute()
+
+	var allNations []Nationality
+	_, err = client.From("Nationalities").Select("id,code,name", "", false).ExecuteTo(&allNations)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	var allNations []Nationality
-	json.Unmarshal(data, &allNations)
 	c.IndentedJSON(http.StatusOK, allNations)
 }
 
@@ -76,6 +79,34 @@ func GetPlayers(c *gin.Context) {
 	var allPlayers []Player
 	json.Unmarshal(data, &allPlayers)
 	c.IndentedJSON(http.StatusOK, allPlayers)
+}
+
+func GetCurrentPlayer(c *gin.Context) {
+	playerID, err := getPlayerIDFromRequest(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to initialize client"})
+		return
+	}
+
+	var players []Player
+	_, err = client.From("Players").Select("*", "", false).Eq("id", strconv.FormatInt(playerID, 10)).ExecuteTo(&players)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if len(players) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "player not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, players[0])
 }
 
 func GetMatchDetails(c *gin.Context) {
@@ -442,23 +473,6 @@ func AddPlayer(c *gin.Context) {
 		return
 	}
 
-	// Update user metadata with player_id
-	playerID := *insertedPlayers[0].ID
-	userID := newPlayer.UserId
-
-	updateData := map[string]interface{}{
-		"user_metadata": map[string]interface{}{
-			"player_id": playerID,
-		},
-	}
-
-	// TODO: Find out how to do this
-	_, err = client.Auth.AdminUpdateUser()
-	if err != nil {
-		// Log warning but don't fail - player is already created
-		fmt.Printf("Warning: Failed to update user metadata for user %s: %v\n", userID, err)
-	}
-
 	c.JSON(http.StatusOK, insertedPlayers[0])
 }
 
@@ -611,5 +625,55 @@ func getPlayers(matchPlayers []MatchPlayer) (map[int64]Player, error) {
 }
 
 func isJwtValid(token string) bool {
+	return IsTokenValid(token)
+}
 
+// ============================================================================
+// PERFORMANCE TODO: Current implementation queries database on every request
+// ============================================================================
+// Better alternatives for production:
+// 1. Store player_id in JWT user_metadata (no DB lookup, cryptographically signed)
+// 2. Use Redis cache for user_id -> player_id mapping (faster than DB)
+// ============================================================================
+
+func getPlayerIDFromUserID(userID string) (int64, error) {
+	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
+	if err != nil {
+		return 0, err
+	}
+
+	var players []Player
+	_, err = client.From("Players").Select("id", "", false).Eq("user_id", userID).ExecuteTo(&players)
+	if err != nil {
+		return 0, err
+	}
+
+	if len(players) == 0 {
+		return 0, errors.New("no player found for this user - please contact the maintainer")
+	}
+
+	if players[0].ID == nil {
+		return 0, errors.New("invalid player data")
+	}
+
+	return *players[0].ID, nil
+}
+
+func getPlayerIDFromRequest(c *gin.Context) (int64, error) {
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		return 0, errors.New("missing authorization header")
+	}
+
+	parts := strings.Split(authHeader, " ")
+	if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
+		return 0, errors.New("invalid authorization header format")
+	}
+
+	userID, err := GetUserIDFromToken(parts[1])
+	if err != nil {
+		return 0, err
+	}
+
+	return getPlayerIDFromUserID(userID)
 }

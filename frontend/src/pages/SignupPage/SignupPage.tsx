@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { getNationalities, addPlayer } from '../../api';
+import { getAllNationalities, addPlayer } from '../../api';
 import { supabase } from '../../lib/supabase';
 import type { Nationality } from '../../types';
 import './SignupPage.css';
@@ -23,7 +23,7 @@ const SignupPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getNationalities().then(setNationalities).catch(console.error);
+    getAllNationalities().then(setNationalities).catch(console.error);
   }, []);
 
 
@@ -52,7 +52,6 @@ const SignupPage: React.FC = () => {
       
       // Step 3: Create player record
       await addPlayer({
-        user_id: userId,
         username,
         name,
         surname,
@@ -64,8 +63,8 @@ const SignupPage: React.FC = () => {
       
       alert('Signup successful! Please check your email to verify your account.');
       navigate('/login');
-    } catch (err: any) {
-      setError(err.message || 'Failed to sign up');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to sign up');
     } finally {
       setLoading(false);
     }

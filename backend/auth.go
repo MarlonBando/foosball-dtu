@@ -78,6 +78,32 @@ func IsTokenValid(tokenString string) bool {
 	return true
 }
 
+func GetUserIDFromToken(tokenString string) (string, error) {
+	keyFunc := func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return &PUBLIC_KEY, nil
+	}
+
+	token, err := jwt.Parse(tokenString, keyFunc)
+	if err != nil {
+		return "", err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return "", errors.New("invalid token claims")
+	}
+
+	userID, ok := claims["sub"].(string)
+	if !ok {
+		return "", errors.New("user_id not found in token")
+	}
+
+	return userID, nil
+}
+
 func Auth(authHeader string) error {
 	if authHeader == "" {
 		return errors.New("missing authorization token")

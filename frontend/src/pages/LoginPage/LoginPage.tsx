@@ -21,8 +21,8 @@ const LoginPage: React.FC = () => {
     try {
       await signIn(email, password);
       navigate('/home');
-    } catch (err: any) {
-      setError(err.message || 'Failed to sign in');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to sign in');
     } finally {
       setLoading(false);
     }
