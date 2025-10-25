@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { getPlayerMatches, acceptMatch, rejectMatch, getMatchDetails } from '../../api';
+import { getPlayerMatches, acceptMatch, rejectMatch, getMatchDetails, getAllPlayers } from '../../api';
 import type { MatchDetail } from '../../api';
 import { PLAYER_STATUS } from '../../types';
+import { useAuth } from '../../contexts/AuthContext';
 import PageLayout from '../../components/PageLayout/PageLayout';
 import PlayerHeader from '../../components/PlayerHeader/PlayerHeader';
 import MatchHistoryTable from '../../components/MatchHistoryTable/MatchHistoryTable';
@@ -9,20 +10,6 @@ import Toast from '../../components/Toast/Toast';
 import Spinner from '../../components/Spinner/Spinner';
 import './HomePage.css';
 import type { Player, Match } from '../../types';
-
-const CURRENT_PLAYER_ID = 1;
-
-const mockPlayer: Player = {
-    id: CURRENT_PLAYER_ID,
-    created_at: new Date().toISOString(),
-    username: 'johndoe',
-    elo: 1450,
-    name: 'John',
-    surname: 'Doe',
-    nationality: 1,
-    wins: 24,
-    losses: 18,
-};
 
 function convertApiMatchToUiMatch(apiMatch: MatchDetail): Match {
   const players = apiMatch.players;
@@ -65,37 +52,59 @@ function convertApiMatchToUiMatch(apiMatch: MatchDetail): Match {
 }
 
 const HomePage: React.FC = () => {
+    const { playerId } = useAuth();
+    const [player, setPlayer] = useState<Player | null>(null);
     const [matches, setMatches] = useState<Match[]>([]);
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
     useEffect(() => {
+        if (!playerId) {
+            setLoading(false);
+            setToast({ message: 'No player profile linked to your account.', type: 'error' });
+            return;
+        }
+
         setLoading(true);
-        getPlayerMatches(CURRENT_PLAYER_ID)
-            .then(async (apiMatches) => {
+        
+        // Fetch player data and matches
+        Promise.all([
+            getAllPlayers().then(players => players.find(p => p.id === playerId)),
+            getPlayerMatches(playerId)
+        ])
+            .then(async ([currentPlayer, apiMatches]) => {
+                if (!currentPlayer) {
+                    throw new Error('Player not found');
+                }
+                
+                setPlayer(currentPlayer);
+                
                 const detailedMatches = await Promise.all(
                     apiMatches.map(m => getMatchDetails(m.id))
                 );
                 setMatches(detailedMatches.map(convertApiMatchToUiMatch));
             })
             .catch(err => {
-                console.error('Failed to load matches:', err);
+                console.error('Failed to load player data:', err);
+                setToast({ message: 'Failed to load player data. Please try again.', type: 'error' });
             })
             .finally(() => setLoading(false));
-    }, []);
+    }, [playerId]);
 
     const handleAcceptMatch = (matchId: number) => {
-        acceptMatch(matchId, CURRENT_PLAYER_ID)
+        if (!player) return;
+        
+        acceptMatch(matchId, player.id)
             .then(() => {
                 setMatches(prevMatches =>
                     prevMatches.map(match => {
                         if (match.id !== matchId) return match;
                         
                         const updatedMatch = { ...match };
-                        if (match.t1_gk?.id === CURRENT_PLAYER_ID) updatedMatch.t1_gk_status = PLAYER_STATUS.ACCEPTED;
-                        if (match.t1_st?.id === CURRENT_PLAYER_ID) updatedMatch.t1_st_status = PLAYER_STATUS.ACCEPTED;
-                        if (match.t2_gk?.id === CURRENT_PLAYER_ID) updatedMatch.t2_gk_status = PLAYER_STATUS.ACCEPTED;
-                        if (match.t2_st?.id === CURRENT_PLAYER_ID) updatedMatch.t2_st_status = PLAYER_STATUS.ACCEPTED;
+                        if (match.t1_gk?.id === player.id) updatedMatch.t1_gk_status = PLAYER_STATUS.ACCEPTED;
+                        if (match.t1_st?.id === player.id) updatedMatch.t1_st_status = PLAYER_STATUS.ACCEPTED;
+                        if (match.t2_gk?.id === player.id) updatedMatch.t2_gk_status = PLAYER_STATUS.ACCEPTED;
+                        if (match.t2_st?.id === player.id) updatedMatch.t2_st_status = PLAYER_STATUS.ACCEPTED;
                         
                         return updatedMatch;
                     })
@@ -109,17 +118,19 @@ const HomePage: React.FC = () => {
     };
 
     const handleRejectMatch = (matchId: number) => {
-        rejectMatch(matchId, CURRENT_PLAYER_ID)
+        if (!player) return;
+        
+        rejectMatch(matchId, player.id)
             .then(() => {
                 setMatches(prevMatches =>
                     prevMatches.map(match => {
                         if (match.id !== matchId) return match;
                         
                         const updatedMatch = { ...match };
-                        if (match.t1_gk?.id === CURRENT_PLAYER_ID) updatedMatch.t1_gk_status = PLAYER_STATUS.REJECTED;
-                        if (match.t1_st?.id === CURRENT_PLAYER_ID) updatedMatch.t1_st_status = PLAYER_STATUS.REJECTED;
-                        if (match.t2_gk?.id === CURRENT_PLAYER_ID) updatedMatch.t2_gk_status = PLAYER_STATUS.REJECTED;
-                        if (match.t2_st?.id === CURRENT_PLAYER_ID) updatedMatch.t2_st_status = PLAYER_STATUS.REJECTED;
+                        if (match.t1_gk?.id === player.id) updatedMatch.t1_gk_status = PLAYER_STATUS.REJECTED;
+                        if (match.t1_st?.id === player.id) updatedMatch.t1_st_status = PLAYER_STATUS.REJECTED;
+                        if (match.t2_gk?.id === player.id) updatedMatch.t2_gk_status = PLAYER_STATUS.REJECTED;
+                        if (match.t2_st?.id === player.id) updatedMatch.t2_st_status = PLAYER_STATUS.REJECTED;
                         
                         return updatedMatch;
                     })
@@ -135,19 +146,25 @@ const HomePage: React.FC = () => {
     return (
         <PageLayout variant="full" backgroundColor="#ffffff">
             <div className="home-page">
-                <PlayerHeader player={mockPlayer} />
                 {loading ? (
                     <div style={{ textAlign: 'center', padding: '4rem' }}>
                         <Spinner size="large" />
-                        <p style={{ marginTop: '1rem', color: '#666' }}>Loading matches...</p>
+                        <p style={{ marginTop: '1rem', color: '#666' }}>Loading your profile...</p>
                     </div>
+                ) : player ? (
+                    <>
+                        <PlayerHeader player={player} />
+                        <MatchHistoryTable
+                            matches={matches}
+                            currentPlayerId={player.id}
+                            onAcceptMatch={handleAcceptMatch}
+                            onRejectMatch={handleRejectMatch}
+                        />
+                    </>
                 ) : (
-                    <MatchHistoryTable
-                        matches={matches}
-                        currentPlayerId={mockPlayer.id}
-                        onAcceptMatch={handleAcceptMatch}
-                        onRejectMatch={handleRejectMatch}
-                    />
+                    <div style={{ textAlign: 'center', padding: '4rem' }}>
+                        <p style={{ color: '#666' }}>No player profile found. Please contact an administrator.</p>
+                    </div>
                 )}
             </div>
             {toast && (
