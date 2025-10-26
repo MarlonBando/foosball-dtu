@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
 import { getAllNationalities, addPlayer } from '../../api';
 import { supabase } from '../../lib/supabase';
 import type { Nationality } from '../../types';
@@ -19,7 +18,6 @@ const SignupPage: React.FC = () => {
   const [experience, setExperience] = useState('Beginner');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signUp } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,23 +32,30 @@ const SignupPage: React.FC = () => {
 
     try {
       // Step 1: Create auth user
-      await signUp(email, password, {
-        username,
-        name,
-        surname,
-        nationality: parseInt(nationality),
-        experience,
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            username,
+            name,
+            surname,
+            nationality: parseInt(nationality),
+            experience,
+          },
+        },
       });
       
-      // Step 2: Get the user_id from the session
-      const { data: { session } } = await supabase.auth.getSession();
-      const userId = session?.user?.id;
+      if (signUpError) throw signUpError;
+      
+      // Step 2: Get the user_id from the signup response
+      const userId = data.user?.id;
       
       if (!userId) {
         throw new Error('Failed to get user ID after signup');
       }
       
-      // Step 3: Create player record
+      // Step 3: Create player record with user_id
       await addPlayer({
         username,
         name,
@@ -59,9 +64,10 @@ const SignupPage: React.FC = () => {
         elo: 1000,
         wins: 0,
         losses: 0,
-      });
+        user_id: userId,
+      } as any);
       
-      alert('Signup successful! Please check your email to verify your account.');
+      alert('Signup successful! You can now login.');
       navigate('/login');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to sign up');

@@ -30,20 +30,64 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      setPlayerId(session?.user?.user_metadata?.player_id ?? null);
+      
+      // Fetch player_id from backend using the session token
+      if (session?.user) {
+        try {
+          const response = await fetch('/api/players/me', {
+            headers: {
+              'Authorization': `Bearer ${session.access_token}`,
+            },
+          });
+          if (response.ok) {
+            const player = await response.json();
+            setPlayerId(player.id);
+          } else {
+            setPlayerId(null);
+          }
+        } catch (error) {
+          console.error('Failed to fetch player:', error);
+          setPlayerId(null);
+        }
+      } else {
+        setPlayerId(null);
+      }
+      
       setLoading(false);
     });
 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      setPlayerId(session?.user?.user_metadata?.player_id ?? null);
+      
+      // Fetch player_id from backend when auth state changes
+      if (session?.user) {
+        try {
+          const response = await fetch('/api/players/me', {
+            headers: {
+              'Authorization': `Bearer ${session.access_token}`,
+            },
+          });
+          if (response.ok) {
+            const player = await response.json();
+            setPlayerId(player.id);
+          } else {
+            setPlayerId(null);
+          }
+        } catch (error) {
+          console.error('Failed to fetch player:', error);
+          setPlayerId(null);
+        }
+      } else {
+        setPlayerId(null);
+      }
+      
       setLoading(false);
     });
 
