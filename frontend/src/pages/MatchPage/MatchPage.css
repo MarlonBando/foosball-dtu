@@ -2,22 +2,27 @@
 .game-container {
   display: flex;
   flex-direction: column;
-  /* Stack items vertically */
   justify-content: center;
   align-items: center;
   flex-grow: 1;
   padding: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .game-area {
   position: relative;
   display: inline-block;
-  /* Make container size to the image */
+  width: 100%;
+  max-width: 800px;
 }
 
 .scoreboard-container {
   margin-bottom: 20px;
-  /* Add space between scoreboard and table */
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .team {
@@ -29,37 +34,14 @@
   justify-content: space-around;
   width: 50px;
   z-index: 1;
-  /* Ensure players are on top of the image */
 }
 
 .team-left {
   left: 5%;
-  /* Position from the left edge of the game-area */
 }
 
 .team-right {
   right: 5%;
-  /* Position from the right edge of the game-area */
-}
-
-/* Responsive for mobile */
-@media (max-width: 768px) {
-  .foosball-table-image {
-    max-width: 90vw;
-  }
-
-  .player {
-    width: 40px;
-    height: 40px;
-  }
-
-  .team-left {
-    left: 2%;
-  }
-
-  .team-right {
-    right: 2%;
-  }
 }
 
 .register-match-button {
@@ -69,14 +51,121 @@
   font-weight: bold;
   color: #ffffff;
   background-color: #c8102e;
-  /* DTU Red */
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .register-match-button:hover {
   background-color: #a20f26;
-  /* Darker DTU Red */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.register-match-button:active {
+  transform: translateY(0);
+}
+
+.register-match-button:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Tablet optimization */
+@media (max-width: 1024px) {
+  .game-container {
+    padding: 15px;
+  }
+
+  .game-area {
+    max-width: 700px;
+  }
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .game-container {
+    padding: 10px;
+  }
+
+  .game-area {
+    max-width: 100%;
+  }
+
+  .foosball-table-image {
+    max-width: 90vw;
+    height: auto;
+  }
+
+  .team {
+    width: 45px;
+  }
+
+  .team-left {
+    left: 3%;
+  }
+
+  .team-right {
+    right: 3%;
+  }
+
+  .scoreboard-container {
+    margin-bottom: 15px;
+  }
+
+  .register-match-button {
+    width: 90%;
+    max-width: 320px;
+    padding: 14px 24px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-container {
+    padding: 8px;
+  }
+
+  .team {
+    width: 40px;
+  }
+
+  .team-left {
+    left: 2%;
+  }
+
+  .team-right {
+    right: 2%;
+  }
+
+  .scoreboard-container {
+    margin-bottom: 10px;
+  }
+
+  .register-match-button {
+    width: 95%;
+    padding: 12px 20px;
+    font-size: 14px;
+    margin-top: 15px;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+  .team {
+    width: 35px;
+  }
+
+  .team-left {
+    left: 1%;
+  }
+
+  .team-right {
+    right: 1%;
+  }
 }

@@ -18,6 +18,12 @@
   font-size: 24px;
   font-weight: bold;
   font-family: sans-serif;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.player:hover {
+  transform: scale(1.05);
 }
 
 /* This will be used to style team 2 players */
@@ -49,7 +55,7 @@
 
 .player-status {
   margin-top: 5px;
-  height: 30px; /* Give it a fixed height to prevent layout shifts */
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,14 +74,14 @@
   padding: 5px 12px;
   border: none;
   border-radius: 5px;
-  background-color: #4CAF50; /* Green */
+  background-color: #4CAF50;
   color: white;
   cursor: pointer;
   font-size: 16px;
   font-weight: bold;
   transition: background-color 0.2s;
-  min-width: 32px;
-  min-height: 26px;
+  min-width: 44px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -83,6 +89,10 @@
 
 .accept-button:hover:not(:disabled) {
   background-color: #45a049;
+}
+
+.accept-button:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
 .accept-button:disabled {
@@ -94,14 +104,14 @@
   padding: 5px 12px;
   border: none;
   border-radius: 5px;
-  background-color: #f44336; /* Red */
+  background-color: #f44336;
   color: white;
   cursor: pointer;
   font-size: 16px;
   font-weight: bold;
   transition: background-color 0.2s;
-  min-width: 32px;
-  min-height: 26px;
+  min-width: 44px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -111,7 +121,70 @@
   background-color: #da190b;
 }
 
+.reject-button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
 .reject-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .player {
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+  }
+
+  .player-name {
+    padding: 4px 12px;
+    font-size: 12px;
+    min-width: 70px;
+  }
+
+  .action-buttons {
+    gap: 4px;
+  }
+
+  .accept-button,
+  .reject-button {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .player {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    border-width: 2px;
+  }
+
+  .player-name {
+    padding: 3px 10px;
+    font-size: 11px;
+    min-width: 60px;
+    margin-top: 6px;
+  }
+
+  .status-icon {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 360px) {
+  .player {
+    width: 35px;
+    height: 35px;
+    font-size: 16px;
+  }
+
+  .player-name {
+    font-size: 10px;
+    padding: 2px 8px;
+    min-width: 50px;
+  }
 }

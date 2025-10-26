@@ -1,18 +1,38 @@
 .page-layout {
     display: flex;
-    min-height: 100vh;
+    min-height: calc(100vh - 60px);
     width: 100%;
-    /* Ensure full width */
     font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     scrollbar-gutter: stable;
-    /* Reserve space for scrollbar to prevent layout shift */
 }
 
 .page-layout--centered {
     justify-content: center;
     align-items: center;
+    padding: 1rem;
 }
 
 .page-layout--full {
     flex-direction: column;
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+    .page-layout {
+        min-height: calc(100vh - 76px);
+    }
+
+    .page-layout--centered {
+        padding: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-layout {
+        min-height: calc(100vh - 64px);
+    }
+
+    .page-layout--centered {
+        padding: 0.5rem;
+    }
 }
