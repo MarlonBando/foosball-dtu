@@ -7,12 +7,14 @@ interface PlayerSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectPlayer: (player: PlayerType) => void;
+  excludePlayerIds?: number[];
 }
 
 const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
   isOpen,
   onClose,
   onSelectPlayer,
+  excludePlayerIds = [],
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [players, setPlayers] = useState<PlayerType[]>([]);
@@ -29,17 +31,20 @@ const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
   }, [isOpen]);
 
   const filteredPlayers = useMemo(() => {
-    if (!searchTerm) {
-      return players;
+    let filtered = players;
+
+    if (searchTerm) {
+      const lowercasedSearchTerm = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (player) =>
+          player.username.toLowerCase().includes(lowercasedSearchTerm) ||
+          player.name.toLowerCase().includes(lowercasedSearchTerm) ||
+          player.surname.toLowerCase().includes(lowercasedSearchTerm)
+      );
     }
-    const lowercasedSearchTerm = searchTerm.toLowerCase();
-    return players.filter(
-      (player) =>
-        player.username.toLowerCase().includes(lowercasedSearchTerm) ||
-        player.name.toLowerCase().includes(lowercasedSearchTerm) ||
-        player.surname.toLowerCase().includes(lowercasedSearchTerm)
-    );
-  }, [players, searchTerm]);
+
+    return filtered.filter(player => !excludePlayerIds.includes(player.id));
+  }, [players, searchTerm, excludePlayerIds]);
 
   const handlePlayerClick = (player: PlayerType) => {
     onSelectPlayer(player);

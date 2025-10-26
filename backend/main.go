@@ -23,14 +23,14 @@ func main() {
 		fmt.Printf("Failed to read publickey.json: %v\n", err)
 		os.Exit(1)
 	}
-	
+
 	if err := ParseJWK(string(keyContent)); err != nil {
 		fmt.Printf("Failed to parse JWK: %v\n", err)
 		os.Exit(1)
 	}
-	
+
 	fmt.Println("Public key loaded successfully")
-	
+
 	router := gin.Default()
 
 	router.GET("/players", GetPlayers)
@@ -256,6 +256,11 @@ func RegisterMatch(c *gin.Context) {
 	client, err := supabase.NewClient(SUPABASE_URL, SUPABASE_KEY, &supabase.ClientOptions{})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message1": err.Error()})
+		return
+	}
+
+	if req.T1Score == req.T2Score {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Match can't be a draw!"})
 		return
 	}
 
@@ -506,7 +511,6 @@ func UpdateElo(c *gin.Context) {
 	if match.Status != MatchCompleted {
 		return
 	}
-
 	if matchPrevState.Status != MatchPending {
 		return
 	}
@@ -575,7 +579,7 @@ func UpdateElo(c *gin.Context) {
 
 		player.Elo += eloDelta
 
-		_, _, err := client.From("Players").Update(player, "minimal", "").Eq("id", fmt.Sprintf("%d", player.ID)).Execute()
+		_, _, err := client.From("Players").Update(player, "minimal", "").Eq("id", fmt.Sprintf("%d", *player.ID)).Execute()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -584,7 +588,7 @@ func UpdateElo(c *gin.Context) {
 		mp.EloOld = oldElo
 		mp.EloNew = player.Elo
 		mp.IsWin = teamScore > oppScore
-		_, _, err = client.From("MatchPlayers").Update(mp, "minimal", "").Eq("id", fmt.Sprintf("%d", mp.ID)).Execute()
+		_, _, err = client.From("MatchPlayers").Update(mp, "minimal", "").Eq("id", fmt.Sprintf("%d", *mp.ID)).Execute()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
