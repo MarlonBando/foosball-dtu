@@ -5,3 +5,69 @@
     flex-direction: column;
     background-color: #f8f9fa;
 }
+
+.home-actions {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+    margin: 0 auto;
+    max-width: 1200px;
+    width: 100%;
+}
+
+.create-match-button {
+    padding: 1rem 2.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: #c8102e;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.create-match-button:hover {
+    background-color: #a20f26;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.create-match-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+    .home-page {
+        padding: 0;
+    }
+
+    .home-actions {
+        padding: 1.5rem 1rem;
+    }
+
+    .create-match-button {
+        width: 100%;
+        max-width: 320px;
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .home-actions {
+        padding: 1rem;
+    }
+
+    .create-match-button {
+        font-size: 0.95rem;
+        padding: 0.75rem 1.5rem;
+    }
+}

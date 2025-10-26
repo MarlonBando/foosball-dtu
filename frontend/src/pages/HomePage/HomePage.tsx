@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getPlayerMatches, acceptMatch, rejectMatch, getMatchDetails, getAllPlayers } from '../../api';
 import type { MatchDetail } from '../../api';
 import { PLAYER_STATUS } from '../../types';
@@ -53,6 +54,7 @@ function convertApiMatchToUiMatch(apiMatch: MatchDetail): Match {
 
 const HomePage: React.FC = () => {
     const { playerId } = useAuth();
+    const navigate = useNavigate();
     const [player, setPlayer] = useState<Player | null>(null);
     const [matches, setMatches] = useState<Match[]>([]);
     const [loading, setLoading] = useState(true);
@@ -154,6 +156,14 @@ const HomePage: React.FC = () => {
                 ) : player ? (
                     <>
                         <PlayerHeader player={player} />
+                        <div className="home-actions">
+                            <button 
+                                className="create-match-button"
+                                onClick={() => navigate('/match')}
+                            >
+                                + Create New Match
+                            </button>
+                        </div>
                         <MatchHistoryTable
                             matches={matches}
                             currentPlayerId={player.id}

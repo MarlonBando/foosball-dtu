@@ -43,11 +43,11 @@
 }
 
 .score.team1 .digit {
-  background-color: #c8102e; /* DTU Red */
+  background-color: #c8102e;
 }
 
 .score.team2 .digit {
-  background-color: #007bff; /* Blue */
+  background-color: #007bff;
 }
 
 .score-controls {
@@ -67,8 +67,92 @@
   width: 30px;
   height: 30px;
   transition: background-color 0.2s;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.score-controls button:hover {
+.score-controls button:hover:not(:disabled) {
   background-color: #666;
+}
+
+.score-controls button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.score-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .scoreboard {
+    gap: 15px;
+    padding: 8px;
+  }
+
+  .score-container {
+    gap: 8px;
+  }
+
+  .digit {
+    font-size: 2.5rem;
+    padding: 8px 12px;
+  }
+
+  .score-controls button {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .scoreboard {
+    gap: 10px;
+    padding: 6px;
+  }
+
+  .score-container {
+    gap: 6px;
+  }
+
+  .score {
+    gap: 3px;
+  }
+
+  .digit {
+    font-size: 2rem;
+    padding: 6px 10px;
+  }
+
+  .score-controls {
+    gap: 3px;
+  }
+
+  .score-controls button {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+    min-width: 32px;
+    min-height: 32px;
+  }
+}
+
+@media (max-width: 360px) {
+  .digit {
+    font-size: 1.75rem;
+    padding: 5px 8px;
+  }
+
+  .score-controls button {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+    min-width: 28px;
+    min-height: 28px;
+  }
 }

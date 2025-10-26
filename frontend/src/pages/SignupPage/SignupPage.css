@@ -3,83 +3,64 @@
   background-color: #ffffff;
   padding: 40px;
   border-radius: 12px;
-  /* Slightly more rounded */
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  /* Softer, deeper shadow */
   text-align: center;
   width: 100%;
   max-width: 400px;
   border: 1px solid #e0e0e0;
-  /* Subtle light border */
 }
 
-/* The logo component itself has a border, so we don't need to define it here */
 .signup-logo {
   margin-bottom: 25px;
-  /* Slightly more space below logo */
 }
 
 .signup-title {
   color: #333;
   margin-bottom: 35px;
-  /* More space below title */
   font-size: 26px;
-  /* Slightly larger title */
   font-weight: 700;
-  /* Bolder title */
 }
 
 .signup-form {
   display: flex;
   flex-direction: column;
   gap: 18px;
-  /* Slightly more space between inputs */
   margin-bottom: 25px;
-  /* More space below form */
 }
 
 .signup-input {
   padding: 14px 18px;
   border: 1px solid #ccc;
-  /* Slightly softer border */
   border-radius: 8px;
-  /* More rounded input */
   font-size: 17px;
-  /* Slightly larger font */
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  min-height: 44px;
 }
 
 .signup-input:focus {
   border-color: #c8102e;
-  /* DTU Red */
   box-shadow: 0 0 0 4px rgba(200, 16, 46, 0.15);
-  /* More prominent focus glow */
   outline: none;
 }
 
 .experience-level {
   text-align: left;
   margin-top: 15px;
-  /* More space above */
   margin-bottom: 10px;
-  /* More space below */
   color: #555;
   font-size: 16px;
-  /* Slightly larger font */
   font-weight: 500;
 }
 
 .experience-level p {
   margin-bottom: 10px;
   font-weight: 600;
-  /* Bolder text */
 }
 
 .radio-group {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  /* More space between radio buttons */
   justify-content: center;
 }
 
@@ -88,18 +69,17 @@
   align-items: center;
   cursor: pointer;
   font-size: 16px;
-  /* Slightly larger font */
   color: #444;
+  min-height: 44px;
+  padding: 8px;
 }
 
 .radio-group input[type="radio"] {
   margin-right: 10px;
-  /* More space */
   accent-color: #c8102e;
-  /* DTU Red for radio buttons */
   width: 20px;
-  /* Larger radio buttons */
   height: 20px;
+  cursor: pointer;
 }
 
 .signup-button {
@@ -110,25 +90,27 @@
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  min-height: 44px;
 }
 
 .signup-button.primary {
   background-color: #c8102e;
-  /* DTU Red */
   color: white;
   box-shadow: 0 2px 8px rgba(200, 16, 46, 0.2);
 }
 
 .signup-button.primary:hover {
   background-color: #a00c24;
-  /* Darker red */
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(200, 16, 46, 0.3);
 }
 
+.signup-button.primary:active {
+  transform: translateY(0);
+}
+
 .signup-button.secondary {
   background-color: #004a94;
-  /* DTU Blue */
   color: white;
   margin-top: 15px;
   box-shadow: 0 2px 8px rgba(0, 74, 148, 0.2);
@@ -136,9 +118,12 @@
 
 .signup-button.secondary:hover {
   background-color: #003a7a;
-  /* Darker blue */
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 74, 148, 0.3);
+}
+
+.signup-button.secondary:active {
+  transform: translateY(0);
 }
 
 .signup-footer {
@@ -149,4 +134,94 @@
 
 .signup-footer p {
   margin-bottom: 12px;
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .signup-container {
+    padding: 30px 25px;
+    max-width: 90%;
+    margin: 0 auto;
+  }
+
+  .signup-title {
+    font-size: 24px;
+    margin-bottom: 30px;
+  }
+
+  .signup-form {
+    gap: 16px;
+  }
+
+  .signup-input {
+    padding: 12px 16px;
+    font-size: 16px;
+  }
+
+  .experience-level {
+    font-size: 15px;
+  }
+
+  .radio-group {
+    gap: 15px;
+  }
+
+  .radio-group label {
+    font-size: 15px;
+  }
+
+  .signup-button {
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+
+  .signup-footer {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .signup-container {
+    padding: 25px 20px;
+    max-width: 95%;
+  }
+
+  .signup-title {
+    font-size: 22px;
+    margin-bottom: 25px;
+  }
+
+  .signup-form {
+    gap: 14px;
+  }
+
+  .signup-input {
+    padding: 12px 14px;
+    font-size: 16px;
+  }
+
+  .experience-level {
+    font-size: 14px;
+  }
+
+  .radio-group {
+    gap: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .radio-group label {
+    font-size: 14px;
+    padding: 6px;
+  }
+
+  .signup-button {
+    padding: 12px 18px;
+    font-size: 15px;
+  }
+
+  .signup-footer {
+    margin-top: 25px;
+    font-size: 13px;
+  }
 }

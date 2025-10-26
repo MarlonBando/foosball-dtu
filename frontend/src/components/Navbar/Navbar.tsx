@@ -1,11 +1,12 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import './Navbar.css';
 
 const Navbar: React.FC = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     try {
@@ -16,27 +17,35 @@ const Navbar: React.FC = () => {
     }
   };
 
+  const handleHomeClick = () => {
+    navigate('/home');
+  };
+
   if (!user) return null;
+
+  const isHomePage = location.pathname === '/home';
 
   return (
     <nav className="navbar">
-      <div style={{ marginLeft: 'auto', padding: '1rem' }}>
-        <span style={{ marginRight: '1rem', color: '#666' }}>
-          {user.email}
-        </span>
-        <button 
-          onClick={handleLogout}
-          style={{
-            padding: '0.5rem 1rem',
-            background: '#ff4444',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          Logout
-        </button>
+      <div className="navbar-content">
+        {!isHomePage && (
+          <button 
+            onClick={handleHomeClick}
+            className="home-button"
+          >
+            <span className="arrow">←</span>
+            <span className="home-text">Home</span>
+          </button>
+        )}
+        <div className="navbar-right">
+          <span className="user-email">{user.email}</span>
+          <button 
+            onClick={handleLogout}
+            className="logout-button"
+          >
+            Logout
+          </button>
+        </div>
       </div>
     </nav>
   );

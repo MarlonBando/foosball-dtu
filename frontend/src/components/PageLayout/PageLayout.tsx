@@ -1,4 +1,5 @@
 import React from 'react';
+import Navbar from '../Navbar/Navbar';
 import './PageLayout.css';
 
 interface PageLayoutProps {
@@ -15,12 +16,15 @@ const PageLayout: React.FC<PageLayoutProps> = ({
     className = '',
 }) => {
     return (
-        <div
-            className={`page-layout page-layout--${variant} ${className}`}
-            style={{ backgroundColor }}
-        >
-            {children}
-        </div>
+        <>
+            <Navbar />
+            <div
+                className={`page-layout page-layout--${variant} ${className}`}
+                style={{ backgroundColor }}
+            >
+                {children}
+            </div>
+        </>
     );
 };
 
