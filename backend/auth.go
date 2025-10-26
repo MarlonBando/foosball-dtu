@@ -63,7 +63,7 @@ func IsTokenValid(tokenString string) bool {
 		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return PUBLIC_KEY, nil
+		return &PUBLIC_KEY, nil
 	}
 
 	// Parse and verify the token

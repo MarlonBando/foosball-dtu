@@ -13,11 +13,24 @@ import (
 	"strings"
 )
 
-var API_URL = os.Getenv("API_URL")
-var API_KEY = os.Getenv("API_KEY")
-var JWK_CONTENT = os.Getenv("JWK")
+var SUPABASE_URL = os.Getenv("SUPABASE_URL")
+var SUPABASE_KEY = os.Getenv("SUPABASE_KEY")
 
 func main() {
+	// Load the public key for JWT verification
+	keyContent, err := os.ReadFile("publickey.json")
+	if err != nil {
+		fmt.Printf("Failed to read publickey.json: %v\n", err)
+		os.Exit(1)
+	}
+	
+	if err := ParseJWK(string(keyContent)); err != nil {
+		fmt.Printf("Failed to parse JWK: %v\n", err)
+		os.Exit(1)
+	}
+	
+	fmt.Println("Public key loaded successfully")
+	
 	router := gin.Default()
 
 	router.GET("/players", GetPlayers)
@@ -33,13 +46,17 @@ func main() {
 	router.PATCH("/matches/:matchId/accept", AcceptMatch)
 	router.PATCH("/matches/:matchId/reject", RejectMatch)
 
-	router.Run("localhost:8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	router.Run(":" + port)
 }
 
 func GetNationalities(c *gin.Context) {
 	client, err := supabase.NewClient(
-		API_URL,
-		API_KEY,
+		SUPABASE_URL,
+		SUPABASE_KEY,
 		&supabase.ClientOptions{},
 	)
 
@@ -61,8 +78,8 @@ func GetNationalities(c *gin.Context) {
 
 func GetPlayers(c *gin.Context) {
 	client, err := supabase.NewClient(
-		API_URL,
-		API_KEY,
+		SUPABASE_URL,
+		SUPABASE_KEY,
 		&supabase.ClientOptions{},
 	)
 
@@ -88,7 +105,7 @@ func GetCurrentPlayer(c *gin.Context) {
 		return
 	}
 
-	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
+	client, err := supabase.NewClient(SUPABASE_URL, SUPABASE_KEY, &supabase.ClientOptions{})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to initialize client"})
 		return
@@ -116,7 +133,7 @@ func GetMatchDetails(c *gin.Context) {
 		return
 	}
 
-	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
+	client, err := supabase.NewClient(SUPABASE_URL, SUPABASE_KEY, &supabase.ClientOptions{})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to initialize Supabase client"})
 		return
@@ -180,7 +197,7 @@ func GetMatchDetails(c *gin.Context) {
 }
 
 func GetPlayerMatches(c *gin.Context) {
-	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
+	client, err := supabase.NewClient(SUPABASE_URL, SUPABASE_KEY, &supabase.ClientOptions{})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to initialize Supabase client"})
 		return
@@ -236,7 +253,7 @@ func RegisterMatch(c *gin.Context) {
 		return
 	}
 
-	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
+	client, err := supabase.NewClient(SUPABASE_URL, SUPABASE_KEY, &supabase.ClientOptions{})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message1": err.Error()})
 		return
@@ -299,7 +316,7 @@ func AcceptMatch(c *gin.Context) {
 		return
 	}
 
-	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
+	client, err := supabase.NewClient(SUPABASE_URL, SUPABASE_KEY, &supabase.ClientOptions{})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -379,7 +396,7 @@ func RejectMatch(c *gin.Context) {
 		return
 	}
 
-	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
+	client, err := supabase.NewClient(SUPABASE_URL, SUPABASE_KEY, &supabase.ClientOptions{})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -453,8 +470,8 @@ func AddPlayer(c *gin.Context) {
 	}
 
 	client, err := supabase.NewClient(
-		API_URL,
-		API_KEY,
+		SUPABASE_URL,
+		SUPABASE_KEY,
 		&supabase.ClientOptions{},
 	)
 
@@ -526,7 +543,7 @@ func UpdateElo(c *gin.Context) {
 	t2Elo := (players[team2Players[0]].Elo + players[team2Players[1]].Elo) / 2
 
 	// Update each player
-	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
+	client, err := supabase.NewClient(SUPABASE_URL, SUPABASE_KEY, &supabase.ClientOptions{})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
@@ -583,7 +600,7 @@ func atoi64(s string) int64 {
 }
 
 func getMatchPlayers(matchId int64) ([]MatchPlayer, error) {
-	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
+	client, err := supabase.NewClient(SUPABASE_URL, SUPABASE_KEY, &supabase.ClientOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -598,7 +615,7 @@ func getMatchPlayers(matchId int64) ([]MatchPlayer, error) {
 }
 
 func getPlayers(matchPlayers []MatchPlayer) (map[int64]Player, error) {
-	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
+	client, err := supabase.NewClient(SUPABASE_URL, SUPABASE_KEY, &supabase.ClientOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -637,7 +654,7 @@ func isJwtValid(token string) bool {
 // ============================================================================
 
 func getPlayerIDFromUserID(userID string) (int64, error) {
-	client, err := supabase.NewClient(API_URL, API_KEY, &supabase.ClientOptions{})
+	client, err := supabase.NewClient(SUPABASE_URL, SUPABASE_KEY, &supabase.ClientOptions{})
 	if err != nil {
 		return 0, err
 	}
