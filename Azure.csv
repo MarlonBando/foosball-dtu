@@ -1,5 +1,0 @@
-﻿NAME,TYPE,LOCATION,RESOURCE GROUP,SUBSCRIPTION,LAST ACCESSED
-"foosballdtu-proxy","Container instances","Sweden Central","foosballdtu","Azure for Students","16 minutes ago"
-"foosballdtu","Resource group","","foosballdtu","Azure for Students","8 hours ago"
-"foosballdtu-frontend","Container instances","Sweden Central","foosballdtu","Azure for Students","8 hours ago"
-"foosballdtu-backend","Container instances","Sweden Central","foosballdtu","Azure for Students","8 hours ago"
