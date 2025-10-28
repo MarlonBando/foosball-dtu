@@ -47,11 +47,3 @@ jobs:
         push: true
         tags: ${{ env.REGISTRY }}/${{ env.owner_lc }}/${{ env.IMAGE_NAME }}-frontend:latest
 
-    - name: Build and push Proxy image
-      uses: docker/build-push-action@v6
-      with:
-        context: ./proxy
-        file: ./proxy/Dockerfile
-        push: true
-        tags: ${{ env.REGISTRY }}/${{ env.owner_lc }}/${{ env.IMAGE_NAME }}-proxy:latest
-

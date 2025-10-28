@@ -22,21 +22,8 @@ services:
         VITE_SUPABASE_URL: ${SUPABASE_URL}
         VITE_SUPABASE_PUBLISHABLE_KEY: ${SUPABASE_PUBLISHABLE_KEY}
     container_name: frontend
-    networks:
-    - foosball-network
-    restart: unless-stopped
-
-  # Nginx reverse proxy
-  foosballdtu-proxy:
-    build:
-      context: ./proxy
-      dockerfile: Dockerfile
-    container_name: proxy
     ports:
     - "80:80"
-    depends_on:
-    - foosballdtu-backend
-    - foosballdtu-frontend
     networks:
     - foosball-network
     restart: unless-stopped

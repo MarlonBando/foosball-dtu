@@ -28,8 +28,6 @@ COPY --from=builder /app/main .
 # Copy the publickey.json if needed
 COPY --from=builder /app/publickey.json .
 
-# Expose port 8080
-EXPOSE 8080
-
+EXPOSE 80
 # Run the application
 CMD ["./main"]
