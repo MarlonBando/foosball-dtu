@@ -35,6 +35,9 @@ COPY nginx.template.conf /etc/nginx/conf.d/default.conf
 # Expose port 80
 EXPOSE 80
 
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # Start nginx
 ENTRYPOINT ["/entrypoint.sh"]
 
