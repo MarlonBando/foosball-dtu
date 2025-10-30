@@ -49,4 +49,5 @@ jobs:
         build-args: |
           VITE_SUPABASE_URL=${{ secrets.SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY=${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          BACKEND_URL=${{ secrets.BACKEND_URL }}
 
