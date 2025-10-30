@@ -1,3 +1,4 @@
+
 # Stage 1: Build the React application
 FROM node:20-alpine AS builder
 
@@ -12,9 +13,11 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Set as environment variables for the build
-ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
-ENV VITE_SUPABASE_PUBLISHABLE_KEY=$VITE_SUPABASE_PUBLISHABLE_KEY
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_PUBLISHABLE_KEY
+
+ENV VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+ENV VITE_SUPABASE_PUBLISHABLE_KEY=${VITE_SUPABASE_PUBLISHABLE_KEY}
 
 # Build the application
 RUN npm run build
