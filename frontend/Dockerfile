@@ -27,6 +27,11 @@ RUN npm run build
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
 
+ARG BACKEND_URL
+
+# Set as environment variable so it's available at runtime
+ENV BACKEND_URL=${BACKEND_URL}
+
 # Copy built assets from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
