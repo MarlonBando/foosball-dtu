@@ -44,7 +44,7 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
-          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+          VITE_BACKEND_URL: ${{ secrets.BACKEND_URL }}
         run: npm run build
 
       - name: Upload build artifacts

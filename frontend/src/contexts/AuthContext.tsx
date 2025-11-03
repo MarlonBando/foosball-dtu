@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
-const API_URL = import.meta.env.VITE_BACKEND_URL || import.meta.env.BACKEND_URL || '/api';
+const API_URL = import.meta.env.VITE_BACKEND_URL || '/api';
 
 interface AuthContextType {
   user: User | null;
