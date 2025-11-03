@@ -1,3 +1,4 @@
+
 # Stage 1: Build the React application
 FROM node:20-alpine AS builder
 
@@ -12,13 +13,13 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Build arguments for Vite
 ARG VITE_SUPABASE_URL
 ARG VITE_SUPABASE_PUBLISHABLE_KEY
+ARG BACKEND_URL
 
-# Set as environment variables for the build
-ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
-ENV VITE_SUPABASE_PUBLISHABLE_KEY=$VITE_SUPABASE_PUBLISHABLE_KEY
+ENV VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+ENV VITE_SUPABASE_PUBLISHABLE_KEY=${VITE_SUPABASE_PUBLISHABLE_KEY}
+ENV BACKEND_URL=${BACKEND_URL}
 
 # Build the application
 RUN npm run build
@@ -26,14 +27,23 @@ RUN npm run build
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
 
+ARG BACKEND_URL
+
+# Set as environment variable so it's available at runtime
+ENV BACKEND_URL=${BACKEND_URL}
+
 # Copy built assets from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.template.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80
 EXPOSE 80
 
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["/entrypoint.sh"]
+

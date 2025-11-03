@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
+const API_URL = import.meta.env.VITE_BACKEND_URL || '/api';
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -37,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Fetch player_id from backend using the session token
       if (session?.user) {
         try {
-          const response = await fetch('/api/players/me', {
+          const response = await fetch(`${API_URL}/players/me`, {
             headers: {
               'Authorization': `Bearer ${session.access_token}`,
             },
@@ -69,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Fetch player_id from backend when auth state changes
       if (session?.user) {
         try {
-          const response = await fetch('/api/players/me', {
+          const response = await fetch(`${API_URL}/players/me`, {
             headers: {
               'Authorization': `Bearer ${session.access_token}`,
             },
