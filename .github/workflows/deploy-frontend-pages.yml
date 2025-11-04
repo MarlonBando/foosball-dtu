@@ -2,10 +2,10 @@ name: Build and Deploy Frontend to GitHub Pages
 
 on:
   push:
-    branches: [deployment]
+    branches: [main]
     paths:
-      - 'frontend/**'
-      - '.github/workflows/deploy-frontend-pages.yml'
+    - 'frontend/**'
+    - '.github/workflows/deploy-frontend-pages.yml'
   workflow_dispatch:
 
 permissions:
@@ -25,32 +25,32 @@ jobs:
     name: Build Frontend
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: 'frontend/package-lock.json'
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: 'frontend/package-lock.json'
 
-      - name: Install dependencies
-        working-directory: frontend
-        run: npm ci
+    - name: Install dependencies
+      working-directory: frontend
+      run: npm ci
 
-      - name: Build frontend
-        working-directory: frontend
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
-          VITE_BACKEND_URL: ${{ secrets.BACKEND_URL }}
-        run: npm run build
+    - name: Build frontend
+      working-directory: frontend
+      env:
+        VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        VITE_BACKEND_URL: ${{ secrets.BACKEND_URL }}
+      run: npm run build
 
-      - name: Upload build artifacts
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: 'frontend/dist'
+    - name: Upload build artifacts
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: 'frontend/dist'
 
   deploy:
     name: Deploy to GitHub Pages
@@ -60,6 +60,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4

@@ -6,6 +6,8 @@ import type { Nationality } from '../../types';
 import './SignupPage.css';
 import Logo from '../../components/Logo/Logo';
 import PageLayout from '../../components/PageLayout/PageLayout';
+import Toast from '../../components/Toast/Toast';
+import BetaWarningModal from '../../components/BetaWarningModal/BetaWarningModal';
 
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -16,12 +18,18 @@ const SignupPage: React.FC = () => {
   const [nationality, setNationality] = useState('');
   const [nationalities, setNationalities] = useState<Nationality[]>([]);
   const [experience, setExperience] = useState('Beginner');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const [showBetaModal, setShowBetaModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     getAllNationalities().then(setNationalities).catch(console.error);
+    
+    const hasSeenBetaWarning = localStorage.getItem('hasSeenBetaWarning');
+    if (!hasSeenBetaWarning) {
+      setShowBetaModal(true);
+    }
   }, []);
 
   const getStartingElo = (experienceLevel: string): number => {
@@ -39,10 +47,14 @@ const SignupPage: React.FC = () => {
     }
   };
 
+  const handleCloseBetaModal = () => {
+    setShowBetaModal(false);
+    localStorage.setItem('hasSeenBetaWarning', 'true');
+  };
+
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
 
     try {
@@ -83,10 +95,12 @@ const SignupPage: React.FC = () => {
         user_id: userId,
       } as any);
       
-      alert('Signup successful! You can now login.');
-      navigate('/login');
+      setToast({ message: '🎉 Signup successful! Welcome to the team!', type: 'success' });
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to sign up');
+      setToast({ message: err instanceof Error ? err.message : 'Failed to sign up', type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -94,11 +108,18 @@ const SignupPage: React.FC = () => {
 
   return (
     <PageLayout variant="centered" backgroundColor="#f0f2f5">
+      {showBetaModal && <BetaWarningModal onClose={handleCloseBetaModal} />}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       <div className="signup-container">
         <Logo className="signup-logo" />
         <h2 className="signup-title">Join Us!</h2>
         <form onSubmit={handleSignUp} className="signup-form">
-          {error && <div style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
           <input
             type="email"
             placeholder="Email"
