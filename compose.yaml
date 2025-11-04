@@ -23,6 +23,7 @@ services:
         VITE_SUPABASE_URL: ${SUPABASE_URL}
         VITE_SUPABASE_PUBLISHABLE_KEY: ${SUPABASE_PUBLISHABLE_KEY}
         BACKEND_URL: ${BACKEND_URL}
+        VITE_BASE_PATH: ${VITE_BASE_PATH:-/foosball-dtu/}
     container_name: frontend
     ports:
     - "80:80"

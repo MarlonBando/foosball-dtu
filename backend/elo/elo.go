@@ -57,14 +57,20 @@ func getOddsToWin(elo int16, opponentElo int16) float64 {
 	return oddsToWin
 }
 
+const (
+	BASE_K                = 32
+	PROVISIONAL_THRESHOLD = 7
+	ESTABLISHED_THRESHOLD = 15
+)
+
+// For the first matches elo changes at a fast pace
 func getK(matchNumber int) int {
-	var k int
-	if matchNumber < 5 {
-		k = 40 - matchNumber
-	} else if matchNumber < 10 {
-		k = 32 - (matchNumber - 5)
-	} else {
-		k = 24
+	switch {
+	case matchNumber < PROVISIONAL_THRESHOLD:
+		return BASE_K * 2
+	case matchNumber < ESTABLISHED_THRESHOLD:
+		return BASE_K + BASE_K/2
+	default:
+		return BASE_K
 	}
-	return k
 }
