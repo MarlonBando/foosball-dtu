@@ -24,6 +24,21 @@ const SignupPage: React.FC = () => {
     getAllNationalities().then(setNationalities).catch(console.error);
   }, []);
 
+  const getStartingElo = (experienceLevel: string): number => {
+    switch (experienceLevel) {
+      case 'Beginner':
+        return 800;
+      case 'Decent':
+        return 1000;
+      case 'Good':
+        return 1200;
+      case 'Pro':
+        return 1400;
+      default:
+        return 1000;
+    }
+  };
+
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,13 +70,14 @@ const SignupPage: React.FC = () => {
         throw new Error('Failed to get user ID after signup');
       }
       
-      // Step 3: Create player record with user_id
+      // Step 3: Create player record with user_id and experience-based starting ELO
+      const startingElo = getStartingElo(experience);
       await addPlayer({
         username,
         name,
         surname,
         nationality: parseInt(nationality),
-        elo: 1000,
+        elo: startingElo,
         wins: 0,
         losses: 0,
         user_id: userId,

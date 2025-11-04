@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"foosballDtu/elo"
 	"github.com/gin-gonic/gin"
+	"github.com/supabase-community/postgrest-go"
 	"github.com/supabase-community/supabase-go"
 	"net/http"
 	"os"
@@ -222,15 +223,17 @@ func GetPlayerMatches(c *gin.Context) {
 		return
 	}
 
-	// Extract match IDs
 	matchIds := make([]string, len(matchPlayers))
 	for i, mp := range matchPlayers {
 		matchIds[i] = strconv.Itoa(int(mp.IDMatch))
 	}
 
-	// Get matches
 	var matches []Match
-	_, err = client.From("Matches").Select("*", "", false).In("id", matchIds).ExecuteTo(&matches)
+	_, err = client.From("Matches").
+		Select("*", "", false).
+		In("id", matchIds).
+		Order("created_at", &postgrest.OrderOpts{Ascending: false}).
+		ExecuteTo(&matches)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
