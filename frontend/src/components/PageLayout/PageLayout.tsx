@@ -1,5 +1,6 @@
 import React from 'react';
-import Navbar from '../Navbar/Navbar';
+import BottomNav from '../BottomNav/BottomNav';
+import CreateMatchButton from '../CreateMatchButton/CreateMatchButton';
 import './PageLayout.css';
 
 interface PageLayoutProps {
@@ -16,15 +17,16 @@ const PageLayout: React.FC<PageLayoutProps> = ({
     className = '',
 }) => {
     return (
-        <>
-            <Navbar />
+        <div className="min-h-screen relative pb-32">
             <div
                 className={`page-layout page-layout--${variant} ${className}`}
                 style={{ backgroundColor }}
             >
                 {children}
             </div>
-        </>
+            <CreateMatchButton />
+            <BottomNav />
+        </div>
     );
 };
 

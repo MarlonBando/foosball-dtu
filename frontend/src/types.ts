@@ -30,6 +30,7 @@ export interface Player {
   nationality: number;
   wins: number;
   losses: number;
+  elo_change?: number;
 }
 
 export interface Match {
