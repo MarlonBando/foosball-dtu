@@ -1,4 +1,3 @@
-=== RUN   TestEloBehaviorVisualization
 
 ====================================================================================================
 ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
@@ -20,14 +19,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +32  →  1232  (from 1200)
   LOSS   0-10  Complete Destruction     -32  →  1168  (from 1200)
-  WIN   10-3   Dominant Win             +25  →  1225  (from 1200)
-  LOSS   3-10  Dominant Win             -25  →  1175  (from 1200)
-  WIN   10-5   Good Win                 +19  →  1219  (from 1200)
-  LOSS   5-10  Good Win                 -19  →  1181  (from 1200)
-  WIN   10-7   Close Win                 +9  →  1209  (from 1200)
-  LOSS   7-10  Close Win                 -9  →  1191  (from 1200)
-  WIN   10-9   Tight Win                 +3  →  1203  (from 1200)
-  LOSS   9-10  Tight Win                 -3  →  1197  (from 1200)
+  WIN   10-3   Dominant Win             +16  →  1216  (from 1200)
+  LOSS   3-10  Dominant Win             -16  →  1184  (from 1200)
+  WIN   10-5   Good Win                 +11  →  1211  (from 1200)
+  LOSS   5-10  Good Win                 -11  →  1189  (from 1200)
+  WIN   10-7   Close Win                 +8  →  1208  (from 1200)
+  LOSS   7-10  Close Win                 -8  →  1192  (from 1200)
+  WIN   10-9   Tight Win                 +6  →  1206  (from 1200)
+  LOSS   9-10  Tight Win                 -6  →  1194  (from 1200)
 
   Match #7 (K=48) - Developing Player
   ──────────────────────────────────────────────────────────────────────────────────────────
@@ -35,14 +34,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +24  →  1224  (from 1200)
   LOSS   0-10  Complete Destruction     -24  →  1176  (from 1200)
-  WIN   10-3   Dominant Win             +19  →  1219  (from 1200)
-  LOSS   3-10  Dominant Win             -19  →  1181  (from 1200)
-  WIN   10-5   Good Win                 +14  →  1214  (from 1200)
-  LOSS   5-10  Good Win                 -14  →  1186  (from 1200)
-  WIN   10-7   Close Win                 +7  →  1207  (from 1200)
-  LOSS   7-10  Close Win                 -7  →  1193  (from 1200)
-  WIN   10-9   Tight Win                 +2  →  1202  (from 1200)
-  LOSS   9-10  Tight Win                 -2  →  1198  (from 1200)
+  WIN   10-3   Dominant Win             +12  →  1212  (from 1200)
+  LOSS   3-10  Dominant Win             -12  →  1188  (from 1200)
+  WIN   10-5   Good Win                  +8  →  1208  (from 1200)
+  LOSS   5-10  Good Win                  -8  →  1192  (from 1200)
+  WIN   10-7   Close Win                 +6  →  1206  (from 1200)
+  LOSS   7-10  Close Win                 -6  →  1194  (from 1200)
+  WIN   10-9   Tight Win                 +4  →  1204  (from 1200)
+  LOSS   9-10  Tight Win                 -4  →  1196  (from 1200)
 
   Match #15 (K=32) - Transitioning to Established
   ──────────────────────────────────────────────────────────────────────────────────────────
@@ -50,14 +49,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +16  →  1216  (from 1200)
   LOSS   0-10  Complete Destruction     -16  →  1184  (from 1200)
-  WIN   10-3   Dominant Win             +12  →  1212  (from 1200)
-  LOSS   3-10  Dominant Win             -12  →  1188  (from 1200)
-  WIN   10-5   Good Win                  +9  →  1209  (from 1200)
-  LOSS   5-10  Good Win                  -9  →  1191  (from 1200)
+  WIN   10-3   Dominant Win              +8  →  1208  (from 1200)
+  LOSS   3-10  Dominant Win              -8  →  1192  (from 1200)
+  WIN   10-5   Good Win                  +5  →  1205  (from 1200)
+  LOSS   5-10  Good Win                  -5  →  1195  (from 1200)
   WIN   10-7   Close Win                 +4  →  1204  (from 1200)
   LOSS   7-10  Close Win                 -4  →  1196  (from 1200)
-  WIN   10-9   Tight Win                 +1  →  1201  (from 1200)
-  LOSS   9-10  Tight Win                 -1  →  1199  (from 1200)
+  WIN   10-9   Tight Win                 +3  →  1203  (from 1200)
+  LOSS   9-10  Tight Win                 -3  →  1197  (from 1200)
 
 
 ╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -70,14 +69,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +32  →  1232  (from 1200)
   LOSS   0-10  Complete Destruction     -32  →  1168  (from 1200)
-  WIN   10-3   Dominant Win             +25  →  1225  (from 1200)
-  LOSS   3-10  Dominant Win             -25  →  1175  (from 1200)
-  WIN   10-5   Good Win                 +19  →  1219  (from 1200)
-  LOSS   5-10  Good Win                 -19  →  1181  (from 1200)
-  WIN   10-7   Close Win                 +9  →  1209  (from 1200)
-  LOSS   7-10  Close Win                 -9  →  1191  (from 1200)
-  WIN   10-9   Tight Win                 +3  →  1203  (from 1200)
-  LOSS   9-10  Tight Win                 -3  →  1197  (from 1200)
+  WIN   10-3   Dominant Win             +16  →  1216  (from 1200)
+  LOSS   3-10  Dominant Win             -16  →  1184  (from 1200)
+  WIN   10-5   Good Win                 +11  →  1211  (from 1200)
+  LOSS   5-10  Good Win                 -11  →  1189  (from 1200)
+  WIN   10-7   Close Win                 +8  →  1208  (from 1200)
+  LOSS   7-10  Close Win                 -8  →  1192  (from 1200)
+  WIN   10-9   Tight Win                 +6  →  1206  (from 1200)
+  LOSS   9-10  Tight Win                 -6  →  1194  (from 1200)
 
   Match #7 (K=48) - Developing Player
   ──────────────────────────────────────────────────────────────────────────────────────────
@@ -85,14 +84,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +24  →  1224  (from 1200)
   LOSS   0-10  Complete Destruction     -24  →  1176  (from 1200)
-  WIN   10-3   Dominant Win             +19  →  1219  (from 1200)
-  LOSS   3-10  Dominant Win             -19  →  1181  (from 1200)
-  WIN   10-5   Good Win                 +14  →  1214  (from 1200)
-  LOSS   5-10  Good Win                 -14  →  1186  (from 1200)
-  WIN   10-7   Close Win                 +7  →  1207  (from 1200)
-  LOSS   7-10  Close Win                 -7  →  1193  (from 1200)
-  WIN   10-9   Tight Win                 +2  →  1202  (from 1200)
-  LOSS   9-10  Tight Win                 -2  →  1198  (from 1200)
+  WIN   10-3   Dominant Win             +12  →  1212  (from 1200)
+  LOSS   3-10  Dominant Win             -12  →  1188  (from 1200)
+  WIN   10-5   Good Win                  +8  →  1208  (from 1200)
+  LOSS   5-10  Good Win                  -8  →  1192  (from 1200)
+  WIN   10-7   Close Win                 +6  →  1206  (from 1200)
+  LOSS   7-10  Close Win                 -6  →  1194  (from 1200)
+  WIN   10-9   Tight Win                 +4  →  1204  (from 1200)
+  LOSS   9-10  Tight Win                 -4  →  1196  (from 1200)
 
   Match #15 (K=32) - Transitioning to Established
   ──────────────────────────────────────────────────────────────────────────────────────────
@@ -100,14 +99,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +16  →  1216  (from 1200)
   LOSS   0-10  Complete Destruction     -16  →  1184  (from 1200)
-  WIN   10-3   Dominant Win             +12  →  1212  (from 1200)
-  LOSS   3-10  Dominant Win             -12  →  1188  (from 1200)
-  WIN   10-5   Good Win                  +9  →  1209  (from 1200)
-  LOSS   5-10  Good Win                  -9  →  1191  (from 1200)
+  WIN   10-3   Dominant Win              +8  →  1208  (from 1200)
+  LOSS   3-10  Dominant Win              -8  →  1192  (from 1200)
+  WIN   10-5   Good Win                  +5  →  1205  (from 1200)
+  LOSS   5-10  Good Win                  -5  →  1195  (from 1200)
   WIN   10-7   Close Win                 +4  →  1204  (from 1200)
   LOSS   7-10  Close Win                 -4  →  1196  (from 1200)
-  WIN   10-9   Tight Win                 +1  →  1201  (from 1200)
-  LOSS   9-10  Tight Win                 -1  →  1199  (from 1200)
+  WIN   10-9   Tight Win                 +3  →  1203  (from 1200)
+  LOSS   9-10  Tight Win                 -3  →  1197  (from 1200)
 
 
 ╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -120,14 +119,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +32  →  1232  (from 1200)
   LOSS   0-10  Complete Destruction     -32  →  1168  (from 1200)
-  WIN   10-3   Dominant Win             +25  →  1225  (from 1200)
-  LOSS   3-10  Dominant Win             -25  →  1175  (from 1200)
-  WIN   10-5   Good Win                 +19  →  1219  (from 1200)
-  LOSS   5-10  Good Win                 -19  →  1181  (from 1200)
-  WIN   10-7   Close Win                 +9  →  1209  (from 1200)
-  LOSS   7-10  Close Win                 -9  →  1191  (from 1200)
-  WIN   10-9   Tight Win                 +3  →  1203  (from 1200)
-  LOSS   9-10  Tight Win                 -3  →  1197  (from 1200)
+  WIN   10-3   Dominant Win             +16  →  1216  (from 1200)
+  LOSS   3-10  Dominant Win             -16  →  1184  (from 1200)
+  WIN   10-5   Good Win                 +11  →  1211  (from 1200)
+  LOSS   5-10  Good Win                 -11  →  1189  (from 1200)
+  WIN   10-7   Close Win                 +8  →  1208  (from 1200)
+  LOSS   7-10  Close Win                 -8  →  1192  (from 1200)
+  WIN   10-9   Tight Win                 +6  →  1206  (from 1200)
+  LOSS   9-10  Tight Win                 -6  →  1194  (from 1200)
 
   Match #7 (K=48) - Developing Player
   ──────────────────────────────────────────────────────────────────────────────────────────
@@ -135,14 +134,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +24  →  1224  (from 1200)
   LOSS   0-10  Complete Destruction     -24  →  1176  (from 1200)
-  WIN   10-3   Dominant Win             +19  →  1219  (from 1200)
-  LOSS   3-10  Dominant Win             -19  →  1181  (from 1200)
-  WIN   10-5   Good Win                 +14  →  1214  (from 1200)
-  LOSS   5-10  Good Win                 -14  →  1186  (from 1200)
-  WIN   10-7   Close Win                 +7  →  1207  (from 1200)
-  LOSS   7-10  Close Win                 -7  →  1193  (from 1200)
-  WIN   10-9   Tight Win                 +2  →  1202  (from 1200)
-  LOSS   9-10  Tight Win                 -2  →  1198  (from 1200)
+  WIN   10-3   Dominant Win             +12  →  1212  (from 1200)
+  LOSS   3-10  Dominant Win             -12  →  1188  (from 1200)
+  WIN   10-5   Good Win                  +8  →  1208  (from 1200)
+  LOSS   5-10  Good Win                  -8  →  1192  (from 1200)
+  WIN   10-7   Close Win                 +6  →  1206  (from 1200)
+  LOSS   7-10  Close Win                 -6  →  1194  (from 1200)
+  WIN   10-9   Tight Win                 +4  →  1204  (from 1200)
+  LOSS   9-10  Tight Win                 -4  →  1196  (from 1200)
 
   Match #15 (K=32) - Transitioning to Established
   ──────────────────────────────────────────────────────────────────────────────────────────
@@ -150,14 +149,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +16  →  1216  (from 1200)
   LOSS   0-10  Complete Destruction     -16  →  1184  (from 1200)
-  WIN   10-3   Dominant Win             +12  →  1212  (from 1200)
-  LOSS   3-10  Dominant Win             -12  →  1188  (from 1200)
-  WIN   10-5   Good Win                  +9  →  1209  (from 1200)
-  LOSS   5-10  Good Win                  -9  →  1191  (from 1200)
+  WIN   10-3   Dominant Win              +8  →  1208  (from 1200)
+  LOSS   3-10  Dominant Win              -8  →  1192  (from 1200)
+  WIN   10-5   Good Win                  +5  →  1205  (from 1200)
+  LOSS   5-10  Good Win                  -5  →  1195  (from 1200)
   WIN   10-7   Close Win                 +4  →  1204  (from 1200)
   LOSS   7-10  Close Win                 -4  →  1196  (from 1200)
-  WIN   10-9   Tight Win                 +1  →  1201  (from 1200)
-  LOSS   9-10  Tight Win                 -1  →  1199  (from 1200)
+  WIN   10-9   Tight Win                 +3  →  1203  (from 1200)
+  LOSS   9-10  Tight Win                 -3  →  1197  (from 1200)
 
 
 ╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -170,14 +169,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +32  →  1232  (from 1200)
   LOSS   0-10  Complete Destruction     -32  →  1168  (from 1200)
-  WIN   10-3   Dominant Win             +25  →  1225  (from 1200)
-  LOSS   3-10  Dominant Win             -25  →  1175  (from 1200)
-  WIN   10-5   Good Win                 +19  →  1219  (from 1200)
-  LOSS   5-10  Good Win                 -19  →  1181  (from 1200)
-  WIN   10-7   Close Win                 +9  →  1209  (from 1200)
-  LOSS   7-10  Close Win                 -9  →  1191  (from 1200)
-  WIN   10-9   Tight Win                 +3  →  1203  (from 1200)
-  LOSS   9-10  Tight Win                 -3  →  1197  (from 1200)
+  WIN   10-3   Dominant Win             +16  →  1216  (from 1200)
+  LOSS   3-10  Dominant Win             -16  →  1184  (from 1200)
+  WIN   10-5   Good Win                 +11  →  1211  (from 1200)
+  LOSS   5-10  Good Win                 -11  →  1189  (from 1200)
+  WIN   10-7   Close Win                 +8  →  1208  (from 1200)
+  LOSS   7-10  Close Win                 -8  →  1192  (from 1200)
+  WIN   10-9   Tight Win                 +6  →  1206  (from 1200)
+  LOSS   9-10  Tight Win                 -6  →  1194  (from 1200)
 
   Match #7 (K=48) - Developing Player
   ──────────────────────────────────────────────────────────────────────────────────────────
@@ -185,14 +184,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +24  →  1224  (from 1200)
   LOSS   0-10  Complete Destruction     -24  →  1176  (from 1200)
-  WIN   10-3   Dominant Win             +19  →  1219  (from 1200)
-  LOSS   3-10  Dominant Win             -19  →  1181  (from 1200)
-  WIN   10-5   Good Win                 +14  →  1214  (from 1200)
-  LOSS   5-10  Good Win                 -14  →  1186  (from 1200)
-  WIN   10-7   Close Win                 +7  →  1207  (from 1200)
-  LOSS   7-10  Close Win                 -7  →  1193  (from 1200)
-  WIN   10-9   Tight Win                 +2  →  1202  (from 1200)
-  LOSS   9-10  Tight Win                 -2  →  1198  (from 1200)
+  WIN   10-3   Dominant Win             +12  →  1212  (from 1200)
+  LOSS   3-10  Dominant Win             -12  →  1188  (from 1200)
+  WIN   10-5   Good Win                  +8  →  1208  (from 1200)
+  LOSS   5-10  Good Win                  -8  →  1192  (from 1200)
+  WIN   10-7   Close Win                 +6  →  1206  (from 1200)
+  LOSS   7-10  Close Win                 -6  →  1194  (from 1200)
+  WIN   10-9   Tight Win                 +4  →  1204  (from 1200)
+  LOSS   9-10  Tight Win                 -4  →  1196  (from 1200)
 
   Match #15 (K=32) - Transitioning to Established
   ──────────────────────────────────────────────────────────────────────────────────────────
@@ -200,14 +199,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +16  →  1216  (from 1200)
   LOSS   0-10  Complete Destruction     -16  →  1184  (from 1200)
-  WIN   10-3   Dominant Win             +12  →  1212  (from 1200)
-  LOSS   3-10  Dominant Win             -12  →  1188  (from 1200)
-  WIN   10-5   Good Win                  +9  →  1209  (from 1200)
-  LOSS   5-10  Good Win                  -9  →  1191  (from 1200)
+  WIN   10-3   Dominant Win              +8  →  1208  (from 1200)
+  LOSS   3-10  Dominant Win              -8  →  1192  (from 1200)
+  WIN   10-5   Good Win                  +5  →  1205  (from 1200)
+  LOSS   5-10  Good Win                  -5  →  1195  (from 1200)
   WIN   10-7   Close Win                 +4  →  1204  (from 1200)
   LOSS   7-10  Close Win                 -4  →  1196  (from 1200)
-  WIN   10-9   Tight Win                 +1  →  1201  (from 1200)
-  LOSS   9-10  Tight Win                 -1  →  1199  (from 1200)
+  WIN   10-9   Tight Win                 +3  →  1203  (from 1200)
+  LOSS   9-10  Tight Win                 -3  →  1197  (from 1200)
 
 
 ╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -221,13 +220,13 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   WIN   10-0   Complete Destruction      +5  →  1205  (from 1200)
   LOSS   0-10  Complete Destruction     -58  →  1142  (from 1200)
   WIN   10-3   Dominant Win              +0  →  1200  (from 1200)
-  LOSS   3-10  Dominant Win             -51  →  1149  (from 1200)
+  LOSS   3-10  Dominant Win             -42  →  1158  (from 1200)
   WIN   10-5   Good Win                  +0  →  1200  (from 1200)
-  LOSS   5-10  Good Win                 -45  →  1155  (from 1200)
+  LOSS   5-10  Good Win                 -37  →  1163  (from 1200)
   WIN   10-7   Close Win                 +0  →  1200  (from 1200)
   LOSS   7-10  Close Win                -35  →  1165  (from 1200)
   WIN   10-9   Tight Win                 +0  →  1200  (from 1200)
-  LOSS   9-10  Tight Win                -29  →  1171  (from 1200)
+  LOSS   9-10  Tight Win                -32  →  1168  (from 1200)
 
   Match #7 (K=48) - Developing Player
   ──────────────────────────────────────────────────────────────────────────────────────────
@@ -236,13 +235,13 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   WIN   10-0   Complete Destruction      +4  →  1204  (from 1200)
   LOSS   0-10  Complete Destruction     -43  →  1157  (from 1200)
   WIN   10-3   Dominant Win              +0  →  1200  (from 1200)
-  LOSS   3-10  Dominant Win             -38  →  1162  (from 1200)
+  LOSS   3-10  Dominant Win             -31  →  1169  (from 1200)
   WIN   10-5   Good Win                  +0  →  1200  (from 1200)
-  LOSS   5-10  Good Win                 -34  →  1166  (from 1200)
+  LOSS   5-10  Good Win                 -28  →  1172  (from 1200)
   WIN   10-7   Close Win                 +0  →  1200  (from 1200)
   LOSS   7-10  Close Win                -26  →  1174  (from 1200)
   WIN   10-9   Tight Win                 +0  →  1200  (from 1200)
-  LOSS   9-10  Tight Win                -22  →  1178  (from 1200)
+  LOSS   9-10  Tight Win                -24  →  1176  (from 1200)
 
   Match #15 (K=32) - Transitioning to Established
   ──────────────────────────────────────────────────────────────────────────────────────────
@@ -251,13 +250,13 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   WIN   10-0   Complete Destruction      +2  →  1202  (from 1200)
   LOSS   0-10  Complete Destruction     -29  →  1171  (from 1200)
   WIN   10-3   Dominant Win              +0  →  1200  (from 1200)
-  LOSS   3-10  Dominant Win             -25  →  1175  (from 1200)
+  LOSS   3-10  Dominant Win             -21  →  1179  (from 1200)
   WIN   10-5   Good Win                  +0  →  1200  (from 1200)
-  LOSS   5-10  Good Win                 -22  →  1178  (from 1200)
+  LOSS   5-10  Good Win                 -18  →  1182  (from 1200)
   WIN   10-7   Close Win                 +0  →  1200  (from 1200)
   LOSS   7-10  Close Win                -17  →  1183  (from 1200)
   WIN   10-9   Tight Win                 +0  →  1200  (from 1200)
-  LOSS   9-10  Tight Win                -14  →  1186  (from 1200)
+  LOSS   9-10  Tight Win                -16  →  1184  (from 1200)
 
 
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -275,14 +274,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +16  →  1616  (from 1600)
   LOSS   0-10  Complete Destruction     -16  →  1584  (from 1600)
-  WIN   10-3   Dominant Win             +12  →  1612  (from 1600)
-  LOSS   3-10  Dominant Win             -12  →  1588  (from 1600)
-  WIN   10-5   Good Win                  +9  →  1609  (from 1600)
-  LOSS   5-10  Good Win                  -9  →  1591  (from 1600)
+  WIN   10-3   Dominant Win              +8  →  1608  (from 1600)
+  LOSS   3-10  Dominant Win              -8  →  1592  (from 1600)
+  WIN   10-5   Good Win                  +5  →  1605  (from 1600)
+  LOSS   5-10  Good Win                  -5  →  1595  (from 1600)
   WIN   10-7   Close Win                 +4  →  1604  (from 1600)
   LOSS   7-10  Close Win                 -4  →  1596  (from 1600)
-  WIN   10-9   Tight Win                 +1  →  1601  (from 1600)
-  LOSS   9-10  Tight Win                 -1  →  1599  (from 1600)
+  WIN   10-9   Tight Win                 +3  →  1603  (from 1600)
+  LOSS   9-10  Tight Win                 -3  →  1597  (from 1600)
 
 
 ╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -295,14 +294,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +16  →  1616  (from 1600)
   LOSS   0-10  Complete Destruction     -16  →  1584  (from 1600)
-  WIN   10-3   Dominant Win             +12  →  1612  (from 1600)
-  LOSS   3-10  Dominant Win             -12  →  1588  (from 1600)
-  WIN   10-5   Good Win                  +9  →  1609  (from 1600)
-  LOSS   5-10  Good Win                  -9  →  1591  (from 1600)
+  WIN   10-3   Dominant Win              +8  →  1608  (from 1600)
+  LOSS   3-10  Dominant Win              -8  →  1592  (from 1600)
+  WIN   10-5   Good Win                  +5  →  1605  (from 1600)
+  LOSS   5-10  Good Win                  -5  →  1595  (from 1600)
   WIN   10-7   Close Win                 +4  →  1604  (from 1600)
   LOSS   7-10  Close Win                 -4  →  1596  (from 1600)
-  WIN   10-9   Tight Win                 +1  →  1601  (from 1600)
-  LOSS   9-10  Tight Win                 -1  →  1599  (from 1600)
+  WIN   10-9   Tight Win                 +3  →  1603  (from 1600)
+  LOSS   9-10  Tight Win                 -3  →  1597  (from 1600)
 
 
 ╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -315,14 +314,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +16  →  1616  (from 1600)
   LOSS   0-10  Complete Destruction     -16  →  1584  (from 1600)
-  WIN   10-3   Dominant Win             +12  →  1612  (from 1600)
-  LOSS   3-10  Dominant Win             -12  →  1588  (from 1600)
-  WIN   10-5   Good Win                  +9  →  1609  (from 1600)
-  LOSS   5-10  Good Win                  -9  →  1591  (from 1600)
+  WIN   10-3   Dominant Win              +8  →  1608  (from 1600)
+  LOSS   3-10  Dominant Win              -8  →  1592  (from 1600)
+  WIN   10-5   Good Win                  +5  →  1605  (from 1600)
+  LOSS   5-10  Good Win                  -5  →  1595  (from 1600)
   WIN   10-7   Close Win                 +4  →  1604  (from 1600)
   LOSS   7-10  Close Win                 -4  →  1596  (from 1600)
-  WIN   10-9   Tight Win                 +1  →  1601  (from 1600)
-  LOSS   9-10  Tight Win                 -1  →  1599  (from 1600)
+  WIN   10-9   Tight Win                 +3  →  1603  (from 1600)
+  LOSS   9-10  Tight Win                 -3  →  1597  (from 1600)
 
 
 ╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -335,14 +334,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +16  →  1616  (from 1600)
   LOSS   0-10  Complete Destruction     -16  →  1584  (from 1600)
-  WIN   10-3   Dominant Win             +12  →  1612  (from 1600)
-  LOSS   3-10  Dominant Win             -12  →  1588  (from 1600)
-  WIN   10-5   Good Win                  +9  →  1609  (from 1600)
-  LOSS   5-10  Good Win                  -9  →  1591  (from 1600)
+  WIN   10-3   Dominant Win              +8  →  1608  (from 1600)
+  LOSS   3-10  Dominant Win              -8  →  1592  (from 1600)
+  WIN   10-5   Good Win                  +5  →  1605  (from 1600)
+  LOSS   5-10  Good Win                  -5  →  1595  (from 1600)
   WIN   10-7   Close Win                 +4  →  1604  (from 1600)
   LOSS   7-10  Close Win                 -4  →  1596  (from 1600)
-  WIN   10-9   Tight Win                 +1  →  1601  (from 1600)
-  LOSS   9-10  Tight Win                 -1  →  1599  (from 1600)
+  WIN   10-9   Tight Win                 +3  →  1603  (from 1600)
+  LOSS   9-10  Tight Win                 -3  →  1597  (from 1600)
 
 
 ╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -356,13 +355,13 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   WIN   10-0   Complete Destruction      +2  →  1602  (from 1600)
   LOSS   0-10  Complete Destruction     -29  →  1571  (from 1600)
   WIN   10-3   Dominant Win              +0  →  1600  (from 1600)
-  LOSS   3-10  Dominant Win             -25  →  1575  (from 1600)
+  LOSS   3-10  Dominant Win             -21  →  1579  (from 1600)
   WIN   10-5   Good Win                  +0  →  1600  (from 1600)
-  LOSS   5-10  Good Win                 -22  →  1578  (from 1600)
+  LOSS   5-10  Good Win                 -18  →  1582  (from 1600)
   WIN   10-7   Close Win                 +0  →  1600  (from 1600)
   LOSS   7-10  Close Win                -17  →  1583  (from 1600)
   WIN   10-9   Tight Win                 +0  →  1600  (from 1600)
-  LOSS   9-10  Tight Win                -14  →  1586  (from 1600)
+  LOSS   9-10  Tight Win                -16  →  1584  (from 1600)
 
 
 ╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -375,14 +374,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +16  →  2016  (from 2000)
   LOSS   0-10  Complete Destruction     -16  →  1984  (from 2000)
-  WIN   10-3   Dominant Win             +12  →  2012  (from 2000)
-  LOSS   3-10  Dominant Win             -12  →  1988  (from 2000)
-  WIN   10-5   Good Win                  +9  →  2009  (from 2000)
-  LOSS   5-10  Good Win                  -9  →  1991  (from 2000)
+  WIN   10-3   Dominant Win              +8  →  2008  (from 2000)
+  LOSS   3-10  Dominant Win              -8  →  1992  (from 2000)
+  WIN   10-5   Good Win                  +5  →  2005  (from 2000)
+  LOSS   5-10  Good Win                  -5  →  1995  (from 2000)
   WIN   10-7   Close Win                 +4  →  2004  (from 2000)
   LOSS   7-10  Close Win                 -4  →  1996  (from 2000)
-  WIN   10-9   Tight Win                 +1  →  2001  (from 2000)
-  LOSS   9-10  Tight Win                 -1  →  1999  (from 2000)
+  WIN   10-9   Tight Win                 +3  →  2003  (from 2000)
+  LOSS   9-10  Tight Win                 -3  →  1997  (from 2000)
 
 
 ╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -395,14 +394,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +16  →  2016  (from 2000)
   LOSS   0-10  Complete Destruction     -16  →  1984  (from 2000)
-  WIN   10-3   Dominant Win             +12  →  2012  (from 2000)
-  LOSS   3-10  Dominant Win             -12  →  1988  (from 2000)
-  WIN   10-5   Good Win                  +9  →  2009  (from 2000)
-  LOSS   5-10  Good Win                  -9  →  1991  (from 2000)
+  WIN   10-3   Dominant Win              +8  →  2008  (from 2000)
+  LOSS   3-10  Dominant Win              -8  →  1992  (from 2000)
+  WIN   10-5   Good Win                  +5  →  2005  (from 2000)
+  LOSS   5-10  Good Win                  -5  →  1995  (from 2000)
   WIN   10-7   Close Win                 +4  →  2004  (from 2000)
   LOSS   7-10  Close Win                 -4  →  1996  (from 2000)
-  WIN   10-9   Tight Win                 +1  →  2001  (from 2000)
-  LOSS   9-10  Tight Win                 -1  →  1999  (from 2000)
+  WIN   10-9   Tight Win                 +3  →  2003  (from 2000)
+  LOSS   9-10  Tight Win                 -3  →  1997  (from 2000)
 
 
 ╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -415,14 +414,14 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   ──────────────────────────────────────────────────────────────────────────────────────────
   WIN   10-0   Complete Destruction     +16  →  2016  (from 2000)
   LOSS   0-10  Complete Destruction     -16  →  1984  (from 2000)
-  WIN   10-3   Dominant Win             +12  →  2012  (from 2000)
-  LOSS   3-10  Dominant Win             -12  →  1988  (from 2000)
-  WIN   10-5   Good Win                  +9  →  2009  (from 2000)
-  LOSS   5-10  Good Win                  -9  →  1991  (from 2000)
+  WIN   10-3   Dominant Win              +8  →  2008  (from 2000)
+  LOSS   3-10  Dominant Win              -8  →  1992  (from 2000)
+  WIN   10-5   Good Win                  +5  →  2005  (from 2000)
+  LOSS   5-10  Good Win                  -5  →  1995  (from 2000)
   WIN   10-7   Close Win                 +4  →  2004  (from 2000)
   LOSS   7-10  Close Win                 -4  →  1996  (from 2000)
-  WIN   10-9   Tight Win                 +1  →  2001  (from 2000)
-  LOSS   9-10  Tight Win                 -1  →  1999  (from 2000)
+  WIN   10-9   Tight Win                 +3  →  2003  (from 2000)
+  LOSS   9-10  Tight Win                 -3  →  1997  (from 2000)
 
 
 ╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -436,13 +435,13 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   WIN   10-0   Complete Destruction      +2  →  2002  (from 2000)
   LOSS   0-10  Complete Destruction     -29  →  1971  (from 2000)
   WIN   10-3   Dominant Win              +0  →  2000  (from 2000)
-  LOSS   3-10  Dominant Win             -25  →  1975  (from 2000)
+  LOSS   3-10  Dominant Win             -21  →  1979  (from 2000)
   WIN   10-5   Good Win                  +0  →  2000  (from 2000)
-  LOSS   5-10  Good Win                 -22  →  1978  (from 2000)
+  LOSS   5-10  Good Win                 -18  →  1982  (from 2000)
   WIN   10-7   Close Win                 +0  →  2000  (from 2000)
   LOSS   7-10  Close Win                -17  →  1983  (from 2000)
   WIN   10-9   Tight Win                 +0  →  2000  (from 2000)
-  LOSS   9-10  Tight Win                -14  →  1986  (from 2000)
+  LOSS   9-10  Tight Win                -16  →  1984  (from 2000)
 
 
 ╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -456,13 +455,13 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   WIN   10-0   Complete Destruction      +2  →  2002  (from 2000)
   LOSS   0-10  Complete Destruction     -29  →  1971  (from 2000)
   WIN   10-3   Dominant Win              +0  →  2000  (from 2000)
-  LOSS   3-10  Dominant Win             -25  →  1975  (from 2000)
+  LOSS   3-10  Dominant Win             -21  →  1979  (from 2000)
   WIN   10-5   Good Win                  +0  →  2000  (from 2000)
-  LOSS   5-10  Good Win                 -22  →  1978  (from 2000)
+  LOSS   5-10  Good Win                 -18  →  1982  (from 2000)
   WIN   10-7   Close Win                 +0  →  2000  (from 2000)
   LOSS   7-10  Close Win                -17  →  1983  (from 2000)
   WIN   10-9   Tight Win                 +0  →  2000  (from 2000)
-  LOSS   9-10  Tight Win                -14  →  1986  (from 2000)
+  LOSS   9-10  Tight Win                -16  →  1984  (from 2000)
 
 
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -490,6 +489,5 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
 END OF ELO BEHAVIOR ANALYSIS
 ====================================================================================================
 
---- PASS: TestEloBehaviorVisualization (0.00s)
 PASS
-ok  	foosballDtu/elo	0.004s
+ok  	foosballDtu/elo	0.289s
