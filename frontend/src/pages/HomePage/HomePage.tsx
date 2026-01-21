@@ -24,8 +24,6 @@ function convertApiMatchToUiMatch(apiMatch: MatchDetail): Match {
     return {
       id: p.player_id,
       username: p.username,
-      name: p.name,
-      surname: p.surname,
       nationality: p.nationality,
       elo: p.current_elo,
       wins: p.wins,
