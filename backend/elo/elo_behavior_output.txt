@@ -464,6 +464,106 @@ ELO BEHAVIOR ANALYSIS - Understanding rating changes across different scenarios
   LOSS   9-10  Tight Win                -16  →  1984  (from 2000)
 
 
+╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
+║  Player ELO: 1400  vs  Opponent ELO: 2000  (Difference: -600)                                     ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  Match #20 (K=32) - Established Player
+  ──────────────────────────────────────────────────────────────────────────────────────────
+  Result Score  Description            Change  New ELO         
+  ──────────────────────────────────────────────────────────────────────────────────────────
+  WIN   10-0   Complete Destruction     +29  →  1429  (from 1400)
+  LOSS   0-10  Complete Destruction      -2  →  1398  (from 1400)
+  WIN   10-3   Dominant Win             +21  →  1421  (from 1400)
+  LOSS   3-10  Dominant Win              +5  →  1405  (from 1400)
+  WIN   10-5   Good Win                 +18  →  1418  (from 1400)
+  LOSS   5-10  Good Win                  +7  →  1407  (from 1400)
+  WIN   10-7   Close Win                +17  →  1417  (from 1400)
+  LOSS   7-10  Close Win                 +8  →  1408  (from 1400)
+  WIN   10-9   Tight Win                +16  →  1416  (from 1400)
+  LOSS   9-10  Tight Win                 +9  →  1409  (from 1400)
+
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
+║  Player ELO: 1500  vs  Opponent ELO: 2000  (Difference: -500)                                     ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  Match #20 (K=32) - Established Player
+  ──────────────────────────────────────────────────────────────────────────────────────────
+  Result Score  Description            Change  New ELO         
+  ──────────────────────────────────────────────────────────────────────────────────────────
+  WIN   10-0   Complete Destruction     +29  →  1529  (from 1500)
+  LOSS   0-10  Complete Destruction      -2  →  1498  (from 1500)
+  WIN   10-3   Dominant Win             +21  →  1521  (from 1500)
+  LOSS   3-10  Dominant Win              +5  →  1505  (from 1500)
+  WIN   10-5   Good Win                 +18  →  1518  (from 1500)
+  LOSS   5-10  Good Win                  +7  →  1507  (from 1500)
+  WIN   10-7   Close Win                +17  →  1517  (from 1500)
+  LOSS   7-10  Close Win                 +8  →  1508  (from 1500)
+  WIN   10-9   Tight Win                +16  →  1516  (from 1500)
+  LOSS   9-10  Tight Win                 +9  →  1509  (from 1500)
+
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
+║  Player ELO: 1500  vs  Opponent ELO: 1800  (Difference: -300)                                     ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  Match #20 (K=32) - Established Player
+  ──────────────────────────────────────────────────────────────────────────────────────────
+  Result Score  Description            Change  New ELO         
+  ──────────────────────────────────────────────────────────────────────────────────────────
+  WIN   10-0   Complete Destruction     +16  →  1516  (from 1500)
+  LOSS   0-10  Complete Destruction     -16  →  1484  (from 1500)
+  WIN   10-3   Dominant Win              +8  →  1508  (from 1500)
+  LOSS   3-10  Dominant Win              -8  →  1492  (from 1500)
+  WIN   10-5   Good Win                  +5  →  1505  (from 1500)
+  LOSS   5-10  Good Win                  -5  →  1495  (from 1500)
+  WIN   10-7   Close Win                 +4  →  1504  (from 1500)
+  LOSS   7-10  Close Win                 -4  →  1496  (from 1500)
+  WIN   10-9   Tight Win                 +3  →  1503  (from 1500)
+  LOSS   9-10  Tight Win                 -3  →  1497  (from 1500)
+
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
+║  Player ELO: 1600  vs  Opponent ELO: 2000  (Difference: -400)                                     ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  Match #20 (K=32) - Established Player
+  ──────────────────────────────────────────────────────────────────────────────────────────
+  Result Score  Description            Change  New ELO         
+  ──────────────────────────────────────────────────────────────────────────────────────────
+  WIN   10-0   Complete Destruction     +29  →  1629  (from 1600)
+  LOSS   0-10  Complete Destruction      -2  →  1598  (from 1600)
+  WIN   10-3   Dominant Win             +21  →  1621  (from 1600)
+  LOSS   3-10  Dominant Win              +5  →  1605  (from 1600)
+  WIN   10-5   Good Win                 +18  →  1618  (from 1600)
+  LOSS   5-10  Good Win                  +7  →  1607  (from 1600)
+  WIN   10-7   Close Win                +17  →  1617  (from 1600)
+  LOSS   7-10  Close Win                 +8  →  1608  (from 1600)
+  WIN   10-9   Tight Win                +16  →  1616  (from 1600)
+  LOSS   9-10  Tight Win                 +9  →  1609  (from 1600)
+
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════════╗
+║  Player ELO: 1800  vs  Opponent ELO: 2000  (Difference: -200)                                     ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  Match #20 (K=32) - Established Player
+  ──────────────────────────────────────────────────────────────────────────────────────────
+  Result Score  Description            Change  New ELO         
+  ──────────────────────────────────────────────────────────────────────────────────────────
+  WIN   10-0   Complete Destruction     +16  →  1816  (from 1800)
+  LOSS   0-10  Complete Destruction     -16  →  1784  (from 1800)
+  WIN   10-3   Dominant Win              +8  →  1808  (from 1800)
+  LOSS   3-10  Dominant Win              -8  →  1792  (from 1800)
+  WIN   10-5   Good Win                  +5  →  1805  (from 1800)
+  LOSS   5-10  Good Win                  -5  →  1795  (from 1800)
+  WIN   10-7   Close Win                 +4  →  1804  (from 1800)
+  LOSS   7-10  Close Win                 -4  →  1796  (from 1800)
+  WIN   10-9   Tight Win                 +3  →  1803  (from 1800)
+  LOSS   9-10  Tight Win                 -3  →  1797  (from 1800)
+
+
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃                                           KEY INSIGHTS                                           ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
@@ -490,4 +590,4 @@ END OF ELO BEHAVIOR ANALYSIS
 ====================================================================================================
 
 PASS
-ok  	foosballDtu/elo	0.289s
+ok  	foosballDtu/elo	0.253s

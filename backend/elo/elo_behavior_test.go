@@ -123,6 +123,11 @@ func TestEloBehaviorVisualization(t *testing.T) {
 		{2000, 1800}, // Moderate advantage - elite
 		{2000, 1600}, // Strong advantage - elite
 		{2000, 1400}, // Very strong advantage - elite
+		{1400, 2000}, // Very strong disadvantage - elite opponent
+		{1500, 2000}, // Very strong disadvantage - elite opponent
+		{1500, 1800}, // Very strong disadvantage - elite opponent
+		{1600, 2000}, // Very strong disadvantage - elite opponent
+		{1800, 2000}, // Very strong disadvantage - elite opponent
 	}
 
 	for _, scenario := range establishedScenarios {
