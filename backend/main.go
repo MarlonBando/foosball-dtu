@@ -178,8 +178,6 @@ func GetMatchDetails(c *gin.Context) {
 		playerDTO := PlayerMatchDTO{
 			PlayerID:    *player.ID,
 			Username:    player.Username,
-			Name:        player.Name,
-			Surname:     player.Surname,
 			Nationality: player.Nationality,
 			CurrentElo:  player.Elo,
 			Wins:        player.Wins,

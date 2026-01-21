@@ -6,7 +6,7 @@ import Logo from '../../components/Logo/Logo';
 import PageLayout from '../../components/PageLayout/PageLayout';
 
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,6 +19,8 @@ const LoginPage: React.FC = () => {
     setLoading(true);
 
     try {
+      // Generate email from username
+      const email = `${username}@foosballdtu.bando`;
       await signIn(email, password);
       navigate('/home');
     } catch (err) {
@@ -36,10 +38,10 @@ const LoginPage: React.FC = () => {
         <form onSubmit={handleSignIn} className="login-form">
           {error && <div style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
           <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             className="login-input"
             required
           />

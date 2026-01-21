@@ -36,8 +36,6 @@ type Player struct {
 	CreatedAt   *time.Time `json:"created_at,omitempty"`
 	Username    string     `json:"username"`
 	Elo         int16      `json:"elo"`
-	Name        string     `json:"name"`
-	Surname     string     `json:"surname"`
 	Nationality int64      `json:"nationality"`
 	Wins        int16      `json:"wins"`
 	Losses      int16      `json:"losses"`

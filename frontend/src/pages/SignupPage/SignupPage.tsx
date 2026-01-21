@@ -10,14 +10,10 @@ import Toast from '../../components/Toast/Toast';
 import BetaWarningModal from '../../components/BetaWarningModal/BetaWarningModal';
 
 const SignupPage: React.FC = () => {
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const [name, setName] = useState('');
-  const [surname, setSurname] = useState('');
   const [nationality, setNationality] = useState('');
   const [nationalities, setNationalities] = useState<Nationality[]>([]);
-  const [experience, setExperience] = useState('Beginner');
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [showBetaModal, setShowBetaModal] = useState(false);
@@ -32,21 +28,6 @@ const SignupPage: React.FC = () => {
     }
   }, []);
 
-  const getStartingElo = (experienceLevel: string): number => {
-    switch (experienceLevel) {
-      case 'Beginner':
-        return 800;
-      case 'Decent':
-        return 1000;
-      case 'Good':
-        return 1200;
-      case 'Pro':
-        return 1400;
-      default:
-        return 1000;
-    }
-  };
-
   const handleCloseBetaModal = () => {
     setShowBetaModal(false);
     localStorage.setItem('hasSeenBetaWarning', 'true');
@@ -58,6 +39,9 @@ const SignupPage: React.FC = () => {
     setLoading(true);
 
     try {
+      // Generate email from username
+      const email = `${username}@foosballdtu.bando`;
+      
       // Step 1: Create auth user
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
@@ -65,10 +49,7 @@ const SignupPage: React.FC = () => {
         options: {
           data: {
             username,
-            name,
-            surname,
             nationality: parseInt(nationality),
-            experience,
           },
         },
       });
@@ -82,14 +63,11 @@ const SignupPage: React.FC = () => {
         throw new Error('Failed to get user ID after signup');
       }
       
-      // Step 3: Create player record with user_id and experience-based starting ELO
-      const startingElo = getStartingElo(experience);
+      // Step 3: Create player record with user_id and fixed starting ELO of 1000
       await addPlayer({
         username,
-        name,
-        surname,
         nationality: parseInt(nationality),
-        elo: startingElo,
+        elo: 1000,
         wins: 0,
         losses: 0,
         user_id: userId,
@@ -121,14 +99,6 @@ const SignupPage: React.FC = () => {
         <h2 className="signup-title">Join Us!</h2>
         <form onSubmit={handleSignUp} className="signup-form">
           <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="signup-input"
-            required
-          />
-          <input
             type="text"
             placeholder="Username"
             value={username}
@@ -145,22 +115,6 @@ const SignupPage: React.FC = () => {
             required
             minLength={6}
           />
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="signup-input"
-            required
-          />
-          <input
-            type="text"
-            placeholder="Surname"
-            value={surname}
-            onChange={(e) => setSurname(e.target.value)}
-            className="signup-input"
-            required
-          />
           
           <select
             value={nationality}
@@ -175,48 +129,6 @@ const SignupPage: React.FC = () => {
               </option>
             ))}
           </select>
-
-          <div className="experience-level">
-            <p>Level of Experience:</p>
-            <div className="radio-group">
-              <label>
-                <input
-                  type="radio"
-                  value="Beginner"
-                  checked={experience === 'Beginner'}
-                  onChange={(e) => setExperience(e.target.value)}
-                />
-                Beginner
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  value="Decent"
-                  checked={experience === 'Decent'}
-                  onChange={(e) => setExperience(e.target.value)}
-                />
-                Decent
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  value="Good"
-                  checked={experience === 'Good'}
-                  onChange={(e) => setExperience(e.target.value)}
-                />
-                Good
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  value="Pro"
-                  checked={experience === 'Pro'}
-                  onChange={(e) => setExperience(e.target.value)}
-                />
-                Pro
-              </label>
-            </div>
-          </div>
 
           <button type="submit" className="signup-button primary" disabled={loading}>
             {loading ? 'Signing Up...' : 'Sign Up'}

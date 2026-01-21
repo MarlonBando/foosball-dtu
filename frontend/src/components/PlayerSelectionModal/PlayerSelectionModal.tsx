@@ -37,9 +37,7 @@ const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
       const lowercasedSearchTerm = searchTerm.toLowerCase();
       filtered = filtered.filter(
         (player) =>
-          player.username.toLowerCase().includes(lowercasedSearchTerm) ||
-          player.name.toLowerCase().includes(lowercasedSearchTerm) ||
-          player.surname.toLowerCase().includes(lowercasedSearchTerm)
+          player.username.toLowerCase().includes(lowercasedSearchTerm)
       );
     }
 
