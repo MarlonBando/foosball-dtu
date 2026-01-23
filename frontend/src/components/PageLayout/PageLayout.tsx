@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import BottomNav from '../BottomNav/BottomNav';
 import CreateMatchButton from '../CreateMatchButton/CreateMatchButton';
 import './PageLayout.css';
@@ -16,6 +17,9 @@ const PageLayout: React.FC<PageLayoutProps> = ({
     backgroundColor = '#f0f2f5',
     className = '',
 }) => {
+    const location = useLocation();
+    const shouldShowNav = !['/login', '/signup'].includes(location.pathname);
+
     return (
         <div className="min-h-screen relative pb-32">
             <div
@@ -24,8 +28,12 @@ const PageLayout: React.FC<PageLayoutProps> = ({
             >
                 {children}
             </div>
-            <CreateMatchButton />
-            <BottomNav />
+            {shouldShowNav && (
+                <>
+                    <CreateMatchButton />
+                    <BottomNav />
+                </>
+            )}
         </div>
     );
 };

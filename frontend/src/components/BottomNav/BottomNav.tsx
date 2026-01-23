@@ -6,11 +6,6 @@ const BottomNav: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Hide BottomNav on auth pages
-    if (['/login', '/signup'].includes(location.pathname)) {
-        return null;
-    }
-
     // Determine active tab based on current path
     const getActiveTab = () => {
         const path = location.pathname;
