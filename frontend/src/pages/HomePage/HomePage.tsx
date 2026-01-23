@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { getPlayerMatches, getMatchDetails, getAllPlayers } from '../../api';
+import React, { useState, useMemo } from 'react';
 import type { MatchDetail } from '../../api';
 import { PLAYER_STATUS } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
+import { useAllPlayers } from '../../hooks/useAllPlayers';
+import { usePlayerMatches } from '../../hooks/usePlayerMatches';
 import PageLayout from '../../components/PageLayout/PageLayout';
 import MatchHistoryList from '../../components/MatchHistoryList/MatchHistoryList';
 import Toast from '../../components/Toast/Toast';
@@ -52,67 +53,55 @@ function convertApiMatchToUiMatch(apiMatch: MatchDetail): Match {
 
 const HomePage: React.FC = () => {
     const { playerId } = useAuth();
-    // const navigate = useNavigate(); // Unused
-    const [player, setPlayer] = useState<Player | null>(null);
-    const [matches, setMatches] = useState<Match[]>([]);
-    const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-    useEffect(() => {
-        if (!playerId) {
-            setLoading(false);
-            setToast({ message: 'No player profile linked to your account.', type: 'error' });
-            return;
-        }
+    // Use React Query hooks for data fetching
+    const { data: players = [] } = useAllPlayers();
+    const { data: matchDetails = [], isPending: loadingMatches } = usePlayerMatches(playerId);
 
-        setLoading(true);
+    // Find current player from players list
+    const player = useMemo(() => 
+        players.find(p => p.id === playerId) || null, 
+        [players, playerId]
+    );
 
-        // Fetch player data and matches
-        Promise.all([
-            getAllPlayers().then(players => players.find(p => p.id === playerId)),
-            getPlayerMatches(playerId)
-        ])
-            .then(async ([currentPlayer, apiMatches]) => {
-                if (!currentPlayer) {
-                    throw new Error('Player not found');
-                }
-
-                setPlayer(currentPlayer);
-
-                const detailedMatches = await Promise.all(
-                    apiMatches.map(m => getMatchDetails(m.id))
-                );
-                setMatches(detailedMatches.map(convertApiMatchToUiMatch));
-            })
-            .catch(err => {
-                console.error('Failed to load player data:', err);
-                setToast({ message: 'Failed to load player data. Please try again.', type: 'error' });
-            })
-            .finally(() => setLoading(false));
-    }, [playerId]);
+    // Convert API matches to UI matches
+    const matches = useMemo(() => 
+        matchDetails.map(convertApiMatchToUiMatch),
+        [matchDetails]
+    );
 
     // Filter to show only completed matches in history
-    const completedMatches = matches.filter(m => m.status === 'completed');
+    const completedMatches = useMemo(() => 
+        matches.filter(m => m.status === 'completed'),
+        [matches]
+    );
 
     return (
         <PageLayout variant="full" backgroundColor="#ffffff">
             <div className="home-page p-4 pb-24">
-                {loading ? (
-                    <div className="flex flex-col items-center justify-center min-h-[50vh]">
-                        <Spinner size="large" />
-                        <p className="mt-4 text-gray-500 font-medium">Loading your matches...</p>
-                    </div>
-                ) : player ? (
-                    <>
-                        <MatchHistoryList
-                            matches={completedMatches}
-                            currentPlayerId={player.id}
-                        />
-                    </>
-                ) : (
+                {!playerId ? (
                     <div className="text-center p-16">
-                        <p className="text-gray-500">No player profile found.</p>
+                        <p className="text-gray-500">No player profile linked to your account.</p>
                     </div>
+                ) : (
+                    <>
+                        {loadingMatches ? (
+                            <div className="flex flex-col items-center justify-center py-12">
+                                <Spinner size="large" />
+                                <p className="mt-4 text-gray-500 font-medium">Loading match history...</p>
+                            </div>
+                        ) : player ? (
+                            <MatchHistoryList
+                                matches={completedMatches}
+                                currentPlayerId={player.id}
+                            />
+                        ) : (
+                            <div className="text-center p-16">
+                                <p className="text-gray-500">No player profile found.</p>
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
             {toast && (

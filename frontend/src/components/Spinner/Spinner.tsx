@@ -6,7 +6,7 @@ interface SpinnerProps {
   color?: string;
 }
 
-const Spinner: React.FC<SpinnerProps> = ({ size = 'medium', color = '#004a94' }) => {
+const Spinner: React.FC<SpinnerProps> = ({ size = 'medium', color = '#990000' }) => {
   return (
     <div className={`spinner spinner-${size}`}>
       <div className="spinner-circle" style={{ borderTopColor: color }}></div>

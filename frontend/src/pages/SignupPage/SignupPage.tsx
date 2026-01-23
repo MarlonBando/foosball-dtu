@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getAllNationalities, addPlayer } from '../../api';
+import { useNationalities } from '../../hooks/useNationalities';
+import { useAddPlayer } from '../../hooks/usePlayerMutations';
 import { supabase } from '../../lib/supabase';
-import type { Nationality } from '../../types';
 import './SignupPage.css';
 import Logo from '../../components/Logo/Logo';
 import PageLayout from '../../components/PageLayout/PageLayout';
@@ -16,16 +16,17 @@ const SignupPage: React.FC = () => {
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
   const [nationality, setNationality] = useState('');
-  const [nationalities, setNationalities] = useState<Nationality[]>([]);
   const [experience, setExperience] = useState('Beginner');
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [showBetaModal, setShowBetaModal] = useState(false);
   const navigate = useNavigate();
 
+  // Use React Query hooks
+  const { data: nationalities = [] } = useNationalities();
+  const addPlayerMutation = useAddPlayer();
+
   useEffect(() => {
-    getAllNationalities().then(setNationalities).catch(console.error);
-    
     const hasSeenBetaWarning = localStorage.getItem('hasSeenBetaWarning');
     if (!hasSeenBetaWarning) {
       setShowBetaModal(true);
@@ -84,7 +85,8 @@ const SignupPage: React.FC = () => {
       
       // Step 3: Create player record with user_id and experience-based starting ELO
       const startingElo = getStartingElo(experience);
-      await addPlayer({
+      
+      await addPlayerMutation.mutateAsync({
         username,
         name,
         surname,

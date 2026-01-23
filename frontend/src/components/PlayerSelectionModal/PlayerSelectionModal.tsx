@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { getAllPlayers } from '../../api';
+import React, { useState, useMemo } from 'react';
+import { useAllPlayers } from '../../hooks/useAllPlayers';
 import type { Player as PlayerType } from '../../types';
 import { Search, X, Users } from 'lucide-react';
 import './PlayerSelectionModal.css';
@@ -78,18 +78,9 @@ const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
   excludePlayerIds = [],
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [players, setPlayers] = useState<PlayerType[]>([]);
-  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      setLoading(true);
-      getAllPlayers()
-        .then(setPlayers)
-        .catch(err => console.error('Failed to load players:', err))
-        .finally(() => setLoading(false));
-    }
-  }, [isOpen]);
+  // Use React Query hook - data will already be cached from prefetch!
+  const { data: players = [], isPending: loading } = useAllPlayers();
 
   const filteredPlayers = useMemo(() => {
     let filtered = players;

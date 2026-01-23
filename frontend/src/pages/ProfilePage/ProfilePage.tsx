@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { getAllPlayers, getPlayerMatches, getMatchDetails, acceptMatch, rejectMatch } from '../../api';
+import { useAllPlayers } from '../../hooks/useAllPlayers';
+import { usePlayerMatches } from '../../hooks/usePlayerMatches';
+import { useAcceptMatch, useRejectMatch } from '../../hooks/useMatchMutations';
 import type { MatchDetail } from '../../api';
 import { PLAYER_STATUS } from '../../types';
 import PageLayout from '../../components/PageLayout/PageLayout';
@@ -8,6 +11,7 @@ import Spinner from '../../components/Spinner/Spinner';
 import MatchHistoryList from '../../components/MatchHistoryList/MatchHistoryList';
 import Toast from '../../components/Toast/Toast';
 import type { Player, Match } from '../../types';
+import { LogOut } from 'lucide-react';
 
 function convertApiMatchToUiMatch(apiMatch: MatchDetail): Match {
     const players = apiMatch.players;
@@ -51,110 +55,82 @@ function convertApiMatchToUiMatch(apiMatch: MatchDetail): Match {
 }
 
 const ProfilePage: React.FC = () => {
-    const { playerId } = useAuth();
-    const [player, setPlayer] = useState<Player | null>(null);
-    const [matches, setMatches] = useState<Match[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { playerId, signOut } = useAuth();
+    const navigate = useNavigate();
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-    useEffect(() => {
-        if (!playerId) {
-            setLoading(false);
-            setToast({ message: 'No player profile linked to your account.', type: 'error' });
-            return;
-        }
+    // Use React Query hooks for data fetching
+    const { data: players = [], isPending: loadingPlayers } = useAllPlayers();
+    const { data: matchDetails = [], isPending: loadingMatches } = usePlayerMatches(playerId);
 
-        setLoading(true);
+    // Use mutations for accept/reject
+    const acceptMutation = useAcceptMatch();
+    const rejectMutation = useRejectMatch();
 
-        // Fetch player data and matches
-        Promise.all([
-            getAllPlayers().then(players => players.find(p => p.id === playerId)),
-            getPlayerMatches(playerId)
-        ])
-            .then(async ([currentPlayer, apiMatches]) => {
-                if (!currentPlayer) {
-                    throw new Error('Player not found');
-                }
+    // Find current player from players list
+    const player = useMemo(() => 
+        players.find(p => p.id === playerId) || null, 
+        [players, playerId]
+    );
 
-                setPlayer(currentPlayer);
+    // Convert API matches to UI matches
+    const matches = useMemo(() => 
+        matchDetails.map(convertApiMatchToUiMatch),
+        [matchDetails]
+    );
 
-                const detailedMatches = await Promise.all(
-                    apiMatches.map(m => getMatchDetails(m.id))
-                );
-                setMatches(detailedMatches.map(convertApiMatchToUiMatch));
-            })
-            .catch(err => {
-                console.error('Failed to load player data:', err);
-                setToast({ message: 'Failed to load player data. Please try again.', type: 'error' });
-            })
-            .finally(() => setLoading(false));
-    }, [playerId]);
+    // Filter pending matches
+    const pendingMatches = useMemo(() => 
+        matches.filter(match => match.status === 'pending'),
+        [matches]
+    );
 
     const handleAcceptMatch = (matchId: number) => {
-        if (!player) return;
-
-        acceptMatch(matchId, player.id)
-            .then(() => {
-                setMatches(prevMatches =>
-                    prevMatches.map(match => {
-                        if (match.id !== matchId) return match;
-
-                        const updatedMatch = { ...match };
-                        if (match.t1_gk?.id === player.id) updatedMatch.t1_gk_status = PLAYER_STATUS.ACCEPTED;
-                        if (match.t1_st?.id === player.id) updatedMatch.t1_st_status = PLAYER_STATUS.ACCEPTED;
-                        if (match.t2_gk?.id === player.id) updatedMatch.t2_gk_status = PLAYER_STATUS.ACCEPTED;
-                        if (match.t2_st?.id === player.id) updatedMatch.t2_st_status = PLAYER_STATUS.ACCEPTED;
-
-                        return updatedMatch;
-                    })
-                );
+        acceptMutation.mutate({ matchId }, {
+            onSuccess: () => {
                 setToast({ message: 'Match accepted successfully!', type: 'success' });
-            })
-            .catch(err => {
+            },
+            onError: (err) => {
                 console.error('Failed to accept match:', err);
                 setToast({ message: 'Failed to accept match. Please try again.', type: 'error' });
-            });
+            },
+        });
     };
 
     const handleRejectMatch = (matchId: number) => {
-        if (!player) return;
-
-        rejectMatch(matchId, player.id)
-            .then(() => {
-                setMatches(prevMatches =>
-                    prevMatches.map(match => {
-                        if (match.id !== matchId) return match;
-
-                        const updatedMatch = { ...match };
-                        if (match.t1_gk?.id === player.id) updatedMatch.t1_gk_status = PLAYER_STATUS.REJECTED;
-                        if (match.t1_st?.id === player.id) updatedMatch.t1_st_status = PLAYER_STATUS.REJECTED;
-                        if (match.t2_gk?.id === player.id) updatedMatch.t2_gk_status = PLAYER_STATUS.REJECTED;
-                        if (match.t2_st?.id === player.id) updatedMatch.t2_st_status = PLAYER_STATUS.REJECTED;
-
-                        return updatedMatch;
-                    })
-                );
+        rejectMutation.mutate({ matchId }, {
+            onSuccess: () => {
                 setToast({ message: 'Match rejected successfully!', type: 'success' });
-            })
-            .catch(err => {
+            },
+            onError: (err) => {
                 console.error('Failed to reject match:', err);
                 setToast({ message: 'Failed to reject match. Please try again.', type: 'error' });
-            });
+            },
+        });
     };
 
-    if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-screen">
-                <Spinner size="large" />
-            </div>
-        );
-    }
+    const handleLogout = async () => {
+        try {
+            await signOut();
+            navigate('/login');
+        } catch (error) {
+            console.error('Failed to logout:', error);
+            setToast({ message: 'Failed to logout. Please try again.', type: 'error' });
+        }
+    };
 
     if (!player) {
         return (
             <PageLayout variant="full">
                 <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center">
-                    <p className="text-gray-500">Player profile not found.</p>
+                    {loadingPlayers ? (
+                        <div className="flex flex-col items-center justify-center py-12">
+                            <Spinner size="large" />
+                            <p className="mt-4 text-gray-500 font-medium">Loading profile...</p>
+                        </div>
+                    ) : (
+                        <p className="text-gray-500">Player profile not found.</p>
+                    )}
                 </div>
             </PageLayout>
         );
@@ -164,14 +140,20 @@ const ProfilePage: React.FC = () => {
         ? Math.round((player.wins / (player.wins + player.losses)) * 100)
         : 0;
 
-    // Show all pending matches regardless of current player's individual status
-    // Matches will disappear only when match status becomes "completed" or "rejected"
-    const pendingMatches = matches.filter(match => match.status === 'pending');
-
     return (
         <PageLayout variant="full">
             <div className="p-4 pb-24">
-                <div className="max-w-md mx-auto mb-6">
+                <div className="max-w-md mx-auto mb-6 relative">
+                    {/* Logout Button - Top Right */}
+                    <button
+                        onClick={handleLogout}
+                        className="absolute top-0 right-0 text-sm text-gray-500 hover:text-red-500 
+                                   transition-colors flex items-center gap-1.5 font-medium"
+                    >
+                        <LogOut size={18} />
+                        <span>Logout</span>
+                    </button>
+
                     <div className="text-center mb-8">
                         <div className="w-24 h-24 bg-gradient-to-br from-primary to-primary-light rounded-full mx-auto mb-4 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
                             {player.username.substring(0, 2).toUpperCase()}
@@ -205,18 +187,25 @@ const ProfilePage: React.FC = () => {
                     </div>
                 </div>
 
-                {pendingMatches.length > 0 && (
+                {(loadingMatches || pendingMatches.length > 0) && (
                     <div className="mt-6">
                         <h2 className="text-xl font-bold text-gray-900 mb-4 px-4">Pending Matches</h2>
-                        <MatchHistoryList
-                            matches={pendingMatches}
-                            currentPlayerId={player.id}
-                            onAcceptMatch={handleAcceptMatch}
-                            onRejectMatch={handleRejectMatch}
-                            showPendingActions={true}
-                            headerTitle="Pending Matches"
-                            showHeader={false}
-                        />
+                        {loadingMatches ? (
+                            <div className="flex flex-col items-center justify-center py-12">
+                                <Spinner size="large" />
+                                <p className="mt-4 text-gray-500 font-medium">Loading pending matches...</p>
+                            </div>
+                        ) : (
+                            <MatchHistoryList
+                                matches={pendingMatches}
+                                currentPlayerId={player.id}
+                                onAcceptMatch={handleAcceptMatch}
+                                onRejectMatch={handleRejectMatch}
+                                showPendingActions={true}
+                                headerTitle="Pending Matches"
+                                showHeader={false}
+                            />
+                        )}
                     </div>
                 )}
             </div>
