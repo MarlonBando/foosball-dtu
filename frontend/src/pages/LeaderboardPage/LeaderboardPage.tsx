@@ -10,6 +10,7 @@ const LeaderboardPage: React.FC = () => {
     const { playerId } = useAuth();
     const [players, setPlayers] = useState<Player[]>([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         getAllPlayers()
@@ -31,7 +32,13 @@ const LeaderboardPage: React.FC = () => {
     }
 
     const top3 = players.slice(0, 3);
-    const rest = players.slice(3);
+
+    // Filter all players based on search query
+    const filteredPlayers = searchQuery.trim() === ''
+        ? players // Show all players if no search
+        : players.filter(player => 
+            player.username.toLowerCase().includes(searchQuery.toLowerCase())
+        );
 
     return (
         <PageLayout variant="full">
@@ -112,45 +119,88 @@ const LeaderboardPage: React.FC = () => {
                     </div>
                 </div>
 
+                {/* Search Bar */}
+                <div className="mb-6 max-w-4xl mx-auto">
+                    <div className="relative">
+                        <input
+                            type="text"
+                            placeholder="Search by username..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full px-4 py-3 pl-11 rounded-xl border border-slate-200 
+                                       focus:outline-none focus:ring-2 focus:ring-primary/50 
+                                       focus:border-primary transition-all
+                                       bg-white shadow-sm text-gray-900 placeholder-gray-400"
+                        />
+                        <svg 
+                            className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                        >
+                            <path 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                strokeWidth={2} 
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" 
+                            />
+                        </svg>
+                    </div>
+                    {searchQuery && (
+                        <p className="text-sm text-gray-500 mt-2">
+                            Found {filteredPlayers.length} player{filteredPlayers.length !== 1 ? 's' : ''}
+                        </p>
+                    )}
+                </div>
+
                 <div className="space-y-2 max-w-4xl mx-auto">
-                    {rest.map((player, index) => {
-                        const isCurrentUser = player.id === playerId;
-                        const rank = index + 4;
-                        return (
-                            <div
-                                key={player.id}
-                                className={`bg-white rounded-xl p-4 flex items-center justify-between shadow-sm border transition-all gap-4
-                                    ${isCurrentUser ? 'border-primary/50 bg-primary/5 ring-1 ring-primary/20' : 'border-slate-100'}
-                                `}
-                            >
-                                <div className="flex items-center gap-4 min-w-0 flex-1">
-                                    <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center font-bold text-gray-400">
-                                        #{rank}
+                    {filteredPlayers.length === 0 ? (
+                        <div className="text-center py-12">
+                            <p className="text-gray-500 text-lg">No players found</p>
+                            <p className="text-gray-400 text-sm mt-2">
+                                Try searching for a different username
+                            </p>
+                        </div>
+                    ) : (
+                        filteredPlayers.map((player) => {
+                            const isCurrentUser = player.id === playerId;
+                            const rank = players.findIndex(p => p.id === player.id) + 1;
+                            return (
+                                <div
+                                    key={player.id}
+                                    className={`bg-white rounded-xl p-4 flex items-center justify-between shadow-sm border transition-all gap-4
+                                        ${isCurrentUser ? 'border-primary/50 bg-primary/5 ring-1 ring-primary/20' : 'border-slate-100'}
+                                    `}
+                                >
+                                    <div className="flex items-center gap-4 min-w-0 flex-1">
+                                        <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center font-bold text-gray-400">
+                                            #{rank}
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <div className="flex items-center gap-2">
+                                                <h3 className={`font-bold truncate ${isCurrentUser ? 'text-primary' : 'text-gray-900'}`}>
+                                                    {player.username}
+                                                </h3>
+                                                {isCurrentUser && (
+                                                    <span className="flex-shrink-0 text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold">
+                                                        You
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="text-xs text-gray-500 font-medium flex items-center">
+                                                <span className="text-green-600">{player.wins}W</span>
+                                                <span className="mx-1 text-slate-300">/</span>
+                                                <span className="text-red-600">{player.losses}L</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="min-w-0 flex-1">
-                                        <div className="flex items-center gap-2">
-                                            <h3 className={`font-bold truncate ${isCurrentUser ? 'text-primary' : 'text-gray-900'}`}>
-                                                {player.username}
-                                            </h3>
-                                            {isCurrentUser && (
-                                                <span className="flex-shrink-0 text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold">
-                                                    You
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className="text-xs text-gray-500 font-medium flex items-center">
-                                            <span className="text-green-600">{player.wins}W</span>
-                                            <span className="mx-1 text-slate-300">/</span>
-                                            <span className="text-red-600">{player.losses}L</span>
-                                        </div>
+                                    <div className="flex-shrink-0 inline-flex items-center justify-center px-3 py-1 rounded-full font-bold text-sm bg-primary/10 text-primary">
+                                        {player.elo}
                                     </div>
                                 </div>
-                                <div className="flex-shrink-0 inline-flex items-center justify-center px-3 py-1 rounded-full font-bold text-sm bg-primary/10 text-primary">
-                                    {player.elo}
-                                </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })
+                    )}
                 </div>
             </div>
         </PageLayout>
