@@ -91,6 +91,9 @@ const HomePage: React.FC = () => {
             .finally(() => setLoading(false));
     }, [playerId]);
 
+    // Filter to show only completed matches in history
+    const completedMatches = matches.filter(m => m.status === 'completed');
+
     return (
         <PageLayout variant="full" backgroundColor="#ffffff">
             <div className="home-page p-4 pb-24">
@@ -102,7 +105,7 @@ const HomePage: React.FC = () => {
                 ) : player ? (
                     <>
                         <MatchHistoryList
-                            matches={matches}
+                            matches={completedMatches}
                             currentPlayerId={player.id}
                         />
                     </>

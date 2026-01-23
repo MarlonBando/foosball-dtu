@@ -5,9 +5,22 @@ import type { Match } from '../../types';
 interface MatchHistoryListProps {
     matches: Match[];
     currentPlayerId?: number;
+    onAcceptMatch?: (matchId: number) => void;
+    onRejectMatch?: (matchId: number) => void;
+    showPendingActions?: boolean;
+    headerTitle?: string;
+    showHeader?: boolean;
 }
 
-const MatchHistoryList: React.FC<MatchHistoryListProps> = ({ matches, currentPlayerId }) => {
+const MatchHistoryList: React.FC<MatchHistoryListProps> = ({ 
+    matches, 
+    currentPlayerId,
+    onAcceptMatch,
+    onRejectMatch,
+    showPendingActions = false,
+    headerTitle = "Match History",
+    showHeader = true
+}) => {
     const navigate = useNavigate();
 
     const formatDate = (dateString: string | null) => {
@@ -53,14 +66,45 @@ const MatchHistoryList: React.FC<MatchHistoryListProps> = ({ matches, currentPla
         return null;
     };
 
+    const currentPlayerNeedsToRespond = (match: Match): boolean => {
+        if (!currentPlayerId || !showPendingActions) return false;
+        if (match.status !== 'pending') return false;
+        
+        if (match.t1_gk?.id === currentPlayerId && match.t1_gk_status === 'pending') return true;
+        if (match.t1_st?.id === currentPlayerId && match.t1_st_status === 'pending') return true;
+        if (match.t2_gk?.id === currentPlayerId && match.t2_gk_status === 'pending') return true;
+        if (match.t2_st?.id === currentPlayerId && match.t2_st_status === 'pending') return true;
+        
+        return false;
+    };
+
+    const getCurrentPlayerStatus = (match: Match): string => {
+        if (!currentPlayerId) return 'pending';
+        
+        if (match.t1_gk?.id === currentPlayerId) return match.t1_gk_status;
+        if (match.t1_st?.id === currentPlayerId) return match.t1_st_status;
+        if (match.t2_gk?.id === currentPlayerId) return match.t2_gk_status;
+        if (match.t2_st?.id === currentPlayerId) return match.t2_st_status;
+        
+        return 'pending';
+    };
+
     return (
         <div className="w-full space-y-3 pb-4">
-            <div className="bg-primary text-white p-6 -mx-4 -mt-4 mb-6 relative overflow-hidden">
-                <h2 className="text-2xl font-bold relative z-10">Match History</h2>
-                <p className="text-white/80 relative z-10">{matches.length} matches played</p>
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-8 -mt-8 blur-2xl"></div>
-                <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-8 -mb-8 blur-xl"></div>
-            </div>
+            {showHeader && (
+                <div className="bg-primary text-white p-6 -mx-4 -mt-4 mb-6 relative overflow-hidden">
+                    <h2 className="text-2xl font-bold relative z-10">{headerTitle}</h2>
+                    <p className="text-white/80 relative z-10">{matches.length} {showPendingActions ? 'pending matches' : 'matches played'}</p>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-8 -mt-8 blur-2xl"></div>
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-8 -mb-8 blur-xl"></div>
+                </div>
+            )}
+
+            {matches.length === 0 && showPendingActions && (
+                <div className="text-center py-8 text-gray-500">
+                    No pending matches
+                </div>
+            )}
 
             {matches.map((match) => {
                 const result = getMatchResult(match);
@@ -86,7 +130,7 @@ const MatchHistoryList: React.FC<MatchHistoryListProps> = ({ matches, currentPla
               `}>
                                 {won && 'W'}
                                 {loss && 'L'}
-                                {isPending && '?'}
+                                {isPending && '⏳'}
                             </div>
 
                             <div>
@@ -99,12 +143,49 @@ const MatchHistoryList: React.FC<MatchHistoryListProps> = ({ matches, currentPla
                             </div>
                         </div>
 
-                        <div className="text-right">
-                            {isPending ? (
+                        <div className="text-right flex items-center justify-end">
+                            {isPending && currentPlayerNeedsToRespond(match) && onAcceptMatch && onRejectMatch ? (
+                                // Show Accept/Reject buttons when player needs to respond
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (match.id) onAcceptMatch(match.id);
+                                        }}
+                                        className="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white text-xs font-semibold rounded-lg transition-colors active:scale-95"
+                                    >
+                                        Accept
+                                    </button>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (match.id) onRejectMatch(match.id);
+                                        }}
+                                        className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg transition-colors active:scale-95"
+                                    >
+                                        Reject
+                                    </button>
+                                </div>
+                            ) : isPending && showPendingActions ? (
+                                // Show status badge when player has already responded
+                                <span className={`text-xs font-semibold px-3 py-1.5 rounded-lg ${
+                                    getCurrentPlayerStatus(match) === 'accepted' 
+                                        ? 'bg-green-100 text-green-700' 
+                                        : getCurrentPlayerStatus(match) === 'rejected'
+                                        ? 'bg-red-100 text-red-700'
+                                        : 'bg-gray-100 text-gray-600'
+                                }`}>
+                                    {getCurrentPlayerStatus(match) === 'accepted' && '✓ Accepted'}
+                                    {getCurrentPlayerStatus(match) === 'rejected' && '✕ Rejected'}
+                                    {getCurrentPlayerStatus(match) === 'pending' && 'Pending'}
+                                </span>
+                            ) : isPending ? (
+                                // Default pending badge (for history page - shouldn't show since we filter)
                                 <span className="text-xs font-semibold bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
                                     Pending
                                 </span>
                             ) : (
+                                // Completed match - show score and ELO change
                                 <>
                                     <div className="text-lg font-bold text-gray-900">
                                         {match.t1_score} - {match.t2_score}
