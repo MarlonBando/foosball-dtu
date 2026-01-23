@@ -4,12 +4,12 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
-  backdrop-filter: blur(5px); /* Blurry background effect */
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Ensure it's on top of other content */
+  z-index: 1000;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
 }
@@ -19,81 +19,239 @@
 }
 
 .player-selection-modal-content {
-  background-color: #fff;
-  border-radius: 10px;
-  padding: 20px;
-  width: 90%; /* 90% of screen width */
-  max-width: 600px; /* Max width for larger screens */
-  height: 90%; /* 90% of screen height */
-  max-height: 700px; /* Max height for larger screens */
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 0;
+  width: 90%;
+  max-width: 500px;
+  height: 85%;
+  max-height: 650px;
   display: flex;
   flex-direction: column;
   position: relative;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  transform: scale(0.9);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  border: 1px solid #e0e0e0;
+  transform: scale(0.95);
   transition: transform 0.3s ease-in-out;
+  overflow: hidden;
 }
 
 .player-selection-modal-overlay.open .player-selection-modal-content {
   transform: scale(1);
 }
 
+.player-selection-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 2px solid #e8e8e8;
+  background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
+}
+
+.player-selection-modal-title-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.player-selection-modal-icon {
+  color: #c8102e;
+  flex-shrink: 0;
+}
+
+.player-selection-modal-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
 .player-selection-modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
   background: none;
   border: none;
-  font-size: 24px;
   cursor: pointer;
-  color: #c8102e; /* DTU Red */
-  font-weight: bold;
+  color: #666;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.player-selection-modal-close:hover {
+  background-color: #fee;
+  color: #c8102e;
+}
+
+.player-selection-modal-search-container {
+  position: relative;
+  padding: 1.25rem 1.5rem 1rem;
+}
+
+.player-selection-modal-search-icon {
+  position: absolute;
+  left: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  pointer-events: none;
 }
 
 .player-selection-modal-search {
-  width: calc(100% - 20px);
-  padding: 10px;
-  margin-bottom: 15px;
+  width: 100%;
+  padding: 14px 18px 14px 48px;
+  padding-right: 45px;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 8px;
   font-size: 16px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  background-color: #fafafa;
+}
+
+.player-selection-modal-search:focus {
+  border-color: #c8102e;
+  box-shadow: 0 0 0 4px rgba(200, 16, 46, 0.1);
+  outline: none;
+  background-color: #fff;
+}
+
+.player-selection-modal-clear {
+  position: absolute;
+  right: 1.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.player-selection-modal-clear:hover {
+  background-color: #fee;
+  color: #c8102e;
 }
 
 .player-selection-modal-list {
   flex-grow: 1;
   overflow-y: auto;
-  border-top: 1px solid #eee;
-  padding-top: 10px;
+  padding: 0.5rem 1.5rem 1.5rem;
 }
 
 .player-selection-modal-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 15px;
-  margin-bottom: 5px;
-  background-color: #f9f9f9;
-  border-radius: 5px;
+  padding: 0.875rem 1rem;
+  margin-bottom: 0.625rem;
+  background-color: #fafafa;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .player-selection-modal-item:hover {
-  background-color: #e0e0e0;
+  background-color: #fff;
+  border-color: #c8102e;
+  box-shadow: 0 3px 12px rgba(200, 16, 46, 0.12);
+  transform: translateY(-2px);
 }
 
-.player-selection-modal-item-username {
-  font-weight: bold;
+.player-selection-modal-player-card {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.player-selection-modal-player-flag {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.player-selection-modal-player-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.player-selection-modal-player-username {
+  font-weight: 600;
   color: #333;
+  font-size: 1.125rem;
+  line-height: 1.2;
 }
 
 .player-selection-modal-item-elo {
-  color: #004a94; /* DTU Blue */
-  font-weight: bold;
+  color: white;
+  font-weight: 700;
+  font-size: 1.125rem;
+  background-color: #333;
+  padding: 0.5rem 1rem;
+  border-radius: 15px;
+  min-width: 60px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.player-selection-modal-loading {
+  text-align: center;
+  color: #666;
+  padding: 3rem 1rem;
+  font-size: 1rem;
 }
 
 .player-selection-modal-no-results {
   text-align: center;
-  color: #777;
-  margin-top: 20px;
+  color: #999;
+  padding: 3rem 1rem;
+  font-size: 1rem;
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .player-selection-modal-content {
+    width: 95%;
+    height: 90%;
+    border-radius: 10px;
+  }
+
+  .player-selection-modal-header {
+    padding: 1rem 1.25rem;
+  }
+
+  .player-selection-modal-title {
+    font-size: 1.25rem;
+  }
+
+  .player-selection-modal-search-container {
+    padding: 1rem 1.25rem 0.75rem;
+  }
+
+  .player-selection-modal-list {
+    padding: 0.5rem 1.25rem 1.25rem;
+  }
+
+  .player-selection-modal-item {
+    padding: 0.875rem 1rem;
+  }
 }

@@ -19,6 +19,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({
 }) => {
     const location = useLocation();
     const shouldShowNav = !['/login', '/signup'].includes(location.pathname);
+    const shouldShowCreateButton = shouldShowNav && !location.pathname.startsWith('/match');
 
     return (
         <div className="min-h-screen relative pb-32">
@@ -30,7 +31,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({
             </div>
             {shouldShowNav && (
                 <>
-                    <CreateMatchButton />
+                    {shouldShowCreateButton && <CreateMatchButton />}
                     <BottomNav />
                 </>
             )}
