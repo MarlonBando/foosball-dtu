@@ -55,7 +55,9 @@ function convertApiMatchToUiMatch(apiMatch: ApiMatchDetail): Match {
       elo: t1_gk.current_elo,
       wins: t1_gk.wins,
       losses: t1_gk.losses,
-      created_at: apiMatch.created_at
+      created_at: apiMatch.created_at,
+      elo_old: t1_gk.elo_old,
+      elo_new: t1_gk.elo_new
     } : null,
     t1_st: t1_st ? {
       id: t1_st.player_id,
@@ -66,7 +68,9 @@ function convertApiMatchToUiMatch(apiMatch: ApiMatchDetail): Match {
       elo: t1_st.current_elo,
       wins: t1_st.wins,
       losses: t1_st.losses,
-      created_at: apiMatch.created_at
+      created_at: apiMatch.created_at,
+      elo_old: t1_st.elo_old,
+      elo_new: t1_st.elo_new
     } : null,
     t2_gk: t2_gk ? {
       id: t2_gk.player_id,
@@ -77,7 +81,9 @@ function convertApiMatchToUiMatch(apiMatch: ApiMatchDetail): Match {
       elo: t2_gk.current_elo,
       wins: t2_gk.wins,
       losses: t2_gk.losses,
-      created_at: apiMatch.created_at
+      created_at: apiMatch.created_at,
+      elo_old: t2_gk.elo_old,
+      elo_new: t2_gk.elo_new
     } : null,
     t2_st: t2_st ? {
       id: t2_st.player_id,
@@ -88,7 +94,9 @@ function convertApiMatchToUiMatch(apiMatch: ApiMatchDetail): Match {
       elo: t2_st.current_elo,
       wins: t2_st.wins,
       losses: t2_st.losses,
-      created_at: apiMatch.created_at
+      created_at: apiMatch.created_at,
+      elo_old: t2_st.elo_old,
+      elo_new: t2_st.elo_new
     } : null,
     table: 1,
     t1_score: apiMatch.t1_score,
