@@ -19,8 +19,6 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ t1_score, t2_score, onScoreChan
   useEffect(() => {
     if (!activeTeam || readOnly) return;
 
-    let timeoutId: NodeJS.Timeout;
-
     const handleKeyPress = (e: KeyboardEvent) => {
       const key = e.key;
       
@@ -29,33 +27,9 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ t1_score, t2_score, onScoreChan
         const newBuffer = inputBuffer + key;
         const potentialScore = parseInt(newBuffer);
         
-        // Clear any existing timeout
-        if (timeoutId) clearTimeout(timeoutId);
-        
-        // If it's a single digit
+        // If it's a single digit, just store it
         if (newBuffer.length === 1) {
           setInputBuffer(newBuffer);
-          
-          // Set a timeout to auto-confirm after 500ms
-          timeoutId = setTimeout(() => {
-            const score = parseInt(newBuffer);
-            if (score >= 0 && score <= 10) {
-              const currentScore = activeTeam === 't1' ? t1_score : t2_score;
-              const delta = score - currentScore;
-              
-              if (delta > 0) {
-                for (let i = 0; i < delta; i++) {
-                  onScoreChange(activeTeam, 1);
-                }
-              } else if (delta < 0) {
-                for (let i = 0; i < Math.abs(delta); i++) {
-                  onScoreChange(activeTeam, -1);
-                }
-              }
-            }
-            setInputBuffer('');
-            setActiveTeam(null);
-          }, 500);
         } else if (newBuffer.length === 2) {
           // Two digits entered - only accept if it's "10"
           if (potentialScore === 10) {
@@ -77,8 +51,6 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ t1_score, t2_score, onScoreChan
         }
       } else if (key === 'Enter') {
         // Enter immediately confirms current input
-        if (timeoutId) clearTimeout(timeoutId);
-        
         if (inputBuffer.length >= 1) {
           const newScore = parseInt(inputBuffer);
           if (newScore >= 0 && newScore <= 10) {
@@ -99,7 +71,6 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ t1_score, t2_score, onScoreChan
         setInputBuffer('');
         setActiveTeam(null);
       } else if (key === 'Escape') {
-        if (timeoutId) clearTimeout(timeoutId);
         setInputBuffer('');
         setActiveTeam(null);
       }
@@ -108,7 +79,6 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ t1_score, t2_score, onScoreChan
     window.addEventListener('keydown', handleKeyPress);
     return () => {
       window.removeEventListener('keydown', handleKeyPress);
-      if (timeoutId) clearTimeout(timeoutId);
     };
   }, [activeTeam, t1_score, t2_score, onScoreChange, readOnly, inputBuffer]);
 

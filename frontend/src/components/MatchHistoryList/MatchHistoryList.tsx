@@ -186,18 +186,18 @@ const MatchHistoryList: React.FC<MatchHistoryListProps> = ({
                                 </span>
                             ) : (
                                 // Completed match - show score and ELO change
-                                <>
+                                <div className="flex flex-col items-end gap-0.5">
                                     <div className="text-lg font-bold text-gray-900">
                                         {match.t1_score} - {match.t2_score}
                                     </div>
                                     {eloChange !== undefined && eloChange !== null && (
-                                        <div className={`text-xs font-bold mt-1 ${eloChange > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                        <div className={`text-xs font-bold ${eloChange > 0 ? 'text-green-500' : 'text-red-500'}`}>
                                             {eloChange > 0 && <span className="mr-0.5">↗</span>}
                                             {eloChange < 0 && <span className="mr-0.5">↘</span>}
                                             {eloChangeText}
                                         </div>
                                     )}
-                                </>
+                                </div>
                             )}
                         </div>
                     </div>
