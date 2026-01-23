@@ -60,6 +60,26 @@ const Player: React.FC<PlayerProps> = ({ player, status, playerStatus, isCurrent
     }
   };
 
+  const renderEloInfo = () => {
+    if (!player || status !== MATCH_STATUS.COMPLETED || 
+        player.elo_old === undefined || player.elo_new === undefined) {
+      return null;
+    }
+
+    const eloChange = player.elo_new - player.elo_old;
+    const changeColor = eloChange > 0 ? '#10b981' : 
+                        eloChange < 0 ? '#ef4444' : '#6b7280';
+
+    return (
+      <div className="player-elo">
+        <span className="elo-old">{player.elo_old}</span>
+        <span className="elo-change" style={{ color: changeColor }}>
+          {eloChange > 0 ? '+' : ''}{eloChange}
+        </span>
+      </div>
+    );
+  };
+
   if (!player) {
     return (
       <div className="player-container" onClick={readOnly ? undefined : onClick}>
@@ -76,6 +96,7 @@ const Player: React.FC<PlayerProps> = ({ player, status, playerStatus, isCurrent
       <div className="player-name">
         {player.username}
       </div>
+      {renderEloInfo()}
       <div className="player-status">
         {renderStatus()}
       </div>

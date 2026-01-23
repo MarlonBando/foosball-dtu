@@ -11,7 +11,8 @@
 }
 
 .login-logo {
-  margin-bottom: 25px;
+  margin: 0 auto 25px;
+  display: block;
 }
 
 .login-title {
