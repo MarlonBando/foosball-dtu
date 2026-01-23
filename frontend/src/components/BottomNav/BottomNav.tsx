@@ -25,16 +25,16 @@ const BottomNav: React.FC = () => {
             path: '/home',
         },
         {
-            id: 'leaderboard',
-            label: 'Leaderboard',
-            icon: Trophy,
-            path: '/leaderboard',
-        },
-        {
             id: 'profile',
             label: 'Profile',
             icon: User,
             path: '/profile',
+        },
+        {
+            id: 'leaderboard',
+            label: 'Leaderboard',
+            icon: Trophy,
+            path: '/leaderboard',
         },
     ];
 

@@ -20,7 +20,7 @@ const LoginPage: React.FC = () => {
 
     try {
       await signIn(email, password);
-      navigate('/home');
+      navigate('/profile');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to sign in');
     } finally {
