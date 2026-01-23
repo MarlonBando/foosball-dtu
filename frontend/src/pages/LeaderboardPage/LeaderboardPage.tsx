@@ -35,7 +35,7 @@ const LeaderboardPage: React.FC = () => {
 
     return (
         <PageLayout variant="full">
-            <div className="p-4 pb-24 max-w-lg mx-auto">
+            <div className="p-4 pb-24">
                 <div className="bg-gradient-to-br from-primary-hover via-primary to-slate-900 text-white p-8 rounded-b-3xl -mx-4 -mt-4 mb-8 shadow-2xl relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
                     <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/10 rounded-full -ml-16 -mb-16 blur-3xl"></div>
@@ -112,7 +112,7 @@ const LeaderboardPage: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 max-w-4xl mx-auto">
                     {rest.map((player, index) => {
                         const isCurrentUser = player.id === playerId;
                         const rank = index + 4;
