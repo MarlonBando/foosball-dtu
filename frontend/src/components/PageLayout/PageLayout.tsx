@@ -22,7 +22,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({
     const shouldShowCreateButton = shouldShowNav && !location.pathname.startsWith('/match');
 
     return (
-        <div className="min-h-screen relative pb-32">
+        <div className="page-layout-root">
             <div
                 className={`page-layout page-layout--${variant} ${className}`}
                 style={{ backgroundColor }}
