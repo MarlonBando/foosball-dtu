@@ -7,7 +7,7 @@ import './SignupPage.css';
 import Logo from '../../components/Logo/Logo';
 import PageLayout from '../../components/PageLayout/PageLayout';
 import Toast from '../../components/Toast/Toast';
-import BetaWarningModal from '../../components/BetaWarningModal/BetaWarningModal';
+import TermsModal from '../../components/TermsModal/TermsModal';
 
 const SignupPage: React.FC = () => {
   const [password, setPassword] = useState('');
@@ -15,7 +15,7 @@ const SignupPage: React.FC = () => {
   const [nationality, setNationality] = useState('');
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
-  const [showBetaModal, setShowBetaModal] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
   const navigate = useNavigate();
 
   // Use React Query hooks
@@ -23,15 +23,15 @@ const SignupPage: React.FC = () => {
   const addPlayerMutation = useAddPlayer();
 
   useEffect(() => {
-    const hasSeenBetaWarning = localStorage.getItem('hasSeenBetaWarning');
-    if (!hasSeenBetaWarning) {
-      setShowBetaModal(true);
+    const hasAcceptedTerms = localStorage.getItem('hasAcceptedTerms');
+    if (!hasAcceptedTerms) {
+      setShowTermsModal(true);
     }
   }, []);
 
-  const handleCloseBetaModal = () => {
-    setShowBetaModal(false);
-    localStorage.setItem('hasSeenBetaWarning', 'true');
+  const handleAcceptTerms = () => {
+    setShowTermsModal(false);
+    localStorage.setItem('hasAcceptedTerms', 'true');
   };
 
 
@@ -40,6 +40,11 @@ const SignupPage: React.FC = () => {
     setLoading(true);
 
     try {
+      // Validate username doesn't contain @ character
+      if (username.includes('@')) {
+        throw new Error('Username cannot contain @ character');
+      }
+
       // Generate email from username
       const email = `${username}@foosballdtu.bando`;
       
@@ -87,7 +92,7 @@ const SignupPage: React.FC = () => {
 
   return (
     <PageLayout variant="centered" backgroundColor="#f0f2f5">
-      {showBetaModal && <BetaWarningModal onClose={handleCloseBetaModal} />}
+      {showTermsModal && <TermsModal onAccept={handleAcceptTerms} />}
       {toast && (
         <Toast
           message={toast.message}
@@ -106,6 +111,8 @@ const SignupPage: React.FC = () => {
             onChange={(e) => setUsername(e.target.value)}
             className="signup-input"
             required
+            pattern="[^@]*"
+            title="Username cannot contain @ character"
           />
           <input
             type="password"
