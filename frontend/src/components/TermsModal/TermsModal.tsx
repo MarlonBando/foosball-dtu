@@ -12,7 +12,7 @@ const TermsModal: React.FC<TermsModalProps> = ({ onAccept }) => {
     <div className="terms-modal-overlay">
       <div className="terms-modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="terms-modal-header">
-          <div className="terms-icon">🏓⚖️</div>
+          <div className="terms-icon">⚖️</div>
           <h2 className="terms-modal-title">Terms & Conditions</h2>
         </div>
 
@@ -42,7 +42,7 @@ const TermsModal: React.FC<TermsModalProps> = ({ onAccept }) => {
               <span className="terms-emoji">🛡️</span>
               <span className="terms-text">
                 <strong>Privacy & GDPR</strong>
-                Your data is protected and used solely for this application. You can request data deletion at any time by contacting us.
+                Your data is protected and used solely for this application. You can request data deletion at any time by contacting Bando.
               </span>
             </div>
 
@@ -84,12 +84,12 @@ const TermsModal: React.FC<TermsModalProps> = ({ onAccept }) => {
           </div>
         </div>
 
-        <button 
-          className="terms-modal-button" 
+        <button
+          className="terms-modal-button"
           onClick={onAccept}
           disabled={!agreedToTerms}
         >
-          {agreedToTerms ? "Let's Play! 🏓" : "Please accept the terms to continue"}
+          {agreedToTerms ? "Let me cook!👨‍🍳 " : "Please accept the terms to continue"}
         </button>
       </div>
     </div>
