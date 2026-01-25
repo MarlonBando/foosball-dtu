@@ -8,7 +8,7 @@
   backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   z-index: 1000;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
@@ -26,7 +26,7 @@
   max-width: 500px;
   height: auto;
   max-height: 80vh;
-  margin: 2rem;
+  margin: 2rem 2rem auto 2rem;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -195,22 +195,23 @@
   flex-direction: column;
   gap: 0.25rem;
   min-width: 0;
+  overflow: hidden;
+  flex: 1;
 }
 
 .player-selection-modal-player-username {
   font-weight: 600;
   color: #333;
-  font-size: 1.125rem;
+  font-size: 1rem;
   line-height: 1.2;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
+  display: inline-block;
 }
 
 .player-selection-modal-item-elo {
   color: white;
   font-weight: 700;
-  font-size: 1.125rem;
+  font-size: 1rem;
   background-color: #333;
   padding: 0.5rem 1rem;
   border-radius: 15px;
@@ -239,7 +240,7 @@
   .player-selection-modal-content {
     width: 95%;
     max-height: 85vh;
-    margin: 1.5rem;
+    margin: 1.5rem 1.5rem auto 1.5rem;
     border-radius: 10px;
   }
 
@@ -262,4 +263,21 @@
   .player-selection-modal-item {
     padding: 0.875rem 1rem;
   }
+}
+
+/* Sliding animation for long usernames */
+@keyframes slide-username {
+  0%, 20% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(calc(150px - 100%));
+  }
+  70%, 100% {
+    transform: translateX(0);
+  }
+}
+
+.player-selection-modal-item:hover .player-selection-modal-player-username {
+  animation: slide-username 8s ease-in-out infinite;
 }
