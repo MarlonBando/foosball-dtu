@@ -32,7 +32,14 @@
 }
 
 .player.empty {
-  background-color: #a0a0a0; /* Grey for empty slot */
+  background-color: #c8102e; /* DTU Red - same as scoreboard */
+}
+
+.position-label {
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  line-height: 1;
 }
 
 .player-initial {

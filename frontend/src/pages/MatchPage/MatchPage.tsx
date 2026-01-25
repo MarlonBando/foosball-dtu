@@ -298,6 +298,7 @@ const MatchPage: React.FC = () => {
             <div className="team team-left">
               <Player
                 player={match.t1_gk}
+                position="GK"
                 status={match.status}
                 playerStatus={match.t1_gk_status}
                 isCurrentUser={match.t1_gk?.id === currentUserId}
@@ -310,6 +311,7 @@ const MatchPage: React.FC = () => {
               />
               <Player
                 player={match.t1_st}
+                position="ST"
                 status={match.status}
                 playerStatus={match.t1_st_status}
                 isCurrentUser={match.t1_st?.id === currentUserId}
@@ -324,6 +326,7 @@ const MatchPage: React.FC = () => {
             <div className="team team-right">
               <Player
                 player={match.t2_gk}
+                position="GK"
                 status={match.status}
                 playerStatus={match.t2_gk_status}
                 isCurrentUser={match.t2_gk?.id === currentUserId}
@@ -336,6 +339,7 @@ const MatchPage: React.FC = () => {
               />
               <Player
                 player={match.t2_st}
+                position="ST"
                 status={match.status}
                 playerStatus={match.t2_st_status}
                 isCurrentUser={match.t2_st?.id === currentUserId}

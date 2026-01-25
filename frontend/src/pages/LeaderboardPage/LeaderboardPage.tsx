@@ -4,6 +4,7 @@ import { useAllPlayers } from '../../hooks/useAllPlayers';
 import PageLayout from '../../components/PageLayout/PageLayout';
 import Spinner from '../../components/Spinner/Spinner';
 import { Trophy, Crown } from 'lucide-react';
+import { getNationalityFlag } from '../../utils/nationality';
 
 const LeaderboardPage: React.FC = () => {
     const { playerId } = useAuth();
@@ -34,9 +35,9 @@ const LeaderboardPage: React.FC = () => {
         <PageLayout variant="full" backgroundColor="#ffffff">
             <div className="p-4 pb-24">
                 {/* Podium Banner - Always Visible */}
-                <div className="bg-gradient-to-br from-primary-hover via-primary to-slate-900 text-white p-8 rounded-b-3xl -mx-4 -mt-4 mb-8 shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-                    <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/10 rounded-full -ml-16 -mb-16 blur-3xl"></div>
+                <div className="bg-primary text-white p-8 rounded-b-3xl -mx-4 -mt-4 mb-8 shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-8 -mt-8 blur-2xl"></div>
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-8 -mb-8 blur-xl"></div>
 
                     <h1 className="text-2xl font-bold text-center mb-8 relative z-10 flex items-center justify-center gap-2">
                         <Trophy className="text-yellow-400" /> Leaderboard
@@ -230,6 +231,7 @@ const LeaderboardPage: React.FC = () => {
                                             </div>
                                             <div className="min-w-0 flex-1">
                                                 <div className="flex items-center gap-2">
+                                                    <span className="flex-shrink-0">{getNationalityFlag(player.nationality)}</span>
                                                     <h3 className={`font-bold truncate ${isCurrentUser ? 'text-primary' : 'text-gray-900'}`}>
                                                         {player.username}
                                                     </h3>

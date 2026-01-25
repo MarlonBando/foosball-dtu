@@ -6,6 +6,7 @@ import { MATCH_STATUS, PLAYER_STATUS } from '../../types';
 
 interface PlayerProps {
   player: PlayerType | null;
+  position?: 'GK' | 'ST';
   status: MatchStatus;
   playerStatus: PlayerStatus;
   isCurrentUser: boolean;
@@ -17,7 +18,7 @@ interface PlayerProps {
   actionType?: 'accept' | 'reject' | null;
 }
 
-const Player: React.FC<PlayerProps> = ({ player, status, playerStatus, isCurrentUser, onAccept, onReject, onClick, readOnly, isLoading = false, actionType = null }) => {
+const Player: React.FC<PlayerProps> = ({ player, position, status, playerStatus, isCurrentUser, onAccept, onReject, onClick, readOnly, isLoading = false, actionType = null }) => {
   const renderStatus = () => {
     switch (status) {
       case MATCH_STATUS.COMPLETED:
@@ -83,7 +84,9 @@ const Player: React.FC<PlayerProps> = ({ player, status, playerStatus, isCurrent
   if (!player) {
     return (
       <div className="player-container" onClick={readOnly ? undefined : onClick}>
-        <div className="player empty"></div>
+        <div className="player empty">
+          {position && <span className="position-label">{position}</span>}
+        </div>
       </div>
     );
   }
