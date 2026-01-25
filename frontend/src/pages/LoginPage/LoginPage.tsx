@@ -22,7 +22,7 @@ const LoginPage: React.FC = () => {
       // Generate email from username
       const email = `${username}@foosballdtu.bando`;
       await signIn(email, password);
-      navigate('/home');
+      navigate('/profile');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to sign in');
     } finally {

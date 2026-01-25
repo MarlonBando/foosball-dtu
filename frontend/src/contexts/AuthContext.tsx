@@ -1,6 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
+import { getAllPlayers, getCurrentPlayer } from '../api/services/playerService';
+import { getPlayerMatches, getMatchDetails } from '../api/services/matchService';
+import { getAllNationalities } from '../api/services/nationalityService';
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || '/api';
 
@@ -29,6 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [playerId, setPlayerId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     // Get initial session
@@ -95,6 +100,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Prefetch all data when playerId is available
+  useEffect(() => {
+    if (playerId) {
+      // Prefetch all data in parallel
+      queryClient.prefetchQuery({
+        queryKey: ['players'],
+        queryFn: getAllPlayers,
+      });
+
+      queryClient.prefetchQuery({
+        queryKey: ['currentPlayer'],
+        queryFn: getCurrentPlayer,
+      });
+
+      queryClient.prefetchQuery({
+        queryKey: ['matches', playerId],
+        queryFn: async () => {
+          const matches = await getPlayerMatches(playerId);
+          const detailsPromises = matches.map(m => getMatchDetails(m.id));
+          return await Promise.all(detailsPromises);
+        },
+      });
+
+      queryClient.prefetchQuery({
+        queryKey: ['nationalities'],
+        queryFn: getAllNationalities,
+      });
+    }
+  }, [playerId, queryClient]);
 
   const signUp = async (email: string, password: string, metadata: UserMetadata) => {
     const { error } = await supabase.auth.signUp({

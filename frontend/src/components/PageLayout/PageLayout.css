@@ -1,9 +1,17 @@
+.page-layout-root {
+    min-height: 100vh;      /* fallback */
+    min-height: 100svh;     /* iOS Safari 16+ */
+    min-height: 100dvh;     /* modern browsers */
+    position: relative;
+    padding-bottom: 8rem;   /* space for nav + create button */
+}
+
 .page-layout {
     display: flex;
-    min-height: calc(100vh - 60px);
     width: 100%;
     font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     scrollbar-gutter: stable;
+    flex: 1;
 }
 
 .page-layout--centered {
@@ -18,20 +26,12 @@
 
 /* Mobile optimization */
 @media (max-width: 768px) {
-    .page-layout {
-        min-height: calc(100vh - 76px);
-    }
-
     .page-layout--centered {
         padding: 0.75rem;
     }
 }
 
 @media (max-width: 480px) {
-    .page-layout {
-        min-height: calc(100vh - 64px);
-    }
-
     .page-layout--centered {
         padding: 0.5rem;
     }

@@ -6,6 +6,7 @@ import { MATCH_STATUS, PLAYER_STATUS } from '../../types';
 
 interface PlayerProps {
   player: PlayerType | null;
+  position?: 'GK' | 'ST';
   status: MatchStatus;
   playerStatus: PlayerStatus;
   isCurrentUser: boolean;
@@ -17,7 +18,7 @@ interface PlayerProps {
   actionType?: 'accept' | 'reject' | null;
 }
 
-const Player: React.FC<PlayerProps> = ({ player, status, playerStatus, isCurrentUser, onAccept, onReject, onClick, readOnly, isLoading = false, actionType = null }) => {
+const Player: React.FC<PlayerProps> = ({ player, position, status, playerStatus, isCurrentUser, onAccept, onReject, onClick, readOnly, isLoading = false, actionType = null }) => {
   const renderStatus = () => {
     switch (status) {
       case MATCH_STATUS.COMPLETED:
@@ -60,10 +61,32 @@ const Player: React.FC<PlayerProps> = ({ player, status, playerStatus, isCurrent
     }
   };
 
+  const renderEloInfo = () => {
+    if (!player || status !== MATCH_STATUS.COMPLETED || 
+        player.elo_old === undefined || player.elo_new === undefined) {
+      return null;
+    }
+
+    const eloChange = player.elo_new - player.elo_old;
+    const changeColor = eloChange > 0 ? '#10b981' : 
+                        eloChange < 0 ? '#ef4444' : '#6b7280';
+
+    return (
+      <div className="player-elo">
+        <span className="elo-old">{player.elo_old}</span>
+        <span className="elo-change" style={{ color: changeColor }}>
+          {eloChange > 0 ? '+' : ''}{eloChange}
+        </span>
+      </div>
+    );
+  };
+
   if (!player) {
     return (
       <div className="player-container" onClick={readOnly ? undefined : onClick}>
-        <div className="player empty"></div>
+        <div className="player empty">
+          {position && <span className="position-label">{position}</span>}
+        </div>
       </div>
     );
   }
@@ -76,6 +99,7 @@ const Player: React.FC<PlayerProps> = ({ player, status, playerStatus, isCurrent
       <div className="player-name">
         {player.username}
       </div>
+      {renderEloInfo()}
       <div className="player-status">
         {renderStatus()}
       </div>

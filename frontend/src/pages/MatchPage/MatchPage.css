@@ -47,33 +47,38 @@
 .register-match-button {
   margin-top: 20px;
   padding: 12px 24px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   color: #ffffff;
-  background-color: #c8102e;
-  border: none;
-  border-radius: 8px;
+  background-color: #990000; /* bg-primary */
+  border: 4px solid rgba(255, 255, 255, 0.5);
+  border-radius: 9999px; /* fully rounded */
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease-out;
   min-width: 44px;
   min-height: 44px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.register-match-button:hover {
-  background-color: #a20f26;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.register-match-button:active {
+  box-shadow: 0 8px 24px rgba(153, 0, 0, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   transform: translateY(0);
+}
+
+.register-match-button:hover:not(:disabled) {
+  background-color: #7a0000; /* bg-primary-hover */
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(153, 0, 0, 0.4);
+}
+
+.register-match-button:active:not(:disabled) {
+  background-color: #b30000; /* bg-primary-light */
+  transform: scale(0.95);
 }
 
 .register-match-button:disabled {
   background-color: #999;
   cursor: not-allowed;
   transform: none;
+  opacity: 0.6;
 }
 
 /* Tablet optimization */

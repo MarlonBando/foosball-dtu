@@ -4,6 +4,8 @@ import MatchPage from './pages/MatchPage/MatchPage.tsx'
 import LoginPage from './pages/LoginPage/LoginPage.tsx';
 import SignupPage from './pages/SignupPage/SignupPage.tsx';
 import HomePage from './pages/HomePage/HomePage.tsx';
+import ProfilePage from './pages/ProfilePage/ProfilePage.tsx';
+import LeaderboardPage from './pages/LeaderboardPage/LeaderboardPage.tsx';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.tsx';
 
 function App() {
@@ -29,6 +31,16 @@ function App() {
       <Route path="/match/:id" element={
         <ProtectedRoute>
           <MatchPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/profile" element={
+        <ProtectedRoute>
+          <ProfilePage />
+        </ProtectedRoute>
+      } />
+      <Route path="/leaderboard" element={
+        <ProtectedRoute>
+          <LeaderboardPage />
         </ProtectedRoute>
       } />
     </Routes>

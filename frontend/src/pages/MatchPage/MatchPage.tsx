@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { getMatchDetails, registerMatch, acceptMatch, rejectMatch } from '../../api';
+import { useMatchDetails } from '../../hooks/useMatchDetails';
+import { useRegisterMatch } from '../../hooks/useMatchMutations';
+import { acceptMatch as acceptMatchApi, rejectMatch as rejectMatchApi } from '../../api';
 import type { RegisterMatchRequest, MatchDetail as ApiMatchDetail } from '../../api';
 import { MATCH_STATUS, PLAYER_STATUS } from '../../types';
 import FoosballTable from '../../components/FoosballTable/FoosballTable';
@@ -51,7 +53,9 @@ function convertApiMatchToUiMatch(apiMatch: ApiMatchDetail): Match {
       elo: t1_gk.current_elo,
       wins: t1_gk.wins,
       losses: t1_gk.losses,
-      created_at: apiMatch.created_at
+      created_at: apiMatch.created_at,
+      elo_old: t1_gk.elo_old,
+      elo_new: t1_gk.elo_new
     } : null,
     t1_st: t1_st ? {
       id: t1_st.player_id,
@@ -60,7 +64,9 @@ function convertApiMatchToUiMatch(apiMatch: ApiMatchDetail): Match {
       elo: t1_st.current_elo,
       wins: t1_st.wins,
       losses: t1_st.losses,
-      created_at: apiMatch.created_at
+      created_at: apiMatch.created_at,
+      elo_old: t1_st.elo_old,
+      elo_new: t1_st.elo_new
     } : null,
     t2_gk: t2_gk ? {
       id: t2_gk.player_id,
@@ -69,7 +75,9 @@ function convertApiMatchToUiMatch(apiMatch: ApiMatchDetail): Match {
       elo: t2_gk.current_elo,
       wins: t2_gk.wins,
       losses: t2_gk.losses,
-      created_at: apiMatch.created_at
+      created_at: apiMatch.created_at,
+      elo_old: t2_gk.elo_old,
+      elo_new: t2_gk.elo_new
     } : null,
     t2_st: t2_st ? {
       id: t2_st.player_id,
@@ -78,7 +86,9 @@ function convertApiMatchToUiMatch(apiMatch: ApiMatchDetail): Match {
       elo: t2_st.current_elo,
       wins: t2_st.wins,
       losses: t2_st.losses,
-      created_at: apiMatch.created_at
+      created_at: apiMatch.created_at,
+      elo_old: t2_st.elo_old,
+      elo_new: t2_st.elo_new
     } : null,
     table: 1,
     t1_score: apiMatch.t1_score,
@@ -100,23 +110,25 @@ const MatchPage: React.FC = () => {
   const [match, setMatch] = useState<Match>(initialMatch);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentSlot, setCurrentSlot] = useState<PlayerSlot | null>(null);
-  const [loading, setLoading] = useState(false);
   const [registering, setRegistering] = useState(false);
   const [loadingSlot, setLoadingSlot] = useState<PlayerSlot | null>(null);
   const [actionType, setActionType] = useState<'accept' | 'reject' | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
+  // Use React Query hook for existing match
+  const matchId = id ? parseInt(id) : null;
+  const { data: matchData, isPending: loading } = useMatchDetails(matchId);
+
+  // Use mutation hook for registering new match
+  const registerMutation = useRegisterMatch();
+
   useEffect(() => {
-    if (id) {
-      setLoading(true);
-      getMatchDetails(parseInt(id))
-        .then(apiMatch => setMatch(convertApiMatchToUiMatch(apiMatch)))
-        .catch(err => console.error('Failed to load match:', err))
-        .finally(() => setLoading(false));
-    } else {
+    if (matchData) {
+      setMatch(convertApiMatchToUiMatch(matchData));
+    } else if (!id) {
       setMatch(initialMatch);
     }
-  }, [id]);
+  }, [matchData, id]);
 
   const handleScoreChange = (team: 't1' | 't2', delta: 1 | -1) => {
     if (readOnly) return;
@@ -162,7 +174,7 @@ const MatchPage: React.FC = () => {
 
     setLoadingSlot(slot);
     setActionType('accept');
-    acceptMatch(match.id, player.id)
+    acceptMatchApi(match.id, player.id)
       .then(() => {
         setMatch(prevMatch => {
           const newMatch = { ...prevMatch };
@@ -194,7 +206,7 @@ const MatchPage: React.FC = () => {
 
     setLoadingSlot(slot);
     setActionType('reject');
-    rejectMatch(match.id, player.id)
+    rejectMatchApi(match.id, player.id)
       .then(() => {
         setMatch(prevMatch => {
           const newMatch = { ...prevMatch };
@@ -239,23 +251,26 @@ const MatchPage: React.FC = () => {
     };
 
     setRegistering(true);
-    registerMatch(request)
-      .then(response => {
+    registerMutation.mutate(request, {
+      onSuccess: (response) => {
         setToast({ message: `Match registered successfully! ID: ${response.id}`, type: 'success' });
         setTimeout(() => {
           navigate(`/match/${response.id}`, { state: { readOnly: true } });
         }, 1500);
-      })
-      .catch(err => {
+      },
+      onError: (err) => {
         console.error('Failed to register match:', err);
         setToast({ message: 'Failed to register match. Please try again.', type: 'error' });
-      })
-      .finally(() => setRegistering(false));
+      },
+      onSettled: () => {
+        setRegistering(false);
+      },
+    });
   };
 
   return (
     <PageLayout variant="full" backgroundColor="#ffffff">
-      {loading ? (
+      {(loading && matchId) ? (
         <div style={{ textAlign: 'center', padding: '4rem' }}>
           <Spinner size="large" />
           <p style={{ marginTop: '1rem', color: '#666' }}>Loading match...</p>
@@ -275,6 +290,7 @@ const MatchPage: React.FC = () => {
             <div className="team team-left">
               <Player
                 player={match.t1_gk}
+                position="GK"
                 status={match.status}
                 playerStatus={match.t1_gk_status}
                 isCurrentUser={match.t1_gk?.id === currentUserId}
@@ -287,6 +303,7 @@ const MatchPage: React.FC = () => {
               />
               <Player
                 player={match.t1_st}
+                position="ST"
                 status={match.status}
                 playerStatus={match.t1_st_status}
                 isCurrentUser={match.t1_st?.id === currentUserId}
@@ -301,6 +318,7 @@ const MatchPage: React.FC = () => {
             <div className="team team-right">
               <Player
                 player={match.t2_gk}
+                position="GK"
                 status={match.status}
                 playerStatus={match.t2_gk_status}
                 isCurrentUser={match.t2_gk?.id === currentUserId}
@@ -313,6 +331,7 @@ const MatchPage: React.FC = () => {
               />
               <Player
                 player={match.t2_st}
+                position="ST"
                 status={match.status}
                 playerStatus={match.t2_st_status}
                 isCurrentUser={match.t2_st?.id === currentUserId}
