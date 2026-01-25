@@ -39,8 +39,8 @@ const BottomNav: React.FC = () => {
     ];
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-2">
-            <div className="mx-auto max-w-md bg-white/90 backdrop-blur-lg rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/20 flex justify-around items-center px-2 h-16">
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-lg shadow-[0_8px_32px_rgba(0,0,0,0.12)] border-t border-white/20" style={{ position: 'fixed' }}>
+            <div className="mx-auto max-w-md flex justify-around items-center px-2 h-16">
                 {navItems.map((item) => {
                     const isActive = activeTab === item.id;
                     const Icon = item.icon;
