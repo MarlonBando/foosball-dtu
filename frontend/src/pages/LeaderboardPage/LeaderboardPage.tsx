@@ -31,7 +31,7 @@ const LeaderboardPage: React.FC = () => {
     );
 
     return (
-        <PageLayout variant="full">
+        <PageLayout variant="full" backgroundColor="#ffffff">
             <div className="p-4 pb-24">
                 {/* Podium Banner - Always Visible */}
                 <div className="bg-gradient-to-br from-primary-hover via-primary to-slate-900 text-white p-8 rounded-b-3xl -mx-4 -mt-4 mb-8 shadow-2xl relative overflow-hidden">
