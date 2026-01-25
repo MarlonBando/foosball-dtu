@@ -16,15 +16,15 @@ func GetEloDelta(elo int16, opponentElo int16, matchNumber int, score int, oppon
 
 var weightedScore = map[int]float64{
 	10: 1,    // Complete destruction
-	9:  0.9, // Dominant win
-	8:  0.8,  // Strong dominance
-	7:  0.75, // Clear win
-	6:  0.7,  // Good win
-	5:  0.68, // Solid win
-	4:  0.66, // Decent win
-	3:  0.64, // Close win
-	2:  0.62, // Narrow win
-	1:  0.6,  // Tight win
+	9:  0.95, // Dominant win
+	8:  0.9,  // Strong dominance
+	7:  0.85, // Clear win
+	6:  0.82, // Good win
+	5:  0.79, // Solid win
+	4:  0.76, // Decent win
+	3:  0.73, // Close win
+	2:  0.70, // Narrow win
+	1:  0.67, // Tight win
 }
 
 const DRAW_ACTUAL_SCORE float64 = 0.5
@@ -58,7 +58,7 @@ func getOddsToWin(elo int16, opponentElo int16) float64 {
 }
 
 const (
-	BASE_K                = 32
+	BASE_K                = 48
 	PROVISIONAL_THRESHOLD = 7  // First 7 matches are provisional
 	ESTABLISHED_THRESHOLD = 15 // After 15 matches the player is established
 )
@@ -67,9 +67,9 @@ const (
 func getK(matchNumber int) int {
 	switch {
 	case matchNumber < PROVISIONAL_THRESHOLD:
-		return BASE_K * 2
+		return BASE_K * 2.5
 	case matchNumber < ESTABLISHED_THRESHOLD:
-		return BASE_K + BASE_K/2
+		return BASE_K * 1.75
 	default:
 		// return BASE_K + BASE_K/4
 		return BASE_K
