@@ -121,7 +121,7 @@ const ProfilePage: React.FC = () => {
 
     if (!player) {
         return (
-            <PageLayout variant="full">
+            <PageLayout variant="full" backgroundColor="#ffffff">
                 <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center">
                     {loadingPlayers ? (
                         <div className="flex flex-col items-center justify-center py-12">
@@ -141,48 +141,58 @@ const ProfilePage: React.FC = () => {
         : 0;
 
     return (
-        <PageLayout variant="full">
+        <PageLayout variant="full" backgroundColor="#ffffff">
             <div className="p-4 pb-24">
-                <div className="max-w-md mx-auto mb-6 relative">
-                    {/* Logout Button - Top Right */}
-                    <button
-                        onClick={handleLogout}
-                        className="absolute top-0 right-0 text-sm text-gray-500 hover:text-red-500 
-                                   transition-colors flex items-center gap-1.5 font-medium"
-                    >
-                        <LogOut size={18} />
-                        <span>Logout</span>
-                    </button>
+                {/* Profile Header Banner - Red Background */}
+                <div className="bg-primary text-white p-8 rounded-b-3xl -mx-4 -mt-4 mb-8 shadow-2xl relative overflow-hidden">
+                    {/* Decorative blur elements */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-8 -mt-8 blur-2xl"></div>
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-8 -mb-8 blur-xl"></div>
 
-                    <div className="text-center mb-8">
-                        <div className="w-24 h-24 bg-gradient-to-br from-primary to-primary-light rounded-full mx-auto mb-4 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
-                            {player.username.substring(0, 2).toUpperCase()}
-                        </div>
-                        <h1 className="text-2xl font-bold text-gray-900">{player.name} {player.surname}</h1>
-                        <p className="text-gray-500">@{player.username}</p>
-                    </div>
+                    <div className="max-w-md mx-auto relative">
+                        {/* Logout Button - Top Right */}
+                        <button
+                            onClick={handleLogout}
+                            className="absolute top-0 right-0 text-sm text-white hover:text-white/80 
+                                       transition-colors flex items-center gap-1.5 font-medium z-10"
+                        >
+                            <LogOut size={18} />
+                            <span>Logout</span>
+                        </button>
 
-                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-6 relative overflow-hidden">
-                        <div className="relative z-10 text-center">
-                            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Current ELO</h2>
-                            <div className="text-5xl font-black text-primary tracking-tight">
-                                {player.elo}
+                        <div className="text-center mb-8 relative z-10">
+                            <div className="w-24 h-24 bg-white rounded-full mx-auto mb-4 flex items-center justify-center text-3xl font-bold text-primary shadow-lg">
+                                {player.username.substring(0, 2).toUpperCase()}
                             </div>
+                            <h1 className="text-2xl font-bold text-white">{player.name} {player.surname}</h1>
+                            <p className="text-white/80">@{player.username}</p>
                         </div>
-                    </div>
 
-                    <div className="grid grid-cols-3 gap-4">
-                        <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-center">
-                            <div className="text-2xl font-bold text-gray-900">{player.wins}</div>
-                            <div className="text-xs font-semibold text-green-500 uppercase mt-1">Wins</div>
-                        </div>
-                        <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-center">
-                            <div className="text-2xl font-bold text-gray-900">{player.losses}</div>
-                            <div className="text-xs font-semibold text-red-500 uppercase mt-1">Losses</div>
-                        </div>
-                        <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-center">
-                            <div className="text-2xl font-bold text-gray-900">{winRate}%</div>
-                            <div className="text-xs font-semibold text-blue-500 uppercase mt-1">Win Rate</div>
+                        {/* Stats Cards Section - Inside Banner */}
+                        <div className="relative z-10">
+                            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-6 relative overflow-hidden">
+                                <div className="relative z-10 text-center">
+                                    <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Current ELO</h2>
+                                    <div className="text-5xl font-black text-primary tracking-tight">
+                                        {player.elo}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-center">
+                                    <div className="text-2xl font-bold text-gray-900">{player.wins}</div>
+                                    <div className="text-xs font-semibold text-green-500 uppercase mt-1">Wins</div>
+                                </div>
+                                <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-center">
+                                    <div className="text-2xl font-bold text-gray-900">{player.losses}</div>
+                                    <div className="text-xs font-semibold text-red-500 uppercase mt-1">Losses</div>
+                                </div>
+                                <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-center">
+                                    <div className="text-2xl font-bold text-gray-900">{winRate}%</div>
+                                    <div className="text-xs font-semibold text-blue-500 uppercase mt-1">Win Rate</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useAllPlayers } from '../../hooks/useAllPlayers';
 import type { Player as PlayerType } from '../../types';
 import { Search, X, Users } from 'lucide-react';
+import { getNationalityFlag } from '../../utils/nationality';
 import './PlayerSelectionModal.css';
 
 interface PlayerSelectionModalProps {
@@ -10,66 +11,6 @@ interface PlayerSelectionModalProps {
   onSelectPlayer: (player: PlayerType) => void;
   excludePlayerIds?: number[];
 }
-
-// Helper function to get flag emoji from nationality ID
-const getNationalityFlag = (nationalityId: number): string => {
-  const flagMap: { [key: number]: string } = {
-    1: '🇮🇹', // Italy
-    2: '🇩🇰', // Denmark
-    3: '🇺🇸', // USA
-    4: '🇬🇧', // UK
-    5: '🇩🇪', // Germany
-    6: '🇫🇷', // France
-    7: '🇪🇸', // Spain
-    8: '🇵🇹', // Portugal
-    9: '🇳🇱', // Netherlands
-    10: '🇧🇪', // Belgium
-    11: '🇸🇪', // Sweden
-    12: '🇳🇴', // Norway
-    13: '🇫🇮', // Finland
-    14: '🇵🇱', // Poland
-    15: '🇨🇭', // Switzerland
-    16: '🇦🇹', // Austria
-    17: '🇬🇷', // Greece
-    18: '🇮🇪', // Ireland
-    19: '🇨🇿', // Czech Republic
-    20: '🇭🇺', // Hungary
-    21: '🇷🇴', // Romania
-    22: '🇧🇬', // Bulgaria
-    23: '🇭🇷', // Croatia
-    24: '🇷🇸', // Serbia
-    25: '🇺🇦', // Ukraine
-    26: '🇷🇺', // Russia
-    27: '🇹🇷', // Turkey
-    28: '🇮🇱', // Israel
-    29: '🇸🇦', // Saudi Arabia
-    30: '🇦🇪', // UAE
-    31: '🇮🇳', // India
-    32: '🇨🇳', // China
-    33: '🇯🇵', // Japan
-    34: '🇰🇷', // South Korea
-    35: '🇹🇭', // Thailand
-    36: '🇻🇳', // Vietnam
-    37: '🇵🇭', // Philippines
-    38: '🇮🇩', // Indonesia
-    39: '🇲🇾', // Malaysia
-    40: '🇸🇬', // Singapore
-    41: '🇦🇺', // Australia
-    42: '🇳🇿', // New Zealand
-    43: '🇿🇦', // South Africa
-    44: '🇪🇬', // Egypt
-    45: '🇳🇬', // Nigeria
-    46: '🇰🇪', // Kenya
-    47: '🇧🇷', // Brazil
-    48: '🇦🇷', // Argentina
-    49: '🇲🇽', // Mexico
-    50: '🇨🇱', // Chile
-    51: '🇨🇴', // Colombia
-    52: '🇵🇪', // Peru
-    53: '🇨🇦', // Canada
-  };
-  return flagMap[nationalityId] || '🌍';
-};
 
 const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
   isOpen,
@@ -156,7 +97,9 @@ const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
                     <div className="player-selection-modal-player-username">{player.username}</div>
                   </div>
                 </div>
-                <div className="player-selection-modal-item-elo">{player.elo}</div>
+                <div className="flex-shrink-0 inline-flex items-center justify-center px-3 py-1 rounded-full font-bold text-sm bg-primary/10 text-primary">
+                  {player.elo}
+                </div>
               </div>
             ))
           ) : (
