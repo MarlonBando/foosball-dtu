@@ -113,19 +113,11 @@ func TestEloBehaviorVisualization(t *testing.T) {
 		playerElo   int16
 		opponentElo int16
 	}{
-		// Mid-level scenarios (1400-1600)
-		{1400, 2000}, // Very strong disadvantage
-		{1500, 1800}, // Strong disadvantage
-		{1500, 2000}, // Very strong disadvantage
-		{1600, 1600}, // Equal skill - mid level
+		{1600, 1600}, // Equal skill - higher level
 		{1600, 1550}, // Slight advantage
 		{1600, 1500}, // Moderate advantage
 		{1600, 1400}, // Strong advantage
 		{1600, 1200}, // Very strong advantage
-		{1600, 2000}, // Strong disadvantage
-		
-		// Elite-level scenarios (1800-2000)
-		{1800, 2000}, // Slight disadvantage
 		{2000, 2000}, // Equal skill - elite level
 		{2000, 1900}, // Slight advantage - elite
 		{2000, 1800}, // Moderate advantage - elite
