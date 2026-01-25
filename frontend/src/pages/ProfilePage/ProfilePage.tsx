@@ -146,19 +146,20 @@ const ProfilePage: React.FC = () => {
                 {/* Profile Header Banner - Red Background */}
                 <div className="bg-primary text-white p-8 rounded-b-3xl -mx-4 -mt-4 mb-8 shadow-2xl relative overflow-hidden">
                     {/* Decorative blur elements */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-8 -mt-8 blur-2xl"></div>
-                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-8 -mb-8 blur-xl"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-8 -mt-8 blur-2xl pointer-events-none"></div>
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-8 -mb-8 blur-xl pointer-events-none"></div>
+
+                    {/* Logout Button - Top Right */}
+                    <button
+                        onClick={handleLogout}
+                        className="absolute top-4 right-4 text-sm text-white hover:text-white/80 
+                                   transition-colors flex items-center gap-1.5 font-medium z-20 cursor-pointer"
+                    >
+                        <LogOut size={18} />
+                        <span>Logout</span>
+                    </button>
 
                     <div className="max-w-md mx-auto relative">
-                        {/* Logout Button - Top Right */}
-                        <button
-                            onClick={handleLogout}
-                            className="absolute top-0 right-0 text-sm text-white hover:text-white/80 
-                                       transition-colors flex items-center gap-1.5 font-medium z-10"
-                        >
-                            <LogOut size={18} />
-                            <span>Logout</span>
-                        </button>
 
                         <div className="text-center mb-8 relative z-10">
                             <div className="w-24 h-24 bg-white rounded-full mx-auto mb-4 flex items-center justify-center text-3xl font-bold text-primary shadow-lg">
