@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useAllPlayers } from '../../hooks/useAllPlayers';
 import type { Player as PlayerType } from '../../types';
 import { Search, X, Users } from 'lucide-react';
-import { getNationalityFlag } from '../../utils/nationality';
+import PlayerRankingCard from '../PlayerRankingCard/PlayerRankingCard';
 import './PlayerSelectionModal.css';
 
 interface PlayerSelectionModalProps {
@@ -21,10 +21,16 @@ const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
 
   // Use React Query hook - data will already be cached from prefetch!
-  const { data: players = [], isPending: loading } = useAllPlayers();
+  const { data: playersData = [], isPending: loading } = useAllPlayers();
+
+  // Sort all players by ELO descending to calculate ranks
+  const sortedPlayers = useMemo(() =>
+    [...playersData].sort((a, b) => b.elo - a.elo),
+    [playersData]
+  );
 
   const filteredPlayers = useMemo(() => {
-    let filtered = players;
+    let filtered = sortedPlayers;
 
     if (searchTerm) {
       const lowercasedSearchTerm = searchTerm.toLowerCase();
@@ -37,7 +43,7 @@ const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
     }
 
     return filtered.filter(player => !excludePlayerIds.includes(player.id));
-  }, [players, searchTerm, excludePlayerIds]);
+  }, [sortedPlayers, searchTerm, excludePlayerIds]);
 
   const handlePlayerClick = (player: PlayerType) => {
     onSelectPlayer(player);
@@ -83,25 +89,19 @@ const PlayerSelectionModal: React.FC<PlayerSelectionModalProps> = ({
           {loading ? (
             <div className="player-selection-modal-loading">Loading players...</div>
           ) : filteredPlayers.length > 0 ? (
-            filteredPlayers.map((player) => (
-              <div
-                key={player.id}
-                className="player-selection-modal-item"
-                onClick={() => handlePlayerClick(player)}
-              >
-                <div className="player-selection-modal-player-card">
-                  <div className="player-selection-modal-player-flag">
-                    {getNationalityFlag(player.nationality)}
-                  </div>
-                  <div className="player-selection-modal-player-info">
-                    <div className="player-selection-modal-player-username">{player.username}</div>
-                  </div>
-                </div>
-                <div className="flex-shrink-0 inline-flex items-center justify-center px-3 py-1 rounded-full font-bold text-sm bg-primary/10 text-primary">
-                  {player.elo}
-                </div>
-              </div>
-            ))
+            filteredPlayers.map((player) => {
+              const rank = sortedPlayers.findIndex(p => p.id === player.id) + 1;
+              return (
+                <PlayerRankingCard
+                  key={player.id}
+                  player={player}
+                  rank={rank}
+                  showRank={true}
+                  showWinLoss={true}
+                  onClick={handlePlayerClick}
+                />
+              );
+            })
           ) : (
             <div className="player-selection-modal-no-results">No players found.</div>
           )}

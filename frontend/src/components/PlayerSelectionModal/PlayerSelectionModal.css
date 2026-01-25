@@ -150,62 +150,9 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0.5rem 1.5rem 1.5rem;
-}
-
-.player-selection-modal-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.875rem 1rem;
-  margin-bottom: 0.625rem;
-  background-color: #fafafa;
-  border: 1.5px solid #e8e8e8;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  max-width: 100%;
-}
-
-.player-selection-modal-item:hover {
-  background-color: #fff;
-  border-color: #c8102e;
-  box-shadow: 0 3px 12px rgba(200, 16, 46, 0.12);
-  transform: translateY(-2px);
-}
-
-.player-selection-modal-player-card {
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-}
-
-.player-selection-modal-player-flag {
-  width: 56px;
-  height: 56px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-  font-size: 2.5rem;
-  line-height: 1;
-}
-
-.player-selection-modal-player-info {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  min-width: 0;
-  overflow: hidden;
-  flex: 1;
-}
-
-.player-selection-modal-player-username {
-  font-weight: 600;
-  color: #333;
-  font-size: 1rem;
-  line-height: 1.2;
-  white-space: nowrap;
-  display: inline-block;
+  gap: 0.625rem;
 }
 
 .player-selection-modal-loading {
@@ -246,25 +193,4 @@
   .player-selection-modal-list {
     padding: 0.5rem 1.25rem 1.25rem;
   }
-
-  .player-selection-modal-item {
-    padding: 0.875rem 1rem;
-  }
-}
-
-/* Sliding animation for long usernames */
-@keyframes slide-username {
-  0%, 20% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(calc(150px - 100%));
-  }
-  70%, 100% {
-    transform: translateX(0);
-  }
-}
-
-.player-selection-modal-item:hover .player-selection-modal-player-username {
-  animation: slide-username 8s ease-in-out infinite;
 }

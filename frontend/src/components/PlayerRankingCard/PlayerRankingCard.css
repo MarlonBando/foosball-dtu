@@ -1,0 +1,177 @@
+/* Main card container */
+.player-ranking-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background-color: #ffffff;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+  gap: 1rem;
+  min-width: 0;
+}
+
+/* Clickable variant */
+.player-ranking-card-clickable {
+  cursor: pointer;
+}
+
+.player-ranking-card-clickable:hover {
+  background-color: #fafafa;
+  border-color: #c8102e;
+  box-shadow: 0 3px 12px rgba(200, 16, 46, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Current user highlight */
+.player-ranking-card-current {
+  border-color: #c8102e;
+  background-color: rgba(200, 16, 46, 0.03);
+}
+
+/* Left section with rank and player info */
+.player-ranking-card-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+  flex: 1;
+}
+
+/* Rank number */
+.player-ranking-card-rank {
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+/* Player info container */
+.player-ranking-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Main row with flag and username */
+.player-ranking-card-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+/* Flag emoji */
+.player-ranking-card-flag {
+  flex-shrink: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+/* Username - with overflow handling */
+.player-ranking-card-username {
+  font-weight: 700;
+  color: #1f2937;
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.player-ranking-card-username-current {
+  color: #c8102e;
+}
+
+/* "You" badge */
+.player-ranking-card-you-badge {
+  flex-shrink: 0;
+  font-size: 0.625rem;
+  background-color: rgba(200, 16, 46, 0.1);
+  color: #c8102e;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+}
+
+/* Win/Loss stats */
+.player-ranking-card-stats {
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.player-ranking-card-wins {
+  color: #16a34a;
+}
+
+.player-ranking-card-separator {
+  margin: 0 0.25rem;
+  color: #cbd5e1;
+}
+
+.player-ranking-card-losses {
+  color: #dc2626;
+}
+
+/* ELO badge */
+.player-ranking-card-elo {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  background-color: rgba(200, 16, 46, 0.1);
+  color: #c8102e;
+}
+
+/* Sliding animation for long usernames */
+@keyframes slide-username {
+  0%, 20% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(calc(150px - 100%));
+  }
+  70%, 100% {
+    transform: translateX(0);
+  }
+}
+
+.player-ranking-card:hover .player-ranking-card-username {
+  animation: slide-username 8s ease-in-out infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .player-ranking-card {
+    padding: 0.875rem 1rem;
+  }
+
+  .player-ranking-card-rank {
+    font-size: 0.75rem;
+  }
+
+  .player-ranking-card-username {
+    font-size: 0.9375rem;
+  }
+
+  .player-ranking-card-elo {
+    font-size: 0.8125rem;
+    padding: 0.25rem 0.625rem;
+  }
+}

@@ -3,8 +3,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useAllPlayers } from '../../hooks/useAllPlayers';
 import PageLayout from '../../components/PageLayout/PageLayout';
 import Spinner from '../../components/Spinner/Spinner';
+import PlayerRankingCard from '../../components/PlayerRankingCard/PlayerRankingCard';
 import { Trophy, Crown } from 'lucide-react';
-import { getNationalityFlag } from '../../utils/nationality';
 
 const LeaderboardPage: React.FC = () => {
     const { playerId } = useAuth();
@@ -219,39 +219,14 @@ const LeaderboardPage: React.FC = () => {
                                 const isCurrentUser = player.id === playerId;
                                 const rank = players.findIndex(p => p.id === player.id) + 1;
                                 return (
-                                    <div
+                                    <PlayerRankingCard
                                         key={player.id}
-                                        className={`bg-white rounded-xl p-4 flex items-center justify-between shadow-sm border transition-all gap-4
-                                            ${isCurrentUser ? 'border-primary/50 bg-primary/5 ring-1 ring-primary/20' : 'border-slate-100'}
-                                        `}
-                                    >
-                                        <div className="flex items-center gap-4 min-w-0 flex-1">
-                                            <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center font-bold text-gray-400">
-                                                #{rank}
-                                            </div>
-                                            <div className="min-w-0 flex-1">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="flex-shrink-0">{getNationalityFlag(player.nationality)}</span>
-                                                    <h3 className={`font-bold truncate ${isCurrentUser ? 'text-primary' : 'text-gray-900'}`}>
-                                                        {player.username}
-                                                    </h3>
-                                                    {isCurrentUser && (
-                                                        <span className="flex-shrink-0 text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold">
-                                                            You
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <div className="text-xs text-gray-500 font-medium flex items-center">
-                                                    <span className="text-green-600">{player.wins}W</span>
-                                                    <span className="mx-1 text-slate-300">/</span>
-                                                    <span className="text-red-600">{player.losses}L</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="flex-shrink-0 inline-flex items-center justify-center px-3 py-1 rounded-full font-bold text-sm bg-primary/10 text-primary">
-                                            {player.elo}
-                                        </div>
-                                    </div>
+                                        player={player}
+                                        rank={rank}
+                                        isCurrentUser={isCurrentUser}
+                                        showRank={true}
+                                        showWinLoss={true}
+                                    />
                                 );
                             })
                         )}
