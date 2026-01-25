@@ -49,8 +49,6 @@ function convertApiMatchToUiMatch(apiMatch: ApiMatchDetail): Match {
     t1_gk: t1_gk ? {
       id: t1_gk.player_id,
       username: t1_gk.username,
-      name: t1_gk.name,
-      surname: t1_gk.surname,
       nationality: t1_gk.nationality,
       elo: t1_gk.current_elo,
       wins: t1_gk.wins,
@@ -62,8 +60,6 @@ function convertApiMatchToUiMatch(apiMatch: ApiMatchDetail): Match {
     t1_st: t1_st ? {
       id: t1_st.player_id,
       username: t1_st.username,
-      name: t1_st.name,
-      surname: t1_st.surname,
       nationality: t1_st.nationality,
       elo: t1_st.current_elo,
       wins: t1_st.wins,
@@ -75,8 +71,6 @@ function convertApiMatchToUiMatch(apiMatch: ApiMatchDetail): Match {
     t2_gk: t2_gk ? {
       id: t2_gk.player_id,
       username: t2_gk.username,
-      name: t2_gk.name,
-      surname: t2_gk.surname,
       nationality: t2_gk.nationality,
       elo: t2_gk.current_elo,
       wins: t2_gk.wins,
@@ -88,8 +82,6 @@ function convertApiMatchToUiMatch(apiMatch: ApiMatchDetail): Match {
     t2_st: t2_st ? {
       id: t2_st.player_id,
       username: t2_st.username,
-      name: t2_st.name,
-      surname: t2_st.surname,
       nationality: t2_st.nationality,
       elo: t2_st.current_elo,
       wins: t2_st.wins,

@@ -9,8 +9,6 @@ export interface Player {
   created_at: string;
   username: string;
   elo: number;
-  name: string;
-  surname: string;
   nationality: number;
   wins: number;
   losses: number;
@@ -27,8 +25,6 @@ export interface Match {
 export interface PlayerInMatch {
   player_id: number;
   username: string;
-  name: string;
-  surname: string;
   nationality: number;
   current_elo: number;
   wins: number;

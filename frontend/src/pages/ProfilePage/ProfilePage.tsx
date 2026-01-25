@@ -25,8 +25,6 @@ function convertApiMatchToUiMatch(apiMatch: MatchDetail): Match {
         return {
             id: p.player_id,
             username: p.username,
-            name: p.name,
-            surname: p.surname,
             nationality: p.nationality,
             elo: p.current_elo,
             elo_change: p.elo_new - p.elo_old,
@@ -165,7 +163,7 @@ const ProfilePage: React.FC = () => {
                             <div className="w-24 h-24 bg-white rounded-full mx-auto mb-4 flex items-center justify-center text-3xl font-bold text-primary shadow-lg">
                                 {player.username.substring(0, 2).toUpperCase()}
                             </div>
-                            <h1 className="text-2xl font-bold text-white">{player.name} {player.surname}</h1>
+                            <h1 className="text-2xl font-bold text-white">{player.username}</h1>
                             <p className="text-white/80">@{player.username}</p>
                         </div>
 

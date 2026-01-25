@@ -25,8 +25,6 @@ export interface Player {
   user_id?: string;
   username: string;
   elo: number;
-  name: string;
-  surname: string;
   nationality: number;
   wins: number;
   losses: number;
@@ -64,8 +62,6 @@ export interface MatchDetail {
 export interface PlayerInMatch {
   player_id: number;
   username: string;
-  name: string;
-  surname: string;
   nationality: number;
   current_elo: number;
   wins: number;

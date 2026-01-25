@@ -7,19 +7,15 @@ import './SignupPage.css';
 import Logo from '../../components/Logo/Logo';
 import PageLayout from '../../components/PageLayout/PageLayout';
 import Toast from '../../components/Toast/Toast';
-import BetaWarningModal from '../../components/BetaWarningModal/BetaWarningModal';
+import TermsModal from '../../components/TermsModal/TermsModal';
 
 const SignupPage: React.FC = () => {
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const [name, setName] = useState('');
-  const [surname, setSurname] = useState('');
   const [nationality, setNationality] = useState('');
-  const [experience, setExperience] = useState('Beginner');
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
-  const [showBetaModal, setShowBetaModal] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
   const navigate = useNavigate();
 
   // Use React Query hooks
@@ -27,30 +23,15 @@ const SignupPage: React.FC = () => {
   const addPlayerMutation = useAddPlayer();
 
   useEffect(() => {
-    const hasSeenBetaWarning = localStorage.getItem('hasSeenBetaWarning');
-    if (!hasSeenBetaWarning) {
-      setShowBetaModal(true);
+    const hasAcceptedTerms = localStorage.getItem('hasAcceptedTerms');
+    if (!hasAcceptedTerms) {
+      setShowTermsModal(true);
     }
   }, []);
 
-  const getStartingElo = (experienceLevel: string): number => {
-    switch (experienceLevel) {
-      case 'Beginner':
-        return 800;
-      case 'Decent':
-        return 1000;
-      case 'Good':
-        return 1200;
-      case 'Pro':
-        return 1400;
-      default:
-        return 1000;
-    }
-  };
-
-  const handleCloseBetaModal = () => {
-    setShowBetaModal(false);
-    localStorage.setItem('hasSeenBetaWarning', 'true');
+  const handleAcceptTerms = () => {
+    setShowTermsModal(false);
+    localStorage.setItem('hasAcceptedTerms', 'true');
   };
 
 
@@ -59,6 +40,14 @@ const SignupPage: React.FC = () => {
     setLoading(true);
 
     try {
+      // Validate username doesn't contain @ character
+      if (username.includes('@')) {
+        throw new Error('Username cannot contain @ character');
+      }
+
+      // Generate email from username
+      const email = `${username}@foosballdtu.bando`;
+      
       // Step 1: Create auth user
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
@@ -66,10 +55,7 @@ const SignupPage: React.FC = () => {
         options: {
           data: {
             username,
-            name,
-            surname,
             nationality: parseInt(nationality),
-            experience,
           },
         },
       });
@@ -83,15 +69,11 @@ const SignupPage: React.FC = () => {
         throw new Error('Failed to get user ID after signup');
       }
       
-      // Step 3: Create player record with user_id and experience-based starting ELO
-      const startingElo = getStartingElo(experience);
-      
+      // Step 3: Create player record with user_id and fixed starting ELO of 1000
       await addPlayerMutation.mutateAsync({
         username,
-        name,
-        surname,
         nationality: parseInt(nationality),
-        elo: startingElo,
+        elo: 1000,
         wins: 0,
         losses: 0,
         user_id: userId,
@@ -110,7 +92,7 @@ const SignupPage: React.FC = () => {
 
   return (
     <PageLayout variant="centered" backgroundColor="#f0f2f5">
-      {showBetaModal && <BetaWarningModal onClose={handleCloseBetaModal} />}
+      {showTermsModal && <TermsModal onAccept={handleAcceptTerms} />}
       {toast && (
         <Toast
           message={toast.message}
@@ -123,20 +105,14 @@ const SignupPage: React.FC = () => {
         <h2 className="signup-title">Join Us!</h2>
         <form onSubmit={handleSignUp} className="signup-form">
           <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="signup-input"
-            required
-          />
-          <input
             type="text"
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             className="signup-input"
             required
+            pattern="[^@]*"
+            title="Username cannot contain @ character"
           />
           <input
             type="password"
@@ -146,22 +122,6 @@ const SignupPage: React.FC = () => {
             className="signup-input"
             required
             minLength={6}
-          />
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="signup-input"
-            required
-          />
-          <input
-            type="text"
-            placeholder="Surname"
-            value={surname}
-            onChange={(e) => setSurname(e.target.value)}
-            className="signup-input"
-            required
           />
           
           <select
@@ -177,48 +137,6 @@ const SignupPage: React.FC = () => {
               </option>
             ))}
           </select>
-
-          <div className="experience-level">
-            <p>Level of Experience:</p>
-            <div className="radio-group">
-              <label>
-                <input
-                  type="radio"
-                  value="Beginner"
-                  checked={experience === 'Beginner'}
-                  onChange={(e) => setExperience(e.target.value)}
-                />
-                Beginner
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  value="Decent"
-                  checked={experience === 'Decent'}
-                  onChange={(e) => setExperience(e.target.value)}
-                />
-                Decent
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  value="Good"
-                  checked={experience === 'Good'}
-                  onChange={(e) => setExperience(e.target.value)}
-                />
-                Good
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  value="Pro"
-                  checked={experience === 'Pro'}
-                  onChange={(e) => setExperience(e.target.value)}
-                />
-                Pro
-              </label>
-            </div>
-          </div>
 
           <button type="submit" className="signup-button primary" disabled={loading}>
             {loading ? 'Signing Up...' : 'Sign Up'}

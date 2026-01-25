@@ -12,7 +12,7 @@ const PendingGameCard: React.FC<PendingGameCardProps> = ({ match, onAccept, onRe
     // Helper to format player names or "Open Slot"
     const renderPlayer = (player: any) => { // Using any temporarily as types might need mapped from Match to PlayerInMatch if not consistent, but Match has t1_gk: Player
         if (!player) return <span className="text-gray-400 italic">Open</span>;
-        return <span className="font-semibold text-gray-800">{player.name} {player.surname}</span>;
+        return <span className="font-semibold text-gray-800">{player.username}</span>;
     };
 
     // Helper to get status of the current user in this match to show context if needed

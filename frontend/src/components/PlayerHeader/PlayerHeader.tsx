@@ -7,12 +7,10 @@ interface PlayerHeaderProps {
 }
 
 const PlayerHeader: React.FC<PlayerHeaderProps> = ({ player }) => {
-    const fullName = `${player.name} ${player.surname}`;
-
     return (
         <div className="player-header">
             <div className="player-header-card">
-                <h1 className="player-header-name">{fullName}</h1>
+                <h1 className="player-header-name">{player.username}</h1>
                 <div className="player-elo">
                     <span className="elo-label">ELO Rating</span>
                     <span className="elo-value">{player.elo}</span>

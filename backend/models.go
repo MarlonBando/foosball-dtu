@@ -36,8 +36,6 @@ type Player struct {
 	CreatedAt   *time.Time `json:"created_at,omitempty"`
 	Username    string     `json:"username"`
 	Elo         int16      `json:"elo"`
-	Name        string     `json:"name"`
-	Surname     string     `json:"surname"`
 	Nationality int64      `json:"nationality"`
 	Wins        int16      `json:"wins"`
 	Losses      int16      `json:"losses"`
@@ -86,8 +84,6 @@ type MatchDetailDTO struct {
 type PlayerMatchDTO struct {
 	PlayerID    int64        `json:"player_id"`
 	Username    string       `json:"username"`
-	Name        string       `json:"name"`
-	Surname     string       `json:"surname"`
 	Nationality int64        `json:"nationality"`
 	CurrentElo  int16        `json:"current_elo"`
 	Wins        int16        `json:"wins"`

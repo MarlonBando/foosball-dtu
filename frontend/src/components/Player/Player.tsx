@@ -93,8 +93,8 @@ const Player: React.FC<PlayerProps> = ({ player, position, status, playerStatus,
 
   return (
     <div className="player-container" >
-      <div className="player" title={`${player.name} ${player.surname}`} onClick={readOnly ? undefined : onClick}>
-        <span className="player-initial">{player.name[0]}</span>
+      <div className="player" title={player.username} onClick={readOnly ? undefined : onClick}>
+        <span className="player-initial">{player.username[0].toUpperCase()}</span>
       </div>
       <div className="player-name">
         {player.username}
