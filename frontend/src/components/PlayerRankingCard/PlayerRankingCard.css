@@ -87,6 +87,7 @@
   display: inline-block;
   min-width: 0;
   max-width: 100%;
+  text-overflow: ellipsis;
 }
 
 .player-ranking-card-username-current {
@@ -137,23 +138,6 @@
   font-size: 0.875rem;
   background-color: rgba(200, 16, 46, 0.1);
   color: #c8102e;
-}
-
-/* Sliding animation for long usernames */
-@keyframes slide-username {
-  0%, 20% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(calc(150px - 100%));
-  }
-  70%, 100% {
-    transform: translateX(0);
-  }
-}
-
-.player-ranking-card:hover .player-ranking-card-username {
-  animation: slide-username 8s ease-in-out infinite;
 }
 
 /* Responsive adjustments */
