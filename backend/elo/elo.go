@@ -16,7 +16,7 @@ func GetEloDelta(elo int16, opponentElo int16, matchNumber int, score int, oppon
 
 var weightedScore = map[int]float64{
 	10: 1,    // Complete destruction
-	9:  0.9, // Dominant win
+	9:  0.9,  // Dominant win
 	8:  0.8,  // Strong dominance
 	7:  0.75, // Clear win
 	6:  0.7,  // Good win
@@ -67,9 +67,9 @@ const (
 func getK(matchNumber int) int {
 	switch {
 	case matchNumber < PROVISIONAL_THRESHOLD:
-		return BASE_K * 2
+		return BASE_K * 1.5
 	case matchNumber < ESTABLISHED_THRESHOLD:
-		return BASE_K + BASE_K/2
+		return BASE_K * 1.25
 	default:
 		// return BASE_K + BASE_K/4
 		return BASE_K
