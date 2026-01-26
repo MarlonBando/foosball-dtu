@@ -40,13 +40,40 @@ const SignupPage: React.FC = () => {
     setLoading(true);
 
     try {
-      // Validate username doesn't contain @ character
-      if (username.includes('@')) {
-        throw new Error('Username cannot contain @ character');
+      // Trim whitespace from username
+      const trimmedUsername = username.trim();
+      
+      // Validate username length
+      if (trimmedUsername.length < 3) {
+        throw new Error('Username must be at least 3 characters long');
+      }
+      if (trimmedUsername.length > 20) {
+        throw new Error('Username must be no more than 20 characters long');
+      }
+      
+      // Validate username format - only letters, numbers, dots, hyphens, and underscores
+      const usernameRegex = /^[a-zA-Z0-9._-]+$/;
+      if (!usernameRegex.test(trimmedUsername)) {
+        throw new Error('Username can only contain letters, numbers, dots (.), hyphens (-), and underscores (_)');
+      }
+      
+      // Prevent usernames starting or ending with dots or hyphens
+      if (/^[.-]|[.-]$/.test(trimmedUsername)) {
+        throw new Error('Username cannot start or end with dots or hyphens');
+      }
+      
+      // Prevent consecutive dots
+      if (/\.\./.test(trimmedUsername)) {
+        throw new Error('Username cannot contain consecutive dots');
+      }
+      
+      // Prevent all-numeric usernames
+      if (/^\d+$/.test(trimmedUsername)) {
+        throw new Error('Username cannot be all numbers');
       }
 
-      // Generate email from username
-      const email = `${username}@foosballdtu.bando`;
+      // Generate email from trimmed username
+      const email = `${trimmedUsername}@foosballdtu.bando`;
       
       // Step 1: Create auth user
       const { data, error: signUpError } = await supabase.auth.signUp({
@@ -54,7 +81,7 @@ const SignupPage: React.FC = () => {
         password,
         options: {
           data: {
-            username,
+            username: trimmedUsername,
             nationality: parseInt(nationality),
           },
         },
@@ -71,7 +98,7 @@ const SignupPage: React.FC = () => {
       
       // Step 3: Create player record with user_id and fixed starting ELO of 1000
       await addPlayerMutation.mutateAsync({
-        username,
+        username: trimmedUsername,
         nationality: parseInt(nationality),
         elo: 1000,
         wins: 0,
@@ -111,8 +138,10 @@ const SignupPage: React.FC = () => {
             onChange={(e) => setUsername(e.target.value)}
             className="signup-input"
             required
-            pattern="[^@]*"
-            title="Username cannot contain @ character"
+            pattern="[a-zA-Z0-9._-]+"
+            minLength={3}
+            maxLength={20}
+            title="Username can only contain letters, numbers, dots (.), hyphens (-), and underscores (_). Must be 3-20 characters long."
           />
           <input
             type="password"

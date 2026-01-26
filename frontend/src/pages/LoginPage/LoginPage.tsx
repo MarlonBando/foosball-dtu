@@ -19,8 +19,8 @@ const LoginPage: React.FC = () => {
     setLoading(true);
 
     try {
-      // Generate email from username
-      const email = `${username}@foosballdtu.bando`;
+      // Generate email from trimmed username
+      const email = `${username.trim()}@foosballdtu.bando`;
       await signIn(email, password);
       navigate('/profile');
     } catch (err) {
