@@ -123,10 +123,10 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ t1_score, t2_score, onScoreChan
         value={inputBuffer}
         onChange={handleInputChange}
         onKeyDown={handleInputKeyDown}
-        onBlur={() => {
-          console.log('Input blur event - activeTeam:', activeTeam, 'inputBuffer:', inputBuffer);
-          commitInput();
-        }}
+        // onBlur={() => {
+        //   console.log('Input blur event - activeTeam:', activeTeam, 'inputBuffer:', inputBuffer);
+        //   commitInput();
+        // }}
       />
       <div className="score-container">
         <div 
