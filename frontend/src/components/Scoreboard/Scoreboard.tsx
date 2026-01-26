@@ -12,6 +12,7 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ t1_score, t2_score, onScoreChan
   const [activeTeam, setActiveTeam] = useState<'t1' | 't2' | null>(null);
   const [inputBuffer, setInputBuffer] = useState<string>('');
   const hiddenInputRef = useRef<HTMLInputElement | null>(null);
+  const lastViewportHeightRef = useRef<number>(window.visualViewport?.height || window.innerHeight);
 
   const formatScore = (score: number) => {
     return score.toString().padStart(2, '0');
@@ -24,6 +25,39 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ t1_score, t2_score, onScoreChan
       hiddenInputRef.current.focus();
     }
   }, [activeTeam, readOnly]);
+
+  // Detect keyboard hide via visual viewport changes
+  useEffect(() => {
+    if (!activeTeam || readOnly) return;
+
+    const handleViewportChange = () => {
+      const currentHeight = window.visualViewport?.height || window.innerHeight;
+      const lastHeight = lastViewportHeightRef.current;
+      
+      // Keyboard is closing if viewport height increased significantly
+      if (currentHeight > lastHeight + 50) {
+        console.log('Keyboard closing detected via viewport resize');
+        if (activeTeam) {
+          const parsed = inputBuffer ? parseInt(inputBuffer, 10) : 0;
+          if (!Number.isNaN(parsed) && parsed >= 0 && parsed <= 10) {
+            applyScore(activeTeam, parsed);
+          }
+          setInputBuffer('');
+          setActiveTeam(null);
+        }
+      }
+      
+      lastViewportHeightRef.current = currentHeight;
+    };
+
+    window.visualViewport?.addEventListener('resize', handleViewportChange);
+    window.addEventListener('resize', handleViewportChange);
+
+    return () => {
+      window.visualViewport?.removeEventListener('resize', handleViewportChange);
+      window.removeEventListener('resize', handleViewportChange);
+    };
+  }, [activeTeam, readOnly, inputBuffer]);
 
   // Handle escape key
   useEffect(() => {
@@ -81,16 +115,6 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ t1_score, t2_score, onScoreChan
     setInputBuffer(value);
 
     console.log('Input change event - value:', value, 'activeTeam:', activeTeam);
-    // Auto-commit when 2 digits entered
-    if ((value.length === 2 || parseInt(value, 10) > 1 ) && activeTeam) {
-      const parsed = parseInt(value, 10);
-      if (!Number.isNaN(parsed) && parsed >= 0 && parsed <= 10) {
-        applyScore(activeTeam, parsed);
-      }
-      setInputBuffer('');
-      setActiveTeam(null);
-      hiddenInputRef.current?.blur();
-    }
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -123,10 +147,6 @@ const Scoreboard: React.FC<ScoreboardProps> = ({ t1_score, t2_score, onScoreChan
         value={inputBuffer}
         onChange={handleInputChange}
         onKeyDown={handleInputKeyDown}
-        // onBlur={() => {
-        //   console.log('Input blur event - activeTeam:', activeTeam, 'inputBuffer:', inputBuffer);
-        //   commitInput();
-        // }}
       />
       <div className="score-container">
         <div 
