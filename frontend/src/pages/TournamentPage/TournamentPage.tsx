@@ -1,27 +1,23 @@
 import React, { useMemo } from 'react';
 import PageLayout from '../../components/PageLayout/PageLayout';
 import Spinner from '../../components/Spinner/Spinner';
-import type { KnockoutStage, TournamentStanding } from './tournamentApi';
+import type {
+  TournamentKnockoutMatch,
+  TournamentKnockoutStage,
+  TournamentStanding,
+} from '../../api/types';
 import {
   useTournamentKnockoutMatches,
   useTournamentStandings,
 } from './tournamentHooks';
+import {
+  normalizeKnockoutStage,
+  standingsSort,
+  toStageLabel,
+} from './tournamentUtils';
 
 const GROUPS = ['A', 'B', 'C', 'D'] as const;
-const STAGE_ORDER: KnockoutStage[] = ['r16', 'qf', 'sf', 'final'];
-const STAGE_LABELS: Record<KnockoutStage, string> = {
-  r16: 'Round of 16',
-  qf: 'Quarter Finals',
-  sf: 'Semi Finals',
-  final: 'Final',
-};
-
-const standingsSort = (a: TournamentStanding, b: TournamentStanding) => {
-  if (b.points !== a.points) return b.points - a.points;
-  if (b.goal_diff !== a.goal_diff) return b.goal_diff - a.goal_diff;
-  if (b.goals_for !== a.goals_for) return b.goals_for - a.goals_for;
-  return a.team.localeCompare(b.team);
-};
+const STAGE_ORDER: TournamentKnockoutStage[] = ['r16', 'qf', 'sf', 'final'];
 
 const TournamentPage: React.FC = () => {
   const {
@@ -50,17 +46,25 @@ const TournamentPage: React.FC = () => {
   }, [standings]);
 
   const knockoutByStage = useMemo(() => {
-    const grouped = new Map<KnockoutStage, typeof knockoutMatches>();
+    const grouped = new Map<string, TournamentKnockoutMatch[]>();
+    const stageOrder: string[] = [...STAGE_ORDER];
     STAGE_ORDER.forEach((stage) => grouped.set(stage, []));
 
     knockoutMatches.forEach((match) => {
-      const matches = grouped.get(match.stage);
-      if (matches) matches.push(match);
+      const stage = normalizeKnockoutStage(match.stage);
+      const existing = grouped.get(stage);
+      if (existing) {
+        existing.push(match);
+        return;
+      }
+
+      grouped.set(stage, [match]);
+      stageOrder.push(stage);
     });
 
     grouped.forEach((matches) => matches.sort((a, b) => a.slot - b.slot));
 
-    return grouped;
+    return { grouped, stageOrder };
   }, [knockoutMatches]);
 
   const isLoading = isStandingsPending || isKnockoutPending;
@@ -106,33 +110,40 @@ const TournamentPage: React.FC = () => {
                         <h3 className="font-bold text-slate-700">Group {group}</h3>
                       </div>
                       <div className="overflow-x-auto">
-                        <table className="w-full min-w-[300px] text-sm">
+                        <table className="w-full min-w-[360px] text-sm">
                           <thead>
                             <tr className="text-left text-xs uppercase tracking-wide text-slate-500 bg-white">
                               <th className="px-4 py-3">Team</th>
-                              <th className="px-3 py-3 text-right">P</th>
-                              <th className="px-3 py-3 text-right">GF</th>
-                              <th className="px-3 py-3 text-right">GA</th>
+                              <th className="px-3 py-3 text-right text-emerald-700">W</th>
+                              <th className="px-3 py-3 text-right text-red-700">L</th>
+                              <th className="px-3 py-3 text-right">GS</th>
+                              <th className="px-3 py-3 text-right">GR</th>
                               <th className="px-3 py-3 text-right">GD</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-slate-100">
                             {rows.length === 0 ? (
                               <tr>
-                                <td colSpan={5} className="px-4 py-6 text-center text-slate-400">
+                                <td colSpan={6} className="px-4 py-6 text-center text-slate-400">
                                   No teams found
                                 </td>
                               </tr>
                             ) : (
-                              rows.map((row) => (
-                                <tr key={row.team_id} className="hover:bg-slate-50/80">
-                                  <td className="px-4 py-3 font-medium text-slate-800">{row.team}</td>
-                                  <td className="px-3 py-3 text-right font-semibold text-slate-900">{row.points}</td>
-                                  <td className="px-3 py-3 text-right text-slate-700">{row.goals_for}</td>
-                                  <td className="px-3 py-3 text-right text-slate-700">{row.goals_against}</td>
-                                  <td className="px-3 py-3 text-right font-semibold text-slate-900">{row.goal_diff}</td>
-                                </tr>
-                              ))
+                              rows.map((row) => {
+                                const wins = row.wins ?? 0;
+                                const losses = row.losses ?? 0;
+
+                                return (
+                                  <tr key={row.team_id} className="hover:bg-slate-50/80">
+                                    <td className="px-4 py-3 font-medium text-slate-800">{row.team}</td>
+                                    <td className="px-3 py-3 text-right font-bold text-emerald-700 bg-emerald-50/60">{wins}</td>
+                                    <td className="px-3 py-3 text-right font-semibold text-red-700 bg-red-50/60">{losses}</td>
+                                    <td className="px-3 py-3 text-right text-slate-700">{row.goals_for}</td>
+                                    <td className="px-3 py-3 text-right text-slate-700">{row.goals_against}</td>
+                                    <td className="px-3 py-3 text-right font-semibold text-slate-900">{row.goal_diff}</td>
+                                  </tr>
+                                );
+                              })
                             )}
                           </tbody>
                         </table>
@@ -144,22 +155,29 @@ const TournamentPage: React.FC = () => {
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Knockout Bracket</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Knockout Bracket</h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {STAGE_ORDER.map((stage) => {
-                  const matches = knockoutByStage.get(stage) ?? [];
+                {knockoutByStage.stageOrder.map((stage) => {
+                  const matches = knockoutByStage.grouped.get(stage) ?? [];
                   return (
                     <div key={stage} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                       <div className="bg-slate-50 border-b border-slate-200 px-4 py-3">
-                        <h3 className="font-bold text-slate-700">{STAGE_LABELS[stage]}</h3>
+                        <h3 className="font-bold text-slate-700">{toStageLabel(stage)}</h3>
                       </div>
                       <ul className="divide-y divide-slate-100">
                         {matches.length === 0 ? (
                           <li className="px-4 py-6 text-center text-slate-400">No match slots</li>
                         ) : (
                           matches.map((match) => {
-                            const score = match.status === 'completed'
-                              ? `${match.team1_score ?? 0} - ${match.team2_score ?? 0}`
+                            const isCompleted = match.status === 'completed';
+                            const t1Score = match.team1_score ?? 0;
+                            const t2Score = match.team2_score ?? 0;
+                            
+                            const isT1Winner = isCompleted && t1Score > t2Score;
+                            const isT2Winner = isCompleted && t2Score > t1Score;
+
+                            const scoreText = isCompleted
+                              ? `${t1Score} - ${t2Score}`
                               : 'vs';
 
                             return (
@@ -168,9 +186,25 @@ const TournamentPage: React.FC = () => {
                                   Slot {match.slot}
                                 </p>
                                 <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-                                  <span className="truncate font-medium text-slate-800">{match.team1 ?? 'TBD'}</span>
-                                  <span className="font-semibold text-slate-700">{score}</span>
-                                  <span className="truncate text-right font-medium text-slate-800">{match.team2 ?? 'TBD'}</span>
+                                  <span className={`truncate font-medium ${
+                                    !isCompleted
+                                      ? 'text-slate-800'
+                                      : isT1Winner 
+                                        ? 'text-emerald-600 font-bold' 
+                                        : 'text-slate-400'
+                                  }`}>
+                                    {match.team1 ?? 'TBD'}
+                                  </span>
+                                  <span className="font-semibold text-slate-700">{scoreText}</span>
+                                  <span className={`truncate text-right font-medium ${
+                                    !isCompleted
+                                      ? 'text-slate-800'
+                                      : isT2Winner 
+                                        ? 'text-emerald-600 font-bold' 
+                                        : 'text-slate-400'
+                                  }`}>
+                                    {match.team2 ?? 'TBD'}
+                                  </span>
                                 </div>
                               </li>
                             );

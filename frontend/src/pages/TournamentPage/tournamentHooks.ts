@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
   getTournamentKnockoutMatches,
   getTournamentStandings,
-} from './tournamentApi';
+} from '../../api/services/tournamentService';
 
 const STANDINGS_QUERY_KEY = ['tournament-standings'] as const;
 const KNOCKOUT_QUERY_KEY = ['tournament-knockout'] as const;
