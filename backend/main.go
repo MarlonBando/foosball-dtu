@@ -10,6 +10,7 @@ import (
 	"github.com/supabase-community/supabase-go"
 	"net/http"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -39,6 +40,8 @@ func main() {
 	router.GET("/matches", GetPlayerMatches)
 	router.GET("/match/:id", GetMatchDetails)
 	router.GET("/nationalities", GetNationalities)
+	router.GET("/tournament/standings", GetTournamentStandings)
+	router.GET("/tournament/knockout", GetTournamentKnockoutMatches)
 
 	router.POST("/matches/register", RegisterMatch)
 	router.POST("/players/add", AddPlayer)
@@ -236,6 +239,119 @@ func GetPlayerMatches(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	c.JSON(http.StatusOK, matches)
+}
+
+func GetTournamentStandings(c *gin.Context) {
+	client, err := supabase.NewClient(SUPABASE_URL, SUPABASE_KEY, &supabase.ClientOptions{})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to initialize Supabase client"})
+		return
+	}
+
+	var standings []TournamentStanding
+	_, err = client.From("tournament_standings").
+		Select("*", "", false).
+		Order("group", &postgrest.OrderOpts{Ascending: true}).
+		Order("points", &postgrest.OrderOpts{Ascending: false}).
+		Order("goal_diff", &postgrest.OrderOpts{Ascending: false}).
+		Order("goals_for", &postgrest.OrderOpts{Ascending: false}).
+		ExecuteTo(&standings)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, standings)
+}
+
+func GetTournamentKnockoutMatches(c *gin.Context) {
+	client, err := supabase.NewClient(SUPABASE_URL, SUPABASE_KEY, &supabase.ClientOptions{})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to initialize Supabase client"})
+		return
+	}
+
+	var rows []TournamentKnockoutRow
+	_, err = client.From("tournament_knockout_matches").
+		Select("stage,slot,team1_id,team2_id,team1_score,team2_score,status,winner_id", "", false).
+		Order("stage", &postgrest.OrderOpts{Ascending: true}).
+		Order("slot", &postgrest.OrderOpts{Ascending: true}).
+		ExecuteTo(&rows)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	teamIDSet := make(map[int64]struct{})
+	for _, row := range rows {
+		if row.Team1ID != nil {
+			teamIDSet[*row.Team1ID] = struct{}{}
+		}
+		if row.Team2ID != nil {
+			teamIDSet[*row.Team2ID] = struct{}{}
+		}
+	}
+
+	teamNames := make(map[int64]string, len(teamIDSet))
+	if len(teamIDSet) > 0 {
+		teamIDs := make([]string, 0, len(teamIDSet))
+		for id := range teamIDSet {
+			teamIDs = append(teamIDs, strconv.FormatInt(id, 10))
+		}
+
+		var teams []TournamentTeam
+		_, err = client.From("tournament_teams").Select("id,name", "", false).In("id", teamIDs).ExecuteTo(&teams)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		for _, team := range teams {
+			teamNames[team.ID] = team.Name
+		}
+	}
+
+	matches := make([]TournamentKnockoutMatch, 0, len(rows))
+	for _, row := range rows {
+		var team1, team2 *string
+		if row.Team1ID != nil {
+			if name, ok := teamNames[*row.Team1ID]; ok {
+				teamName := name
+				team1 = &teamName
+			}
+		}
+		if row.Team2ID != nil {
+			if name, ok := teamNames[*row.Team2ID]; ok {
+				teamName := name
+				team2 = &teamName
+			}
+		}
+
+		matches = append(matches, TournamentKnockoutMatch{
+			Stage:      normalizeKnockoutStage(row.Stage),
+			Slot:       row.Slot,
+			Team1:      team1,
+			Team2:      team2,
+			Team1Score: row.Team1Score,
+			Team2Score: row.Team2Score,
+			Status:     row.Status,
+			WinnerID:   row.WinnerID,
+		})
+	}
+
+	sort.SliceStable(matches, func(i, j int) bool {
+		leftRank := knockoutStageOrder(matches[i].Stage)
+		rightRank := knockoutStageOrder(matches[j].Stage)
+		if leftRank != rightRank {
+			return leftRank < rightRank
+		}
+		if matches[i].Stage != matches[j].Stage {
+			return matches[i].Stage < matches[j].Stage
+		}
+		return matches[i].Slot < matches[j].Slot
+	})
 
 	c.JSON(http.StatusOK, matches)
 }
@@ -602,6 +718,44 @@ func UpdateElo(c *gin.Context) {
 func atoi64(s string) int64 {
 	i, _ := strconv.Atoi(s)
 	return int64(i)
+}
+
+func normalizeKnockoutStage(stage string) string {
+	normalized := strings.ToLower(strings.TrimSpace(stage))
+	normalized = strings.ReplaceAll(normalized, "-", "_")
+	normalized = strings.ReplaceAll(normalized, " ", "_")
+	if normalized == "" {
+		return "unknown"
+	}
+
+	compacted := strings.NewReplacer("_", "", "/", "").Replace(normalized)
+	switch compacted {
+	case "r16", "ro16", "round16", "roundof16", "18":
+		return "r16"
+	case "qf", "quarterfinal", "quarterfinals", "quarteroffinal", "14":
+		return "qf"
+	case "sf", "semifinal", "semifinals", "semioffinal", "12":
+		return "sf"
+	case "f", "final", "finals":
+		return "final"
+	default:
+		return normalized
+	}
+}
+
+func knockoutStageOrder(stage string) int {
+	switch normalizeKnockoutStage(stage) {
+	case "r16":
+		return 0
+	case "qf":
+		return 1
+	case "sf":
+		return 2
+	case "final":
+		return 3
+	default:
+		return 4
+	}
 }
 
 func getMatchPlayers(matchId int64) ([]MatchPlayer, error) {

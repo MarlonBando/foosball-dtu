@@ -7,6 +7,11 @@ import { AuthProvider } from './contexts/AuthContext'
 import { queryClient } from './lib/queryClient'
 import './index.css'
 
+if (!window.location.hash && window.location.pathname !== '/') {
+  const directPath = `${window.location.pathname}${window.location.search}`
+  window.history.replaceState(null, '', `/#${directPath}`)
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>

@@ -18,7 +18,8 @@ const PageLayout: React.FC<PageLayoutProps> = ({
     className = '',
 }) => {
     const location = useLocation();
-    const shouldShowNav = !['/login', '/signup'].includes(location.pathname);
+    const isTournamentRoute = location.pathname === '/tournament' || location.pathname.startsWith('/tournament/');
+    const shouldShowNav = !['/login', '/signup'].includes(location.pathname) && !isTournamentRoute;
     const shouldShowCreateButton = shouldShowNav && !location.pathname.startsWith('/match');
 
     return (
