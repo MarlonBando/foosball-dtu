@@ -6,7 +6,6 @@ import SignupPage from './pages/SignupPage/SignupPage.tsx';
 import HomePage from './pages/HomePage/HomePage.tsx';
 import ProfilePage from './pages/ProfilePage/ProfilePage.tsx';
 import LeaderboardPage from './pages/LeaderboardPage/LeaderboardPage.tsx';
-import TournamentPage from './pages/TournamentPage/TournamentPage.tsx';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.tsx';
 
 function App() {
@@ -42,11 +41,6 @@ function App() {
       <Route path="/leaderboard" element={
         <ProtectedRoute>
           <LeaderboardPage />
-        </ProtectedRoute>
-      } />
-      <Route path="/tournament" element={
-        <ProtectedRoute>
-          <TournamentPage />
         </ProtectedRoute>
       } />
     </Routes>

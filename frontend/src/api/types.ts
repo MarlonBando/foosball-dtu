@@ -54,28 +54,3 @@ export interface RegisterMatchRequest {
   t1_score: number;
   t2_score: number;
 }
-
-export type TournamentKnockoutStage = 'r16' | 'qf' | 'sf' | 'final';
-
-export interface TournamentStanding {
-  group: string;
-  team: string;
-  team_id: number;
-  points: number;
-  wins?: number | null;
-  losses?: number | null;
-  goals_for: number;
-  goals_against: number;
-  goal_diff: number;
-}
-
-export interface TournamentKnockoutMatch {
-  stage: string;
-  slot: number;
-  team1: string | null;
-  team2: string | null;
-  team1_score: number | null;
-  team2_score: number | null;
-  status: string;
-  winner_id: number | null;
-}
