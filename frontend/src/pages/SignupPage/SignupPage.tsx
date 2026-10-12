@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useNationalities } from '../../hooks/useNationalities';
 import { useAddPlayer } from '../../hooks/usePlayerMutations';
+import { Globe, Lock, User, UserPlus } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
-import './SignupPage.css';
-import Logo from '../../components/Logo/Logo';
-import PageLayout from '../../components/PageLayout/PageLayout';
+import { getNationalityFlag } from '../../utils/nationality';
+import AuthLayout from '../../components/AuthLayout/AuthLayout';
+import { AuthError, AuthInput, AuthSelect, AuthSubmit } from '../../components/AuthLayout/AuthField';
 import Toast from '../../components/Toast/Toast';
 import TermsModal from '../../components/TermsModal/TermsModal';
 
@@ -14,6 +15,7 @@ const SignupPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [nationality, setNationality] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const navigate = useNavigate();
@@ -37,6 +39,7 @@ const SignupPage: React.FC = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     setLoading(true);
 
     try {
@@ -111,14 +114,14 @@ const SignupPage: React.FC = () => {
         navigate('/login');
       }, 2000);
     } catch (err) {
-      setToast({ message: err instanceof Error ? err.message : 'Failed to sign up', type: 'error' });
+      setError(err instanceof Error ? err.message : 'Failed to sign up');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <PageLayout variant="centered" backgroundColor="#f0f2f5">
+    <>
       {showTermsModal && <TermsModal onAccept={handleAcceptTerms} />}
       {toast && (
         <Toast
@@ -127,56 +130,70 @@ const SignupPage: React.FC = () => {
           onClose={() => setToast(null)}
         />
       )}
-      <div className="signup-container">
-        <Logo className="signup-logo" />
-        <h2 className="signup-title">Join Us!</h2>
-        <form onSubmit={handleSignUp} className="signup-form">
-          <input
-            type="text"
-            placeholder="Username"
+      <AuthLayout
+        title="Join the league!"
+        subtitle="Find out who the GOAT of DTU foosball is"
+        footer={
+          <>
+            Already have an account?{' '}
+            <Link to="/login" className="font-semibold text-primary hover:underline">
+              Sign in
+            </Link>
+          </>
+        }
+      >
+        <form onSubmit={handleSignUp} className="flex flex-col gap-4">
+          {error && <AuthError message={error} />}
+          <AuthInput
+            label="Username"
+            icon={User}
+            placeholder="e.g. foosball_goat"
+            hint="3–20 characters: letters, numbers, . _ -"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="signup-input"
+            autoComplete="username"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             required
             pattern="[a-zA-Z0-9._-]+"
             minLength={3}
             maxLength={20}
             title="Username can only contain letters, numbers, dots (.), hyphens (-), and underscores (_). Must be 3-20 characters long."
           />
-          <input
+          <AuthInput
+            label="Password"
+            icon={Lock}
             type="password"
-            placeholder="Password"
+            placeholder="Create a password"
+            hint="At least 6 characters"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="signup-input"
+            autoComplete="new-password"
             required
             minLength={6}
           />
-          
-          <select
+          <AuthSelect
+            label="Nationality"
+            icon={Globe}
             value={nationality}
             onChange={(e) => setNationality(e.target.value)}
-            className="signup-input"
             required
           >
             <option value="" disabled>Select your nationality</option>
             {nationalities.map((nat) => (
-              <option key={nat.id} value={nat.id}>
-                {nat.name}
+              <option key={nat.id} value={nat.id} className="text-gray-900">
+                {getNationalityFlag(nat.id)} {nat.name}
               </option>
             ))}
-          </select>
-
-          <button type="submit" className="signup-button primary" disabled={loading}>
-            {loading ? 'Signing Up...' : 'Sign Up'}
-          </button>
+          </AuthSelect>
+          <AuthSubmit loading={loading} loadingLabel="Creating account...">
+            <UserPlus size={18} />
+            Create Account
+          </AuthSubmit>
         </form>
-        <div className="signup-footer">
-          <p>Already have an account?</p>
-          <Link to="/login" className="signup-button secondary">Back to Login</Link>
-        </div>
-      </div>
-    </PageLayout>
+      </AuthLayout>
+    </>
   );
 };
 
