@@ -33,6 +33,7 @@ func main() {
 	fmt.Println("Public key loaded successfully")
 
 	router := gin.Default()
+	router.Use(CORSMiddleware())
 
 	router.GET("/players", GetPlayers)
 	router.GET("/players/me", GetCurrentPlayer)
@@ -52,6 +53,35 @@ func main() {
 		port = "80"
 	}
 	router.Run(":" + port)
+}
+
+// CORSMiddleware allows the frontend (served from a different origin, e.g. GitHub Pages)
+// to call the API. Allowed origins come from CORS_ORIGINS (comma-separated).
+func CORSMiddleware() gin.HandlerFunc {
+	originsEnv := os.Getenv("CORS_ORIGINS")
+	if originsEnv == "" {
+		originsEnv = "https://marlonbando.github.io,http://localhost:5173"
+	}
+	allowed := map[string]bool{}
+	for _, o := range strings.Split(originsEnv, ",") {
+		allowed[strings.TrimRight(strings.TrimSpace(o), "/")] = true
+	}
+
+	return func(c *gin.Context) {
+		origin := c.GetHeader("Origin")
+		if allowed[origin] {
+			c.Header("Access-Control-Allow-Origin", origin)
+			c.Header("Vary", "Origin")
+			c.Header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+			c.Header("Access-Control-Allow-Headers", "Authorization, Content-Type")
+			c.Header("Access-Control-Max-Age", "86400")
+		}
+		if c.Request.Method == http.MethodOptions {
+			c.AbortWithStatus(http.StatusNoContent)
+			return
+		}
+		c.Next()
+	}
 }
 
 func GetNationalities(c *gin.Context) {
