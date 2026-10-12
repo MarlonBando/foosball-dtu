@@ -103,8 +103,7 @@ jobs:
         PI_HOST: ${{ secrets.PI_HOST }}
         PI_USER: ${{ secrets.PI_USER }}
       run: |
-        ssh "$PI_USER@$PI_HOST" 'mkdir -p ~/app'
-        scp deploy/docker-compose.yml "$PI_USER@$PI_HOST:~/app/docker-compose.yml"
+        ssh "$PI_USER@$PI_HOST" 'mkdir -p ~/app && cat > ~/app/docker-compose.yml' < deploy/docker-compose.yml
 
     - name: Pull and restart on Pi
       env:
