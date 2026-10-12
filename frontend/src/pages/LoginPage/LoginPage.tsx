@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Lock, LogIn, User } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import './LoginPage.css';
-import Logo from '../../components/Logo/Logo';
-import PageLayout from '../../components/PageLayout/PageLayout';
+import AuthLayout from '../../components/AuthLayout/AuthLayout';
+import { AuthError, AuthInput, AuthSubmit } from '../../components/AuthLayout/AuthField';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -31,38 +31,48 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <PageLayout variant="centered" backgroundColor="#f0f2f5">
-      <div className="login-container">
-        <Logo className="login-logo" />
-        <h2 className="login-title">Welcome Back!</h2>
-        <form onSubmit={handleSignIn} className="login-form">
-          {error && <div style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="login-input"
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="login-input"
-            required
-          />
-          <button type="submit" className="login-button primary" disabled={loading}>
-            {loading ? 'Signing In...' : 'Sign In'}
-          </button>
-        </form>
-        <div className="login-footer">
-          <p>Don't have an account?</p>
-          <Link to="/signup" className="login-button secondary">Sign Up</Link>
-        </div>
-      </div>
-    </PageLayout>
+    <AuthLayout
+      title="Welcome back!"
+      subtitle="Sign in to climb the ranks"
+      footer={
+        <>
+          Don't have an account?{' '}
+          <Link to="/signup" className="font-semibold text-primary hover:underline">
+            Sign up
+          </Link>
+        </>
+      }
+    >
+      <form onSubmit={handleSignIn} className="flex flex-col gap-4">
+        {error && <AuthError message={error} />}
+        <AuthInput
+          label="Username"
+          icon={User}
+          placeholder="Your username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          autoComplete="username"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
+          required
+        />
+        <AuthInput
+          label="Password"
+          icon={Lock}
+          type="password"
+          placeholder="Your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          autoComplete="current-password"
+          required
+        />
+        <AuthSubmit loading={loading} loadingLabel="Signing in...">
+          <LogIn size={18} />
+          Sign In
+        </AuthSubmit>
+      </form>
+    </AuthLayout>
   );
 };
 
