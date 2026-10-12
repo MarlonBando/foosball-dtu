@@ -1,6 +1,3 @@
-# Deployed to ~/app/docker-compose.yml on the Raspberry Pi by .github/workflows/deploy.yml.
-# Runtime secrets (SUPABASE_URL, SUPABASE_KEY) are read from ~/app/.env on the Pi,
-# which must be created by hand and is never committed.
 services:
   backend:
     image: ghcr.io/marlonbando/foosball-dtu:latest

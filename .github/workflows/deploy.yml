@@ -105,6 +105,16 @@ jobs:
       run: |
         ssh "$PI_USER@$PI_HOST" 'mkdir -p ~/app && cat > ~/app/docker-compose.yml' < deploy/docker-compose.yml
 
+    - name: Write .env on Pi
+      env:
+        PI_HOST: ${{ secrets.PI_HOST }}
+        PI_USER: ${{ secrets.PI_USER }}
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      run: |
+        printf 'SUPABASE_URL=%s\nSUPABASE_KEY=%s\n' "$SUPABASE_URL" "$SUPABASE_KEY" \
+          | ssh "$PI_USER@$PI_HOST" 'umask 077 && cat > ~/app/.env'
+
     - name: Pull and restart on Pi
       env:
         PI_HOST: ${{ secrets.PI_HOST }}
