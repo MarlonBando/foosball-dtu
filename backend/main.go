@@ -574,8 +574,8 @@ func UpdateElo(c *gin.Context) {
 		}
 	}
 
-	t1Elo := (players[team1Players[0]].Elo + players[team1Players[1]].Elo) / 2
-	t2Elo := (players[team2Players[0]].Elo + players[team2Players[1]].Elo) / 2
+	t1Elo := elo.TeamElo(players[team1Players[0]].Elo, players[team1Players[1]].Elo)
+	t2Elo := elo.TeamElo(players[team2Players[0]].Elo, players[team2Players[1]].Elo)
 
 	// Update each player
 	client, err := supabase.NewClient(SUPABASE_URL, SUPABASE_KEY, &supabase.ClientOptions{})
