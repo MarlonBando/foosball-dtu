@@ -2,59 +2,70 @@ package elo
 
 import "math"
 
+// GetEloDelta returns the rating change for a side (a player in 1v1, a team
+// rating in 2v2) that scored `score` against an opponent that scored
+// `opponentScore`. Ratings are the side's rating and the opponent's rating.
+//
+// The result of the match decides the direction of the change: a winner never
+// loses ELO and a loser never gains ELO. The margin of victory and the
+// rating gap only decide how big the change is.
 func GetEloDelta(elo int16, opponentElo int16, matchNumber int, score int, opponentScore int) int16 {
-	k := float64(getK(matchNumber))
+	k := getK(matchNumber)
 	actualScore := getActualScore(score, opponentScore)
 	expectedScore := getOddsToWin(elo, opponentElo)
 
-	eloDelta := int16(k * (actualScore - expectedScore))
-	if actualScore > 0.5 && eloDelta < 0 {
-		eloDelta = 0
+	eloDelta := k * (actualScore - expectedScore)
+	switch {
+	case score > opponentScore:
+		eloDelta = math.Max(eloDelta, 0)
+	case score < opponentScore:
+		eloDelta = math.Min(eloDelta, 0)
 	}
-	return eloDelta
+	return int16(math.Round(eloDelta))
 }
 
-var weightedScore = map[int]float64{
-	10: 1,    // Complete destruction
-	9:  0.9,  // Dominant win
-	8:  0.8,  // Strong dominance
-	7:  0.75, // Clear win
-	6:  0.7,  // Good win
-	5:  0.68, // Solid win
-	4:  0.66, // Decent win
-	3:  0.64, // Close win
-	2:  0.62, // Narrow win
-	1:  0.6,  // Tight win
+// TeamElo is the rating used for a 2-player team. It is the plain average of
+// the two players (rounded down, like the integer ratings it is built from).
+func TeamElo(a int16, b int16) int16 {
+	return int16((int(a) + int(b)) / 2)
 }
 
-const DRAW_ACTUAL_SCORE float64 = 0.5
+const (
+	// A 1-goal win is worth this much of a full win.
+	MIN_WIN_SCORE = 0.75
+	// Winning by the maximum margin counts as a full win.
+	MAX_GOAL_DIFF = 10
+)
 
 // Since in foosball a 10-0 win is different from a 10-9 win
-// Here we get the actual score that is the weighted win.
-// That means that 10-9 is similar to a draw in chess.
-// And if you are 2000 elo and you face a 1000 elo
-// and you win only 10 - 9 you are going to lose elo even if you won
+// the actual score of the winner grows linearly with the goal difference,
+// from MIN_WIN_SCORE (1 goal) to 1 (10 goals). The loser gets the complement.
+// So a 10-9 win is worth less than a 10-0 win, but is still a win.
 func getActualScore(score int, opponentScore int) float64 {
-	winner := score > opponentScore
-	var actualScore float64
-	if winner {
-		actualScore = weightedScore[score-opponentScore]
-	} else {
-		opponentActualScore := weightedScore[opponentScore-score]
-		actualScore = 1 - opponentActualScore
+	if score == opponentScore {
+		return 0.5
 	}
-
-	return actualScore
+	diff := score - opponentScore
+	if diff < 0 {
+		diff = -diff
+	}
+	if diff > MAX_GOAL_DIFF {
+		diff = MAX_GOAL_DIFF
+	}
+	winnerScore := MIN_WIN_SCORE + (1-MIN_WIN_SCORE)*float64(diff-1)/float64(MAX_GOAL_DIFF-1)
+	if score > opponentScore {
+		return winnerScore
+	}
+	return 1 - winnerScore
 }
 
 // From the original design of the ELO system
 // a difference of 400 in elo results in 10:1 odd to win
-const ELO_SCALING_FACTOR = 400
+const ELO_SCALING_FACTOR = 400.0
 
 func getOddsToWin(elo int16, opponentElo int16) float64 {
-	ratingDiff := int(opponentElo - elo)
-	oddsToWin := 1 / (1 + math.Pow10(ratingDiff/ELO_SCALING_FACTOR))
-	return oddsToWin
+	ratingDiff := float64(int(opponentElo) - int(elo))
+	return 1 / (1 + math.Pow(10, ratingDiff/ELO_SCALING_FACTOR))
 }
 
 const (
@@ -64,14 +75,13 @@ const (
 )
 
 // For the first matches elo changes at a fast pace
-func getK(matchNumber int) int {
+func getK(matchNumber int) float64 {
 	switch {
 	case matchNumber < PROVISIONAL_THRESHOLD:
 		return BASE_K * 1.5
 	case matchNumber < ESTABLISHED_THRESHOLD:
 		return BASE_K * 1.25
 	default:
-		// return BASE_K + BASE_K/4
 		return BASE_K
 	}
 }
